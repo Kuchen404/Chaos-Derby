@@ -53,7 +53,7 @@ function startCeremony(){
   last=performance.now();raf=requestAnimationFrame(cerTick);
 }
 function endCeremony(){photoTaken=false;$('cer').hidden=true;$('strip').hidden=false;if(podium)podium.visible=false}
-function cerTick(now){const dt=clamp((now-last)/1000,0,.1);last=now;cerFrame(dt);raf=requestAnimationFrame(cerTick)}
+function cerTick(now){const dt=clamp((now-last)/1000,0,.1);last=now;voice.update(dt);cerFrame(dt);raf=requestAnimationFrame(cerTick)}
 function cerFrame(dt){
   ct+=dt;
   race.order.forEach((i,k)=>{const f=fig[i],r=f.root;
