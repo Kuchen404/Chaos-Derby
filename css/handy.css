@@ -1,0 +1,34 @@
+/* Chaos-Derby – Wettschein am Handy (handy.html). Baut auf css/style.css auf. */
+.phone{max-width:480px;margin:0 auto;padding:16px 16px 40px;display:flex;flex-direction:column;gap:14px}
+.phone header{align-items:center}
+.me{display:flex;align-items:baseline;gap:10px;font-weight:700}
+.me b{font:500 18px var(--mono);color:var(--turf)}
+.phone .pill{align-self:flex-start;margin:0}
+.phone .row input{font-size:16px}           /* 16px verhindert das Hineinzoomen auf dem iPhone */
+#game{display:flex;flex-direction:column;gap:14px}
+.banner{padding:12px 14px;border-radius:6px;background:var(--panel);border:1px solid var(--line);font-size:15px}
+.banner.run{background:var(--board);color:var(--board-fg);border-color:var(--board);font-size:18px;padding:22px 16px;text-align:center}
+.banner.done{border-color:var(--turf)}
+.bod{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-left:6px}
+.seg{display:flex;gap:6px}
+.seg button,.chips button{flex:1;padding:9px 6px;font-size:14px;border-width:2px;border-color:var(--line)}
+.seg button[aria-pressed="true"]{border-color:var(--fg);background:var(--fg);color:var(--bg)}
+.pick{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.pick button{width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border-width:2px;border-color:var(--line);text-align:left;font-weight:500}
+.pick button[aria-pressed="true"]{border-color:var(--accent)}
+.pick .nm{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.pick .nm b{font-size:15px}
+.pick .nm small{font-size:12px;color:var(--muted)}
+.pick .qq{font:500 15px var(--mono)}
+.pick .mk{width:1.6em;text-align:right;font:400 14px var(--display);color:var(--accent)}
+.phone .slip input{font-size:16px}
+.chips{display:flex;gap:6px}
+.einlauf{margin:0 0 6px;padding-left:1.6em}
+.einlauf li{padding:4px 0}
+.einlauf li span:last-child{margin-left:8px;font-weight:700}
+.list li.won .n{color:var(--turf);font-weight:500}
+.list li.lost{color:var(--muted)}
+.list li.total{border-bottom:0;font-weight:700}
+.list li.total b{font:500 17px var(--mono);color:var(--turf)}
+.toast{position:fixed;left:16px;right:16px;bottom:16px;max-width:448px;margin:0 auto;padding:12px 14px;border-radius:6px;background:var(--turf);color:#fff;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+.toast.bad{background:var(--accent)}

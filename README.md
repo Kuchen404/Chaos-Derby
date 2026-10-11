@@ -65,12 +65,15 @@ Der wichtigste Grundsatz: **erst simulieren, dann zeigen.** Ein Rennen wird voll
 | `js/jikkyo.js` | japanische Ansagen mit steigender Aufregung (Quelle für die Aufnahmen) |
 | `audio/` | die japanischen Ansagen als Aufnahmen, erzeugt mit VOICEVOX |
 | `js/betting.js` | Wettbüro auf der Seite: Mitspieler, Wettschein, Abrechnung |
+| `js/remote.js`, `js/link.js` | Wetten am Handy, Seite des Fernsehers: QR-Code, Verbindung, Kasse für die Handys |
+| `handy.html`, `js/handy.js` | Wettschein am Handy (ohne Rennen) |
 | `js/main.js` | Abspielen, Bedienung, Quotentafel |
 | `models/` | die elf Tiermodelle, auf die benutzten Animationen verkleinert |
-| `vendor/` | Three.js r128 und der glTF-Lader |
+| `vendor/` | Three.js r128, der glTF-Lader, PeerJS und der QR-Code-Erzeuger |
 | `tools/jikkyo-render.js` | Aufnahmen des Kommentators neu erzeugen (braucht VOICEVOX und ffmpeg) |
 | `tools/odds.js` | Balance und Quoten prüfen: `node tools/odds.js 3000` |
 | `tools/bets-test.js` | Wettlogik prüfen: `node tools/bets-test.js` |
+| `tools/handy-test.js` | Wetten am Handy prüfen: `node tools/handy-test.js` (braucht Playwright und `peer`) |
 | `tools/sfx-test.js` | Geräusche prüfen: `node tools/sfx-test.js` (braucht Playwright) |
 | `tools/regie.js` | Kameraregie in Bewegung prüfen: `node tools/regie.js 60` (braucht Playwright) |
 | `tools/slim-models.js` | Modelle aus den Originaldateien neu erzeugen |
@@ -85,5 +88,7 @@ Mehr zu den Entscheidungen und den offenen Punkten steht in [`docs/konzept.md`](
 - **Stimme des Kommentators:** VOICEVOX:青山龍星. https://voicevox.hiroshiba.jp/ , Nutzungsbedingungen der Stimme: https://www.virvoxproject.com/voicevoxの利用規約
 - **Musik und Geräusche:** eigener Code (Web-Audio-Synthese), keine fremden Tondateien.
 - **Three.js** und GLTFLoader: MIT, siehe `vendor/THREE-LICENSE.txt`.
+- **PeerJS** 1.5.4: MIT, siehe `vendor/PEERJS-LICENSE.txt`. Verbindungsaufbau über den öffentlichen PeerJS-Server.
+- **QR Code Generator** von Kazuhiko Arase 1.4.4: MIT, Hinweis im Kopf von `vendor/qrcode.js`.
 
 Für den eigenen Code ist noch keine Lizenz festgelegt.

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chaos-Derby Wettschein</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=DM+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/style.css?v=dev">
+<link rel="stylesheet" href="css/handy.css?v=dev">
+</head>
+<body>
+<main class="phone">
+  <header>
+    <div class="eyebrow">Chaos-Derby · Wettschein<span id="raum"></span></div>
+    <div class="me" id="me" hidden><span id="mename"></span><b id="mecash"></b></div>
+  </header>
+
+  <p class="pill" id="conn">Verbinde mit dem Fernseher …</p>
+
+  <form class="card" id="code" hidden>
+    <h3>Raum</h3>
+    <p class="help">Den Code findest du am Fernseher unter dem QR-Code.</p>
+    <div class="row"><input id="codein" maxlength="5" placeholder="z. B. K7M2Q" autocapitalize="characters" autocomplete="off" aria-label="Raumcode"><button class="primary">Verbinden</button></div>
+  </form>
+
+  <form class="card" id="join" hidden>
+    <h3>Mitspielen</h3>
+    <p class="help">Jeder startet mit 100 Talern. Wer schon am Fernseher eingetragen ist, nimmt denselben Namen.</p>
+    <div class="row"><input id="name" maxlength="16" placeholder="Name" aria-label="Dein Name" autocomplete="nickname"><button class="primary">Los</button></div>
+  </form>
+
+  <section id="game" hidden>
+    <div class="banner" id="banner"></div>
+
+    <form class="card slip" id="slip" hidden>
+      <h3>Wettschein <span class="bod" id="bod"></span></h3>
+      <div class="seg" id="types" role="group" aria-label="Wettart"></div>
+      <p class="help" id="help"></p>
+      <ul class="pick" id="pick"></ul>
+      <label>Einsatz<input id="stake" type="number" min="1" step="1" value="10" inputmode="numeric"></label>
+      <div class="chips" id="chips"><button type="button" data-s="5">5</button><button type="button" data-s="10">10</button><button type="button" data-s="25">25</button><button type="button" data-s="all">Alles</button></div>
+      <div class="sum"><span>Quote <b id="q">–</b></span><span>Auszahlung <b id="w">–</b></span></div>
+      <button class="primary" id="go" disabled>Wette abgeben</button>
+    </form>
+
+    <div class="card" id="mine">
+      <h3>Deine Wetten</h3>
+      <ul class="list" id="slips"></ul>
+    </div>
+
+    <div class="card" id="res" hidden>
+      <h3>Einlauf</h3>
+      <ol class="einlauf" id="order"></ol>
+      <h3>Abrechnung</h3>
+      <ul class="list" id="paid"></ul>
+    </div>
+  </section>
+
+  <p class="toast" id="msg" role="status" hidden></p>
+</main>
+<script src="vendor/peerjs.min.js?v=dev"></script>
+<script src="js/link.js?v=dev"></script>
+<script src="js/handy.js?v=dev"></script>
+</body>
+</html>
