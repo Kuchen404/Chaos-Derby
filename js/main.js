@@ -88,8 +88,8 @@ try{
 }catch(err){gl=false;$('nogl').hidden=false}
 $('go').onclick=start;
 $('neu').onclick=()=>{fresh();reset();$('go').textContent='Rennen starten';openBets();paradeStart()};
-function voiceLabel(){$('ton').textContent='Ton: '+(voice.mode==='aus'?'aus':voice.mode==='de'?'Deutsch':voice.fallback?'Deutsch (keine japanische Stimme)':'Japanisch');$('ton').setAttribute('aria-pressed',voice.on);sfx.setOn(voice.on)}
-if(voice.ok){voiceLabel();voice.onload=voiceLabel;speechSynthesis.addEventListener&&speechSynthesis.addEventListener('voiceschanged',voiceLabel);$('ton').onclick=()=>{voice.unlock();voice.next();voiceLabel()}}else $('ton').hidden=true;
+function voiceLabel(){$('ton').textContent='Ton: '+(voice.mode==='aus'?'aus':voice.mode==='de'?'Deutsch':voice.pending?'Japanisch (lädt …)':voice.fallback?'Deutsch (keine japanische Stimme)':'Japanisch');$('ton').setAttribute('aria-pressed',voice.on);sfx.setOn(voice.on)}
+if(voice.ok){voiceLabel();voice.onload=voiceLabel;speechSynthesis.addEventListener&&speechSynthesis.addEventListener('voiceschanged',voiceLabel);$('ton').onclick=()=>{voice.unlock();voice.next();voiceLabel();tonHint()}}else $('ton').hidden=true;
 // Quoten für Boden und Feld des aktuellen Rennens, je Rennen einmal gemerkt. Gerechnet wird in Helfern (Web Worker) neben der Seite,
 // aufgeteilt auf mehrere Prozessorkerne; ohne Worker wie früher in Häppchen auf der Seite selbst.
 const TL={};let oddsBusy=false,oddsJob=null,pool=null;
@@ -145,7 +145,11 @@ fit();
 if(gl)ROSTER.forEach((d,k)=>figFor(k));
 fresh();reset();loading.seal();
 // Erst nach dem Klick auf dem Ladebildschirm: Vorstellung der Starter, mit Ton
-loading.onStart(()=>{voice.unlock();if(voice.ok)voiceLabel();if(gl&&state==='idle')paradeStart()});
+loading.onStart(()=>{voice.unlock();if(voice.ok)voiceLabel();tonHint();if(gl&&state==='idle')paradeStart()});
 window.addEventListener('resize',()=>{fit();if(gl&&state!=='run'&&state!=='cer'&&!paraOn)frame(1,0)});
 // Browser geben Ton erst nach einer Bedienung frei; danach kann der Sprecher schon die Starter vorstellen (Musik und Geräusche: js/sfx.js)
-document.addEventListener('pointerdown',()=>voice.unlock());
+// Bis dahin zeigt ein Hinweis im Sendebild, dass ein Klick (oder eine Taste) den Ton einschaltet.
+let tonFrei=false;
+function tonHint(){$('tonhint').hidden=tonFrei||!voice.on||!loading.started}
+function tonAn(){tonFrei=true;voice.unlock();tonHint()}
+document.addEventListener('pointerdown',tonAn);document.addEventListener('keydown',tonAn);
