@@ -8,10 +8,10 @@ const ROSTER=[
  {id:'stier',nr:3,name:'Dampfwalze',kind:'Stier',trait:'Langsam, räumt beim Sturmlauf alles ab',col:'#2f6fb8',ink:'#fff',v:19.17,late:.03,rain:.95,bod:[1,1,.99]},
  {id:'husky',nr:4,name:'Schmuddelwetter',kind:'Husky',trait:'Trottet lustlos, außer es regnet',col:'#12a08f',ink:'#fff',v:16.79,late:0,rain:2.33,bod:[1,1,1]},
  {id:'aufrecht',nr:5,name:'Aufrechter Gang',kind:'Pferd auf zwei Beinen',trait:'Der Schnellste, läuft manchmal zurück',col:'#8e44ad',ink:'#fff',v:25.15,late:0,rain:.8,bod:[1,.97,.95]},
- {id:'kuh',nr:6,name:'Spätzünder',kind:'Kuh mit Rakete',trait:'Trottet, bis die Rakete zündet',col:'#e0559b',ink:'#fff',v:10.8,late:0,rain:1,bod:[1,.98,.96]},
- {id:'esel',nr:7,name:'Sturkopf',kind:'Esel',trait:'Bleibt stur stehen, bis ihn einer überholt',col:'#ef7d1a',ink:'#111',v:22.28,late:.02,rain:.95,bod:[1,1,1]},
+ {id:'kuh',nr:6,name:'Spätzünder',kind:'Kuh mit Rakete',trait:'Trottet, bis die Rakete zündet',col:'#e0559b',ink:'#fff',v:11.8,late:0,rain:1,bod:[1,.98,.96]},
+ {id:'esel',nr:7,name:'Sturkopf',kind:'Esel',trait:'Bleibt stur stehen, bis ihn einer überholt',col:'#ef7d1a',ink:'#111',v:22.45,late:.02,rain:.95,bod:[1,.99,.97]},
  {id:'hirsch',nr:8,name:'Platzhirsch',kind:'Hirsch',trait:'Springt in großen Sätzen, landet nicht immer',col:'#7a4b2a',ink:'#fff',v:21.76,late:0,rain:.9,bod:[1,.98,.95]},
- {id:'reh',nr:9,name:'Schreckhaft',kind:'Reh',trait:'Sehr schnell, erstarrt aber bei jedem Krach',col:'#f4f4f4',ink:'#111',v:23.47,late:0,rain:.85,bod:[1,.97,.94]},
+ {id:'reh',nr:9,name:'Schreckhaft',kind:'Reh',trait:'Sehr schnell, erstarrt aber bei jedem Krach',col:'#f4f4f4',ink:'#111',v:23.15,late:0,rain:.85,bod:[1,.97,.94]},
  {id:'fuchs',nr:10,name:'Schlitzohr',kind:'Fuchs',trait:'Hängt sich hinter andere und zieht spät vorbei',col:'#8bc34a',ink:'#111',v:20.71,late:0,rain:.9,bod:[1,.99,.97]},
  {id:'wolf',nr:11,name:'Hetzjagd',kind:'Wolf',trait:'Jagt den Vordermann, der rennt dann um sein Leben',col:'#3a3f47',ink:'#fff',v:21.17,late:0,rain:1,bod:[1,1,.99]},
  {id:'shiba',nr:12,name:'Schnüffelnase',kind:'Shiba Inu',trait:'Schnüffelt herum, bekommt dann seine fünf Minuten',col:'#1c2f6b',ink:'#fff',v:22.39,late:0,rain:.8,bod:[1,.97,.94]}
@@ -41,9 +41,9 @@ function simulate(seed,rec,bod,field){
   bod=bod|0;
   let rain0=R()<.45?8+R()*20:-1, rain1=rain0+10;
   // p: Gewicht für den gesprochenen Kommentar, 3 = Zieleinlauf, 2 = Ereignis, 1 = Rest
-  // Ereignisse mit Schnitt sind laut: Ein Reh in der Nähe erschrickt und erstarrt.
-  const say=(s,i,cut,p)=>{if(rec)ev.push({t,s,i,cut,p:p||(cut?2:1)});if(cut&&i>=0)scare(i)};
+  const say=(s,i,cut,p)=>{if(rec)ev.push({t,s,i,cut,p:p||(cut?2:1)})};
   const p=h=>R()<h*DT;
+  // Laute Ereignisse (Sturmlauf, Rakete, Stürze, Jagd, Zoomies): Ein Reh in der Nähe erschrickt und erstarrt
   function scare(i){for(let j=0;j<n;j++){const r=rs[j];
     if(j!==i&&F[j].id==='reh'&&r.st===0&&r.fin<0&&Math.abs(r.x-rs[i].x)<18&&R()<.7){r.st=12;r.T=1.4+R()*1.2;say(F[j].name+' erschrickt und bleibt wie angewurzelt stehen.',j,1.8)}}}
   const hu=has('husky'),huN=hu>=0?F[hu].name:'';
@@ -67,27 +67,28 @@ function simulate(seed,rec,bod,field){
           if(id==='pferd'&&i===li&&r.x>150&&p(.035)){r.st=1;r.T=3.5+R()*2.5;say(d.name+' führt und legt sich hin. Er schläft.',i,2.6)}
           else if((id==='pferd'||id==='aufrecht')&&!r.jub&&i===li&&r.x>L-80&&r.x<L-35&&lx-l2>9&&p(.16)){r.st=8;r.jub=true;r.T=1+R()*.6;say(id==='pferd'?d.name+' jubelt schon. Viel zu früh!':d.name+' reißt die Arme hoch. Er jubelt zu früh!',i,1.5)}
           else if(id==='alpaka'&&p(.015*z)){r.st=3;r.T=2+R()*1.5;say(d.name+' hat den Blumenschmuck entdeckt und frisst.',i,2.2)}
-          else if(id==='stier'&&p(.03*z)){r.st=4;r.T=4;say(d.name+' senkt den Kopf. Bitte alle zur Seite.',i,4)}
-          else if(id==='aufrecht'&&(rain&&p(.08)||bod===2&&p(.012))){r.st=2;r.T=2.2;say(rain?d.name+' rutscht auf dem nassen Gras aus.':d.name+' rutscht im tiefen Boden aus.',i,2)}
+          else if(id==='stier'&&p(.03*z)){r.st=4;r.T=4;say(d.name+' senkt den Kopf. Bitte alle zur Seite.',i,4);scare(i)}
+          else if(id==='aufrecht'&&(rain&&p(.08)||bod===2&&p(.012))){r.st=2;r.T=2.2;say(rain?d.name+' rutscht auf dem nassen Gras aus.':d.name+' rutscht im tiefen Boden aus.',i,2);scare(i)}
           else if(id==='aufrecht'&&p(.045*z)){r.st=7;r.T=1.8+R()*1.4;say(d.name+' hat sich umgedreht. Er läuft zurück.',i,2)}
           else if(id==='kuh'&&!r.used&&t>6&&p(.026*(z>1?2.5:1))){r.used=true;
             if(R()<.15){r.st=9;r.T=1+R()*.5;say('Zündung! Aber die Rakete zeigt in die falsche Richtung.',i,2.6)}
-            else{r.st=6;say('Zündung! Die Rakete von '+d.name+' brennt.',i,2.6)}}
+            else{r.st=6;say('Zündung! Die Rakete von '+d.name+' brennt.',i,2.6)}
+            scare(i)}
           else if(id==='husky'&&!howl&&!rain&&rain0<0&&t>5&&p(.006)){howl=true;rain0=t+1.5;rain1=rain0+10;say(d.name+' heult die Wolken an. Da zieht etwas auf.',i,1.8)}
           // Esel: bleibt stehen, bis ihn jemand überholt (höchstens 7 s)
           else if(id==='esel'&&r.x>60&&p(.035*z)){r.st=10;r.T=7;r.ahead=rs.filter(q=>q.x>r.x).length;say(d.name+' bleibt einfach stehen. Er will nicht mehr.',i,2.2)}
           // Hirsch: großer Satz nach vorn, jeder sechste geht schief
-          else if(id==='hirsch'&&p(.06)){if(R()<.17){r.st=2;r.T=2.2;say(d.name+' setzt zum Sprung an und landet auf der Nase.',i,2)}else{r.st=11;r.T=.9}}
+          else if(id==='hirsch'&&p(.06)){if(R()<.17){r.st=2;r.T=2.2;say(d.name+' setzt zum Sprung an und landet auf der Nase.',i,2);scare(i)}else{r.st=11;r.T=.9}}
           // Reh: erschrickt auch ohne Grund
-          else if(id==='reh'&&p(.01)){r.st=12;r.T=1.4+R()*1.2;say(d.name+' erschrickt vor einem Schmetterling.',i,1.8)}
+          else if(id==='reh'&&p(.016)){r.st=12;r.T=1.4+R()*1.2;say(d.name+' erschrickt vor einem Schmetterling.',i,1.8)}
           // Wolf: jagt den Vordermann, der flieht schneller als sonst
           else if(id==='wolf'&&p(.05)){let tg=-1,gx=1e9;for(let j=0;j<n;j++){const g=rs[j].x-r.x;if(j!==i&&rs[j].fin<0&&g>4&&g<20&&g<gx){gx=g;tg=j}}
             if(tg>=0){const q=rs[tg];r.st=13;r.T=3;q.fl=3;if(STOP.includes(q.st)&&q.st!==2){q.st=0;q.T=0}
-              say(d.name+' hat '+F[tg].name+' im Visier. '+F[tg].name+' rennt um sein Leben.',i,2.2)}}
+              say(d.name+' hat '+F[tg].name+' im Visier. '+F[tg].name+' rennt um sein Leben.',i,2.2);scare(i)}}
           else if(id==='shiba'&&p(.025*z)){r.st=14;r.T=1.8+R()*1.4;say(d.name+' hat eine Spur gefunden und schnüffelt.',i,2)}
-          else if(id==='shiba'&&p(.018)){r.st=15;r.T=2.5;say(d.name+' bekommt seine fünf Minuten und rast los.',i,2.2)}
-        }else if(r.st===6&&p(.13)){r.st=2;r.T=3;say('Die Rakete ist explodiert. '+d.name+' geht zu Fuß weiter.',i,2.4)}
-        else if(r.st===9&&r.T<=DT){r.st=2;r.T=3;say('Die Rakete ist explodiert. '+d.name+' sortiert sich neu.',i,2.4)}
+          else if(id==='shiba'&&p(.018)){r.st=15;r.T=2.5;say(d.name+' bekommt seine fünf Minuten und rast los.',i,2.2);scare(i)}
+        }else if(r.st===6&&p(.13)){r.st=2;r.T=3;say('Die Rakete ist explodiert. '+d.name+' geht zu Fuß weiter.',i,2.4);scare(i)}
+        else if(r.st===9&&r.T<=DT){r.st=2;r.T=3;say('Die Rakete ist explodiert. '+d.name+' sortiert sich neu.',i,2.4);scare(i)}
         else if(r.st===10){const a=rs.filter(q=>q.x>r.x).length;if(a>r.ahead){const by=rs.findIndex((q,j)=>j!==i&&q.x>r.x&&q.x-r.x<3);r.st=0;r.T=0;say(by>=0?F[by].name+' zieht vorbei. Jetzt trottet '+d.name+' beleidigt hinterher.':d.name+' setzt sich wieder in Bewegung.',i)}}
         if(STOP.includes(r.st))v=0;
         else if(r.st===4)v*=1.7;else if(r.st===7)v*=-.6;else if(r.st===6)v=70;else if(r.st===9)v=-35;
@@ -111,7 +112,7 @@ function simulate(seed,rec,bod,field){
     });
     for(let e=0;e<n;e++){const b=rs[e];if(F[e].id!=='stier'||b.st!==4||b.fin>=0)continue;
       for(let j=0;j<n;j++){const r=rs[j];
-        if(j!==e&&r.fin<0&&r.st!==2&&r.st!==6&&r.st!==9&&r.st!==11&&Math.abs(r.x-b.x)<5){r.st=2;r.T=2.2;say(F[e].name+' räumt '+F[j].name+' ab.',j,0,2)}}}
+        if(j!==e&&r.fin<0&&r.st!==2&&r.st!==6&&r.st!==9&&r.st!==11&&Math.abs(r.x-b.x)<5){r.st=2;r.T=2.2;say(F[e].name+' räumt '+F[j].name+' ab.',j,0,2);scare(j)}}}
     if(!order.length&&t>4&&li!==lead&&t-leadT>2.5){say(F[li].name+(lead<0?' führt das Feld an.':' übernimmt die Führung.'));lead=li;leadT=t}
     if(!m200&&lx>=L-200){m200=true;say('Noch 200 Meter.',-1,0,2)}
     const al=has('alpaka');

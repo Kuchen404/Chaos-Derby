@@ -2,7 +2,9 @@
 // und schreibt sie nach models/. Aufruf: node tools/slim-models.js <Ordner mit den Original-glTF>
 const fs=require('fs'),path=require('path');
 const src=process.argv[2];if(!src){console.error('Ordner mit den Original-glTF angeben');process.exit(1)}
-const JOBS={horse:['Horse.gltf',['Gallop','Death','Idle','Walk']],alpaca:['Alpaca.gltf',['Gallop','Idle','Eating']],bull:['Bull.gltf',['Gallop','Idle']],husky:['Husky.gltf',['Gallop','Idle','Walk']],cow:['Cow.gltf',['Walk','Idle']]};
+const JOBS={horse:['Horse.gltf',['Gallop','Death','Idle','Walk']],alpaca:['Alpaca.gltf',['Gallop','Idle','Eating']],bull:['Bull.gltf',['Gallop','Idle']],husky:['Husky.gltf',['Gallop','Idle','Walk']],cow:['Cow.gltf',['Walk','Idle']],
+  donkey:['Donkey.gltf',['Gallop','Idle']],stag:['Stag.gltf',['Gallop','Gallop_Jump','Idle']],deer:['Deer.gltf',['Gallop','Idle']],
+  fox:['Fox.gltf',['Gallop','Idle']],wolf:['Wolf.gltf',['Gallop','Idle']],shiba:['ShibaInu.gltf',['Gallop','Idle','Eating']]};
 const out=path.join(__dirname,'..','models');
 for(const k in JOBS){
   const [file,keep]=JOBS[k],g=JSON.parse(fs.readFileSync(path.join(src,file),'utf8'));

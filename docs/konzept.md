@@ -36,6 +36,13 @@ Das Rennen wird im Hintergrund komplett berechnet (`simulate(seed, true)` in `js
 | jubelt zu früh | Pferd oder Pferd auf zwei Beinen, zwischen 80 und 35 m vor dem Ziel mit mehr als 9 m Vorsprung, einmal pro Rennen | bleibt 1 bis 1,6 s stehen und hüpft |
 | Rakete verkehrt herum | 15 % aller Zündungen der Kuh | fliegt gut 1 s mit 35 m/s rückwärts, dann explodiert sie |
 | Husky heult | Husky, nur wenn es noch nicht geregnet hat | 1,5 s später regnet es 10 s lang |
+| bockt | Esel | bleibt stehen, bis ihn jemand überholt, höchstens 7 s |
+| springt | Hirsch | 0,9 s lang 1,8-faches Tempo; jeder sechste Sprung endet als Sturz (purzelt); über einen Stier im Sturmlauf springt er hinweg |
+| erstarrt | Reh, wenn bis 18 m entfernt etwas Lautes passiert (Sturmlauf, Rakete, Sturz, Jagd, Zoomies), sonst selten ohne Grund | steht 1,4 bis 2,6 s |
+| Windschatten | Fuchs, bis 6 m hinter einem laufenden Starter | 1,12-faches Tempo, auf den letzten 150 m 1,3-faches |
+| jagt | Wolf, wenn ein Starter 4 bis 20 m vor ihm läuft | 3 s lang 1,45-faches Tempo; der Gejagte rennt 3 s lang mit 1,25-fachem Tempo und wacht dafür auch aus Schlaf oder Bocken auf |
+| schnüffelt | Shiba Inu | steht 1,8 bis 3,2 s |
+| Zoomies | Shiba Inu | 2,5 s lang 1,9-faches Tempo im Zickzack |
 
 ### Bahnzustand
 
@@ -46,16 +53,14 @@ Vor jedem Rennen wird der Boden ausgelost: gut (50 %), weich (30 %), schwer (20 
 Auf den letzten 200 m sind Fressen, Sturmlauf und Rückwärtslaufen 1,5-mal so häufig, eine noch nicht gezündete Rakete zündet 2,5-mal so oft, und der Führende kann zu früh jubeln. In etwa 47 % der Rennen gewinnt nicht, wer bei 800 m vorn liegt (vorher 44 %). Ein verfrühter Jubel kommt in etwa einem Viertel der Rennen vor.
 
 - Das Alpaka gewinnt im Ziel bis zu 4 m durch den gestreckten Hals.
-- Aktuelle Siegchancen (`node tools/odds.js`, 6000 Rennen je Boden):
 
-| Starter | gemischt | gut | weich | schwer |
-|---|---|---|---|---|
-| Pferd | 25 % | 31 % | 22 % | 17 % |
-| Alpaka | 22 % | 20 % | 24 % | 21 % |
-| Stier | 15 % | 12 % | 17 % | 18 % |
-| Husky | 13 % | 8 % | 12 % | 22 % |
-| Pferd auf zwei Beinen | 14 % | 17 % | 13 % | 9 % |
-| Kuh | 12 % | 11 % | 12 % | 13 % |
+### Wechselnde Felder
+
+Es gibt 12 Starter (`ROSTER` in `js/sim.js`), pro Rennen laufen 6 davon. Das Feld wird wie der Boden vor dem Rennen ausgelost (`drawField`) und nach Startnummer auf die Bahnen verteilt. Die Simulation kennt keine festen Plätze mehr: Jede Eigenheit hängt an der Kennung des Starters (`id`), und Kommentarzeilen nennen den Namen aus dem Feld. Ergebnisse (`order`, `frames`, `ev`) zählen nach Bahn 0 bis 5, `field` sagt, wer auf welcher Bahn läuft.
+
+Die Grundtempos sind so abgestimmt, dass jeder Starter über viele ausgeloste Felder ungefähr gleich oft gewinnt (fair wären 16,7 %). Wer in einem bestimmten Rennen Favorit ist, ergibt sich aus Feld und Boden.
+
+- Aktuelle Siegchancen (`node tools/odds.js`): siehe Tabelle unten.
 
   Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
 
@@ -65,7 +70,7 @@ Gewettet wird an einem gemeinsamen Bildschirm mit Spielgeld. Einer bedient das W
 
 - **Mitspieler:** Jeder trägt sich mit Namen ein und bekommt 100 Taler. Kassen und offene Wetten bleiben im Browser gespeichert, auch nach dem Neuladen. „Kasse zurücksetzen“ löscht alles.
 - **Wettarten:** Sieg (Starter gewinnt), Platz (Starter wird Erster oder Zweiter) und Zweierwette (Erster und Zweiter in genau dieser Reihenfolge).
-- **Feste Quoten:** Alle drei kommen aus denselben Probeläufen mit 15 % Abzug, gerechnet für den Boden des aktuellen Rennens. Das Spiel rechnet zuerst den aktuellen Boden und die übrigen danach im Leerlauf, jeden nur einmal. Wird der Boden neu ausgelost („Neues Rennen“ oder Neuladen der Seite), gehen offene Wetten an die Kasse zurück, weil ihre Quoten für einen anderen Boden galten. Angezeigt wird eine Nachkommastelle, und genau diese Quote wird ausgezahlt. Sie gilt ab Abgabe der Wette. Obergrenze 99 für Sieg und Platz, 250 für die Zweierwette, Untergrenze 1,1.
+- **Feste Quoten:** Alle drei kommen aus denselben Probeläufen mit 15 % Abzug, gerechnet für Boden und Feld des aktuellen Rennens. Das dauert nach „Neues Rennen“ einige Sekunden, das Wettbüro öffnet, sobald die Quoten stehen. Kommt ein neues Rennen („Neues Rennen“ oder Neuladen der Seite), gehen offene Wetten an die Kasse zurück, weil ihre Quoten für ein anderes Feld galten. Angezeigt wird eine Nachkommastelle, und genau diese Quote wird ausgezahlt. Sie gilt ab Abgabe der Wette. Obergrenze 99 für Sieg und Platz, 250 für die Zweierwette, Untergrenze 1,1.
 - **Ablauf:** Der Einsatz geht sofort von der Kasse ab, bis zum Start lässt sich eine Wette zurücknehmen. Mit dem Start schließt das Wettbüro. Nach dem Zieleinlauf wird einmal abgerechnet, eine Wiederholung zahlt nicht noch einmal aus. „Neues Rennen“ startet nicht mehr sofort, sondern öffnet zuerst das Wettbüro.
 - **Gegenprobe:** `node tools/odds.js` setzt in 3000 Rennen mit ausgelostem Boden, die nicht in die Quoten eingeflossen sind, auf jede Möglichkeit einen Taler, jeweils zur Quote dieses Bodens. Ergebnis zuletzt: Sieg zahlt 0,86 je Taler aus, Platz 0,85, Zweierwette 0,80. Platz kann durch das Runden kleiner Quoten (Pferd auf gutem Boden 1,3) etwas unter 0,85 liegen, die Zweierwette durch seltene Einläufe und die Obergrenze. Für ein Partyspiel reicht das.
 
@@ -101,15 +106,12 @@ Gewettet wird an einem gemeinsamen Bildschirm mit Spielgeld. Einer bedient das W
 
 Das ursprüngliche Feld bestand aus Pferd, Giraffe, Elefant, Robbe, Pferd auf zwei Beinen und Schildkröte mit Rakete. Das kostenlose Modellpaket von Quaternius enthält davon nur das Pferd. Statt Modelle zuzukaufen, wurde das Feld an das Paket angepasst: Alpaka statt Giraffe, Stier statt Elefant, Husky statt Robbe, Kuh statt Schildkröte. Die Regeln blieben gleich.
 
-Im Paket sind außerdem Esel, Hirsch, Reh, Fuchs, Wolf und Shiba Inu mit demselben Skelett. Sie lassen sich als weitere Starter einbauen.
+Im Paket sind außerdem Esel, Hirsch, Reh, Fuchs, Wolf und Shiba Inu mit demselben Skelett. Sie sind inzwischen alle als Starter eingebaut (Nummern 7 bis 12). Damit ist das ganze Paket im Spiel; das weiße Pferd aus dem Paket wird nicht gebraucht, weil das Pferd auf zwei Beinen das braune Modell mit eigener Farbe nutzt. Die Modelle werden mit `node tools/slim-models.js <Ordner>` auf die benutzten Animationen verkleinert.
 
 Ein kostenpflichtiges Paket mit Giraffe, Elefant und Robbe in einheitlichem Stil gibt es von ithappy („Animals Low-Poly“, 139 $).
 
 ## Offen
 
 - **Wetten am Handy:** Wetten am eigenen Handy per QR-Code. Braucht einen kleinen Server; die Wettlogik in `js/bets.js` lässt sich dafür übernehmen. Ebenfalls offen: Totalisator statt fester Quoten, bei dem die Quote aus den Einsätzen der Runde entsteht.
-- **Mehr Abwechslung:** Bahnzustand, Zielgeraden-Ereignisse und drei neue Ereignisse sind umgesetzt (siehe oben). Offen sind weitere Starter und wechselnde Felder; beides braucht neue Modelle. Vorschlag:
-  - Neue Starter aus demselben Quaternius-Paket (gleiches Skelett, gleiche Animationen): **Esel**, der an einer beliebigen Stelle stur stehen bleibt und erst weiterläuft, wenn ein anderer Starter vorbeizieht; **Hirsch**, der über die Bahn springt und dabei Meter gewinnt oder im Nachbarn landet; **Fuchs**, der sich in den Windschatten des Führenden hängt und ihn auf den letzten Metern überholt; **Shiba Inu**, der bei jedem Kommentar zur Tribüne schaut. Namen müssen noch gefunden werden.
-  - Wechselnde Felder: Mit acht bis zehn Startern laufen pro Rennen sechs, ausgelost wie der Boden. Dafür muss `sim.js` statt fester Indizes (`i===0`, `rs[2]` usw.) mit Starterkennungen arbeiten, und Bahnbelegung, Figuren und Quotentafel müssen sich nach dem Feld richten.
-  - Wettbewerbe mit anderer Distanz (800 oder 1200 m) wären eine weitere Abwechslung ohne neue Modelle, brauchen aber eine Bahn, deren Länge nicht fest in `scene.js` steht.
+- **Mehr Abwechslung:** Bahnzustand, Zielgeraden-Ereignisse, zwölf Starter und wechselnde Felder sind umgesetzt (siehe oben). Noch offen: Fehlschläge, die andere Starter mitreißen; Wettbewerbe mit anderer Distanz (800 oder 1200 m), die eine Bahn bräuchten, deren Länge nicht fest in `scene.js` steht.
 - **Bekannte Schwächen:** Bei Schnitten auf einen Starter in einer hinteren Bahn läuft manchmal ein anderer Starter groß durchs Bild. Die Startnummer sehr großer Figuren wird in nahen Einstellungen oben angeschnitten.

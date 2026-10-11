@@ -16,7 +16,7 @@ function shell(c){const root=G(scene),spin=G(root,0,c,0),inner=G(spin,0,-c,0);ro
 const WHITE={Main:'#b2b2a3',Main_Dark:'#a3a394',Main_Light:'#928f92',Hooves:'#928351',Hair:'#aca088',Muzzle:'#977c62'};
 // sc: Maßstab, xo: Versatz, damit die Modellmitte über dem Ankerpunkt liegt
 const MODELS={horse:{sc:.6,xo:-.37},alpaca:{sc:.6,xo:-.25},bull:{sc:.55,xo:-.58},husky:{sc:.5,xo:-.235},cow:{sc:.46,xo:-.485},
-  donkey:{sc:.6,xo:-.3},stag:{sc:.6,xo:-.3},deer:{sc:.6,xo:-.3},fox:{sc:.5,xo:-.2},wolf:{sc:.5,xo:-.25},shiba:{sc:.5,xo:-.2}};
+  donkey:{sc:.55,xo:-.355},stag:{sc:.6,xo:-.372},deer:{sc:.55,xo:-.308},fox:{sc:.5,xo:.12},wolf:{sc:.55,xo:.118},shiba:{sc:.45,xo:-.234}};
 // Darstellung je Starter (Schlüssel = ROSTER-id). front: Abstand Mitte bis Nase, top: Höhe der Startnummer, beides vor Maßstab;
 // gs/ws: Meter je Galopp- bzw. Schrittzyklus; run: Laufanimation; cw: Abstand der Kamera bei Schnitten; js: Größe des Jockeys
 const VIS={
@@ -26,12 +26,12 @@ const VIS={
   husky:{m:'husky',front:.97,top:2.4,gs:5,ws:2.6,cw:.9,js:.8,run:'Walk'},
   aufrecht:{m:'horse',pal:WHITE,up:true,front:.8,top:4.6,gs:8,ws:4.5,cw:1.3,run:'Walk'},
   kuh:{m:'cow',rocket:true,js:.9,front:1.86,top:3.7,gs:8,ws:3.2,cw:1.2,run:'Walk'},
-  esel:{m:'donkey',front:1.5,top:3.4,gs:7,ws:4,cw:1},
-  hirsch:{m:'stag',front:1.6,top:4.4,gs:8,ws:4.5,cw:1.2},
-  reh:{m:'deer',front:1.4,top:3.4,gs:8,ws:4.5,cw:1},
-  fuchs:{m:'fox',front:.9,top:2.3,gs:5,ws:2.6,cw:.9,js:.8},
-  wolf:{m:'wolf',front:1.1,top:2.8,gs:6,ws:3,cw:.9,js:.85},
-  shiba:{m:'shiba',front:.9,top:2.3,gs:5,ws:2.6,cw:.9,js:.8}
+  esel:{m:'donkey',front:1.3,top:2.9,gs:6.2,ws:3.6,cw:1},
+  hirsch:{m:'stag',front:1.45,top:3.9,gs:7,ws:4,cw:1.2},
+  reh:{m:'deer',front:1.21,top:3.05,gs:6,ws:3.6,cw:1},
+  fuchs:{m:'fox',front:1.47,top:2.05,gs:5,ws:2.6,cw:.9,js:.75},
+  wolf:{m:'wolf',front:1.53,top:2.2,gs:5.5,ws:2.8,cw:.95,js:.8},
+  shiba:{m:'shiba',front:.89,top:2.1,gs:4.3,ws:2.3,cw:.85,js:.75}
 };
 let UPA=1.1,UPN=-.55,NRA=-.8,NST=1.5,HDA=-.6;   // Zusatzdrehungen über das Skelett
 // Vorderbeine des aufrechten Pferds: Winkel unter der Waagerechten nach vorn (Bogenmaß), Grundhaltung und Ausschlag im Schrittzyklus
