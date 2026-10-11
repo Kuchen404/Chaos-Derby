@@ -7,7 +7,19 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=DM+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="loading">
+<div class="load" id="load" role="dialog" aria-modal="true" aria-labelledby="lh">
+  <div class="lbox">
+    <div class="eyebrow">Gleich geht es los</div>
+    <h1 id="lh">Chaos-Derby 3D</h1>
+    <p class="lmsg">Die Starter werden in die Boxen geführt.</p>
+    <div class="lbar" role="progressbar" aria-label="Ladefortschritt"><div id="lbar"></div></div>
+    <div class="lrow"><ul id="lparts"></ul><span id="lpct">0 %</span></div>
+    <p class="err" id="lerr" role="alert" hidden></p>
+    <button class="primary" id="lgo" disabled>Lädt …</button>
+    <button type="button" class="link" id="lskip" hidden>Schon anfangen, der Kommentator kommt nach</button>
+  </div>
+</div>
 <div class="wrap">
   <header>
     <div>
@@ -92,6 +104,7 @@
 <script src="js/sim.js"></script>
 <script src="js/bets.js"></script>
 <script src="js/state.js"></script>
+<script src="js/loader.js"></script>
 <script src="js/figures.js"></script>
 <script src="js/scene.js"></script>
 <script src="js/director.js"></script>

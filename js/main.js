@@ -89,9 +89,10 @@ try{
 $('go').onclick=start;
 $('neu').onclick=()=>{fresh();reset();$('go').textContent='Rennen starten';openBets();paradeStart()};
 function voiceLabel(){$('ton').textContent='Ton: '+(voice.mode==='aus'?'aus':voice.mode==='de'?'Deutsch':voice.fallback?'Deutsch (keine japanische Stimme)':'Japanisch');$('ton').setAttribute('aria-pressed',voice.on)}
-if(voice.ok){voiceLabel();speechSynthesis.addEventListener&&speechSynthesis.addEventListener('voiceschanged',voiceLabel);$('ton').onclick=()=>{voice.unlock();voice.next();voiceLabel()}}else $('ton').hidden=true;
-// Quoten für Boden und Feld des aktuellen Rennens: in Häppchen rechnen, damit die Seite bedienbar bleibt, und je Rennen einmal merken
-const TL={};let oddsBusy=false;
+if(voice.ok){voiceLabel();voice.onload=voiceLabel;speechSynthesis.addEventListener&&speechSynthesis.addEventListener('voiceschanged',voiceLabel);$('ton').onclick=()=>{voice.unlock();voice.next();voiceLabel()}}else $('ton').hidden=true;
+// Quoten für Boden und Feld des aktuellen Rennens, je Rennen einmal gemerkt. Gerechnet wird in Helfern (Web Worker) neben der Seite,
+// aufgeteilt auf mehrere Prozessorkerne; ohne Worker wie früher in Häppchen auf der Seite selbst.
+const TL={};let oddsBusy=false,oddsJob=null,pool=null;
 const oddsDone=k=>TL[k]&&TL[k].N>=ODDS_N;
 function showOdds(k){
   const q=quotes(TL[k]);
@@ -99,21 +100,50 @@ function showOdds(k){
   $('mc').textContent='Die Quoten stammen aus '+q.N+' unsichtbar vorab gerechneten Rennen mit diesen Startern auf '+BODEN[q.bod].name+'em Boden, abzüglich 15 % für die Bank. Platz heißt: Erster oder Zweiter.';
   setQuotes(q);
 }
+function oddsProgress(k,u){if(k!==race.key)return;loading.set('q',u);$('mc').textContent='Quoten werden berechnet … '+Math.round(u*100)+' %'}
+function oddsFinished(k){if(k===race.key){loading.set('q',1);showOdds(k)}}
 function oddsLoop(){
   const k=race.key;
   if(oddsDone(k)){oddsBusy=false;return}
   TL[k]=TL[k]||tally(race.bod,race.field);
-  const done=count(TL[k],250);
-  if(done)showOdds(k);else $('mc').textContent='Quoten werden berechnet … '+Math.round(TL[k].N/ODDS_N*100)+' %';
+  if(count(TL[k],250))oddsFinished(k);else oddsProgress(k,TL[k].N/ODDS_N);
   setTimeout(oddsLoop,0);
 }
+function mkPool(){
+  if(typeof Worker==='undefined')return null;
+  try{const n=Math.max(1,Math.min(4,(navigator.hardwareConcurrency||2)-1));return Array.from({length:n},()=>new Worker('js/odds-worker.js'))}catch(e){return null}
+}
+function oddsWorkers(k,bod,field){
+  if(oddsJob)pool.forEach(w=>w.terminate()),pool=mkPool();   // altes Feld abbrechen, das neue hat Vorrang
+  if(!pool)return false;
+  const job=oddsJob={k,tl:tally(bod,field),got:pool.map(()=>0),open:pool.length},n=pool.length;
+  pool.forEach((w,j)=>{
+    w.onmessage=e=>{const m=e.data;if(oddsJob!==job)return;
+      job.got[j]=m.n;
+      if(m.done){['win','place','ex'].forEach(a=>m[a].forEach((v,i)=>{job.tl[a][i]+=v}));
+        if(--job.open===0){job.tl.N=ODDS_N;TL[k]=job.tl;oddsJob=null;oddsFinished(k);return}}
+      oddsProgress(k,job.got.reduce((a,b)=>a+b,0)/ODDS_N)};
+    // Fällt ein Helfer aus (etwa weil die Seite als Datei geöffnet ist), rechnet die Seite selbst weiter
+    w.onerror=e=>{if(oddsJob!==job)return;e.preventDefault&&e.preventDefault();pool.forEach(x=>x.terminate());pool=null;oddsJob=null;odds()};
+    w.postMessage({id:j,bod,field,from:Math.floor(ODDS_N*j/n),to:Math.floor(ODDS_N*(j+1)/n)});
+  });
+  return true;
+}
 function odds(){
-  const k=race.key;dropStaleBets(k);
-  if(oddsDone(k))showOdds(k);
-  else setQuotes(null);
+  const k=race.key;dropStaleBets(k);loading.add('q',4);
+  if(oddsDone(k)){showOdds(k);loading.set('q',1);return}
+  setQuotes(null);
+  if(oddsJob&&oddsJob.k===k)return;
+  if(pool===null&&oddsJob===null&&!odds.tried){odds.tried=true;pool=mkPool()}
+  if(pool&&oddsWorkers(k,race.bod,race.field))return;
   if(!oddsBusy){oddsBusy=true;setTimeout(oddsLoop,0)}
 }
-fit();fresh();reset();paradeStart();
+fit();
+// Alle Starter gleich zu Beginn anlegen, damit ihre Modelle mit dem Ladebildschirm kommen und nicht erst, wenn sie zum ersten Mal im Feld stehen
+if(gl)ROSTER.forEach((d,k)=>figFor(k));
+fresh();reset();loading.seal();
+// Erst nach dem Klick auf dem Ladebildschirm: Vorstellung der Starter, mit Ton
+loading.onStart(()=>{voice.unlock();if(voice.ok)voiceLabel();if(gl&&state==='idle')paradeStart()});
 window.addEventListener('resize',()=>{fit();if(gl&&state!=='run'&&state!=='cer'&&!paraOn)frame(1,0)});
 // Browser geben Ton erst nach einer Bedienung frei; danach kann der Sprecher schon die Starter vorstellen
 document.addEventListener('pointerdown',()=>voice.unlock());
