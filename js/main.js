@@ -35,6 +35,7 @@ function finish(){
   state='done';$('go').textContent='Wiederholung ansehen';$('slow').hidden=true;
   const o=race.order;$('cap').textContent='Einlauf: 1. '+RUN[o[0]].name+' · 2. '+RUN[o[1]].name+' · 3. '+RUN[o[2]].name;
   o.forEach((i,k)=>{$('pl'+i).textContent=(k+1)+'.'});
+  const res=settleBets(o);if(res&&res.length){const won=res.filter(r=>r.win).length;$('cap').textContent+=' · '+(won?won+(won>1?' Wetten':' Wette')+' gewonnen':'keine Wette gewonnen')}
 }
 function reset(){
   cancelAnimationFrame(raf);t=0;evI=0;cut=null;shotK='';state='idle';$('slow').hidden=true;
@@ -45,22 +46,25 @@ function reset(){
   fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.dT=0;f.spin.rotation.z=0});
   fig[5].rocket.color.set('#c9ced4');fig[5].cone.color.set('#d2232a');frame(1,0);
 }
-function start(){reset();if(!gl)return;state='run';$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
+function start(){reset();if(!gl)return;closeBets();state='run';$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
 function fresh(){race=simulate((Math.random()*2**31)|0,true)}
 function fit(){if(!gl)return;const w=$('view').clientWidth;renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.setSize(w,Math.round(w*9/16),false)}
 
-$('tb').innerHTML=RUN.map((d,i)=>'<tr><td><span class="nr" style="background:'+d.col+';color:'+d.ink+'">'+d.nr+'</span></td><td><div class="name">'+d.name+'</div><div class="sub">'+d.kind+'. '+d.trait+'.</div></td><td class="n p" id="pc'+i+'">…</td><td class="n q" id="qt'+i+'">…</td><td class="n" id="pl'+i+'">–</td></tr>').join('');
+$('tb').innerHTML=RUN.map((d,i)=>'<tr><td><span class="nr" style="background:'+d.col+';color:'+d.ink+'">'+d.nr+'</span></td><td><div class="name">'+d.name+'</div><div class="sub">'+d.kind+'. '+d.trait+'.</div></td><td class="n p" id="pc'+i+'">…</td><td class="n q" id="qt'+i+'">…</td><td class="n q2" id="qp'+i+'">…</td><td class="n" id="pl'+i+'">–</td></tr>').join('');
 try{
   renderer=new THREE.WebGLRenderer({antialias:true});renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   $('view').prepend(renderer.domElement);build();
 }catch(err){gl=false;$('nogl').hidden=false}
 $('go').onclick=start;
-$('neu').onclick=()=>{fresh();start()};
+$('neu').onclick=()=>{fresh();reset();$('go').textContent='Rennen starten';openBets()};
 fit();fresh();reset();
 window.addEventListener('resize',()=>{fit();if(gl&&state!=='run')frame(1,0)});
-setTimeout(()=>{
-  const N=1200,w=[0,0,0,0,0,0];for(let k=0;k<N;k++)w[simulate(1000+k*7919,false).order[0]]++;
-  w.forEach((n,i)=>{const p=n/N,q=p>0?clamp(.85/p,1.1,99):99;
-    $('pc'+i).textContent=(p*100).toFixed(0)+' %';$('qt'+i).textContent=q.toFixed(1).replace('.',',')});
-  $('mc').textContent='Die Quoten stammen aus '+N+' unsichtbar vorab gerechneten Rennen mit diesen Startern, abzüglich 15 % für die Bank.';
-},60);
+// Quoten in Häppchen rechnen, damit die Seite bedienbar bleibt
+const tl=tally();
+(function oddsChunk(){
+  if(!count(tl,250)){$('mc').textContent='Quoten werden berechnet … '+Math.round(tl.N/ODDS_N*100)+' %';setTimeout(oddsChunk,0);return}
+  const q=quotes(tl);
+  RUN.forEach((d,i)=>{$('pc'+i).textContent=(q.pWin[i]*100).toFixed(0)+' %';$('qt'+i).textContent=fmtQ(q.win[i]);$('qp'+i).textContent=fmtQ(q.place[i])});
+  $('mc').textContent='Die Quoten stammen aus '+q.N+' unsichtbar vorab gerechneten Rennen mit diesen Startern, abzüglich 15 % für die Bank. Platz heißt: Erster oder Zweiter.';
+  setQuotes(q);
+})();

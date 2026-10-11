@@ -14,7 +14,7 @@ Eine Runde sitzt zusammen, sieht sich ein Rennen an und wettet vorher darauf. Dr
 
 Das Rennen wird im Hintergrund komplett berechnet (`simulate(seed, true)` in `js/sim.js`) und danach nur noch abgespielt. Das löst mehrere Probleme zugleich:
 
-- **Quoten:** Vor dem Rennen laufen 1200 Simulationen ohne Aufzeichnung. Aus den Siegquoten ergibt sich die Wettquote als `0,85 / Siegchance`, also mit 15 % Abzug für die Bank. Neue Ereignisse verändern die Quoten automatisch mit.
+- **Quoten:** Vor dem Rennen laufen 6000 Simulationen ohne Aufzeichnung. Aus den gezählten Chancen ergibt sich die Wettquote als `0,85 / Chance`, also mit 15 % Abzug für die Bank. Neue Ereignisse verändern die Quoten automatisch mit.
 - **Regie:** Die Kamera weiß, wann der Sieger die Linie überquert, und kann die Zeitlupe genau darum legen.
 - **Wiederholung:** Ein Rennen ist durch seinen Startwert (`seed`) festgelegt und lässt sich identisch noch einmal zeigen.
 
@@ -37,6 +37,16 @@ Das Rennen wird im Hintergrund komplett berechnet (`simulate(seed, true)` in `js
 - Das Alpaka gewinnt im Ziel bis zu 4 m durch den gestreckten Hals.
 - Aktuelle Siegchancen: Pferd rund 30 %, Alpaka 20 %, Pferd auf zwei Beinen 17 %, Kuh 14 %, Stier 12 %, Husky 6 %. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
 
+## Wetten
+
+Gewettet wird an einem gemeinsamen Bildschirm mit Spielgeld. Einer bedient das Wettbüro unter dem Sendebild, die Runde sagt ihre Tipps an. Die Logik steht in `js/bets.js` (ohne Grafik, läuft auch in Node), die Bedienung in `js/betting.js`.
+
+- **Mitspieler:** Jeder trägt sich mit Namen ein und bekommt 100 Taler. Kassen und offene Wetten bleiben im Browser gespeichert, auch nach dem Neuladen. „Kasse zurücksetzen“ löscht alles.
+- **Wettarten:** Sieg (Starter gewinnt), Platz (Starter wird Erster oder Zweiter) und Zweierwette (Erster und Zweiter in genau dieser Reihenfolge).
+- **Feste Quoten:** Alle drei kommen aus denselben Probeläufen mit 15 % Abzug. Angezeigt wird eine Nachkommastelle, und genau diese Quote wird ausgezahlt. Sie gilt ab Abgabe der Wette. Obergrenze 99 für Sieg und Platz, 250 für die Zweierwette, Untergrenze 1,1.
+- **Ablauf:** Der Einsatz geht sofort von der Kasse ab, bis zum Start lässt sich eine Wette zurücknehmen. Mit dem Start schließt das Wettbüro. Nach dem Zieleinlauf wird einmal abgerechnet, eine Wiederholung zahlt nicht noch einmal aus. „Neues Rennen“ startet nicht mehr sofort, sondern öffnet zuerst das Wettbüro.
+- **Gegenprobe:** `node tools/odds.js` setzt in 3000 Rennen, die nicht in die Quoten eingeflossen sind, auf jede Möglichkeit einen Taler. Ergebnis zuletzt: Sieg zahlt 0,86 je Taler aus, Platz 0,81, Zweierwette 0,78. Platz liegt durch das Runden kleiner Quoten (Pferd 1,3) etwas unter 0,85, die Zweierwette durch seltene Einläufe und die Obergrenze. Für ein Partyspiel reicht das.
+
 ## Darstellung
 
 - Three.js r128, klassische Skriptdateien ohne Build-Schritt.
@@ -55,7 +65,7 @@ Ein kostenpflichtiges Paket mit Giraffe, Elefant und Robbe in einheitlichem Stil
 
 ## Offen
 
-- **Wetten:** Entweder ein gemeinsamer Bildschirm mit Spielgeld, bei dem einer die Tipps einträgt, oder Wetten am eigenen Handy per QR-Code. Die zweite Variante braucht einen kleinen Server. Als Wettarten reichen Sieg, Platz und Zweierwette. Alternative zu festen Quoten: Totalisator, bei dem die Quote aus den Einsätzen der Runde entsteht.
+- **Wetten am Handy:** Wetten am eigenen Handy per QR-Code. Braucht einen kleinen Server; die Wettlogik in `js/bets.js` lässt sich dafür übernehmen. Ebenfalls offen: Totalisator statt fester Quoten, bei dem die Quote aus den Einsätzen der Runde entsteht.
 - **Mehr Abwechslung:** weitere Starter und Ereignisse, wechselnde Felder pro Rennen, Ereignisse, die gezielt auf die Zielgerade fallen.
 - **Kommentar als Sprache** statt nur als Text.
 - **Zielfoto** und Siegerehrung nach dem Rennen.
