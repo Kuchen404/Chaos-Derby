@@ -20,8 +20,9 @@
       <button id="ton" aria-pressed="true" title="Kommentar vorlesen: Japanisch, Deutsch oder aus">Ton: Japanisch</button>
     </div>
   </header>
-  <p class="lede">Erst wetten, dann zuschauen. Wer mitspielt, trägt sich unten im Wettbüro ein und bekommt Spielgeld. Sobald das Rennen startet, sind die Wetten geschlossen, nach dem Zieleinlauf folgen Zielfoto, Siegerehrung und Auszahlung.</p>
+  <p class="lede">Erst wetten, dann zuschauen. Wer mitspielt, scannt den QR-Code mit dem Handy oder trägt sich ganz unten im Wettbüro ein und bekommt Spielgeld. Sobald das Rennen startet, sind die Wetten geschlossen, nach dem Zieleinlauf folgen Zielfoto, Siegerehrung und Auszahlung.</p>
 
+  <main class="arena">
   <div class="screen">
     <div class="stage">
     <div class="view" id="view">
@@ -47,18 +48,40 @@
     <div class="caption" aria-live="polite"><span class="tag">LIVE</span><span id="cap">Die Starter stehen an der Linie.</span></div>
   </div>
 
+  <section class="odds" aria-labelledby="oh">
+    <h2 id="oh">Quotentafel</h2>
+    <div class="board">
+      <table>
+        <thead><tr><th>Nr</th><th>Starter</th><th class="n p" title="Siegchance">Sieg</th><th class="n">Quote</th><th class="n">Platz</th><th class="n">Einlauf</th></tr></thead>
+        <tbody id="tb"></tbody>
+      </table>
+    </div>
+    <p class="note" id="mc">Quoten werden berechnet …</p>
+    <p class="note">Tiermodelle: Quaternius, Ultimate Animated Animals (CC0). Kommentator: VOICEVOX:青山龍星.</p>
+  </section>
+  <section class="slipsbox" aria-labelledby="sh">
+    <div class="bethead"><h2 id="sh">Wetten dieses Rennens</h2><span class="pill" id="betstate">Quoten werden berechnet …</span></div>
+    <div class="card">
+      <ul class="list" id="slips"></ul>
+      <div id="result" hidden></div>
+      <div class="handy" id="handy" hidden>
+        <div class="qr" id="qr"></div>
+        <div><b>Am Handy wetten</b><p>QR-Code scannen oder <a id="hurl" target="_blank" rel="noopener"></a> öffnen<span id="hon" hidden>, Raum <b id="hcode"></b></span>. Das Rennen läuft nur hier.</p><p class="hmsg" id="hmsg"></p></div>
+      </div>
+    </div>
+  </section>
+  <section class="logbox">
+    <h2>Kommentar</h2>
+    <ol id="log"><li class="empty">Der Kommentar läuft mit, sobald das Rennen startet.</li></ol>
+  </section>
   <section class="bets" aria-labelledby="bh">
-    <div class="bethead"><h2 id="bh">Wettbüro</h2><span class="pill" id="betstate">Quoten werden berechnet …</span></div>
+    <div class="bethead"><h2 id="bh">Wettbüro</h2></div>
     <div class="betgrid">
       <div class="card">
         <h3>Kasse</h3>
         <ul class="list" id="players"></ul>
         <form class="row" id="addp"><input id="pname" maxlength="16" placeholder="Name" aria-label="Name des Mitspielers" autocomplete="off"><button>Mitspielen</button></form>
         <button type="button" class="link" id="resetp">Kasse zurücksetzen</button>
-        <div class="handy" id="handy" hidden>
-          <div class="qr" id="qr"></div>
-          <div><b>Am Handy wetten</b><p>QR-Code scannen oder <a id="hurl" target="_blank" rel="noopener"></a> öffnen<span id="hon" hidden>, Raum <b id="hcode"></b></span>. Das Rennen läuft nur hier.</p><p class="hmsg" id="hmsg"></p></div>
-        </div>
       </div>
       <form class="card slip" id="slip">
         <h3>Wettschein</h3>
@@ -72,31 +95,9 @@
         <button class="primary" id="bgo" disabled>Wette abgeben</button>
         <p class="err" id="berr" role="alert" hidden></p>
       </form>
-      <div class="card">
-        <h3>Wetten dieses Rennens</h3>
-        <ul class="list" id="slips"></ul>
-        <div id="result" hidden></div>
-      </div>
     </div>
   </section>
-
-  <div class="cols">
-    <section>
-      <h2>Quotentafel</h2>
-      <div class="board">
-        <table>
-          <thead><tr><th>Nr</th><th>Starter</th><th class="n">Sieg</th><th class="n">Quote</th><th class="n">Platz</th><th class="n">Einlauf</th></tr></thead>
-          <tbody id="tb"></tbody>
-        </table>
-      </div>
-      <p class="note" id="mc">Quoten werden berechnet …</p>
-      <p class="note">Tiermodelle: Quaternius, Ultimate Animated Animals (CC0). Kommentator: VOICEVOX:青山龍星.</p>
-    </section>
-    <section class="logbox">
-      <h2>Kommentar</h2>
-      <ol id="log"><li class="empty">Der Kommentar läuft mit, sobald das Rennen startet.</li></ol>
-    </section>
-  </div>
+  </main>
 </div>
 
 <!-- ?v=dev ersetzt die Veröffentlichung (.github/workflows/pages.yml) durch den Commit, damit Browser keine alten Dateien mischen -->

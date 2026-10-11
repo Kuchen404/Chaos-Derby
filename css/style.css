@@ -3,7 +3,8 @@ body{margin:0}
 [hidden]{display:none!important}
 img{max-width:100%}
 
-/* Layout: Sendebild über die volle Breite mit Streckenleiste, Kommentarzeile direkt darunter, dann Quotentafel und Kommentarverlauf nebeneinander */
+/* Layout: Auf breiten Bildschirmen (Fernseher) Quotentafel links und Wetten des Rennens rechts neben dem Sendebild, Kommentarverlauf darunter, das Wettbüro (Kasse, Wettschein) ganz unten.
+   Mittelbreit steht das Sendebild über Quotentafel und Wetten, schmal liegt alles untereinander. */
 :root{
   --bg:#f1f4ec; --fg:#17231a; --muted:#5a685c; --line:#cdd7c7; --panel:#ffffff;
   --accent:#c81e25; --turf:#2f7d3b;
@@ -74,8 +75,23 @@ button:focus-visible{outline:3px solid var(--turf);outline-offset:2px}
 .caption .tag{flex:none;font-family:var(--mono);font-size:11px;letter-spacing:.12em;background:var(--accent);color:#fff;padding:3px 7px;border-radius:2px}
 .caption span:last-child{min-width:0}
 
-.cols{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:20px;align-items:start}
-@media (max-width:760px){.cols{grid-template-columns:minmax(0,1fr)}}
+.arena{display:grid;gap:20px;grid-template-columns:minmax(0,1fr);grid-template-areas:"screen" "odds" "slips" "log" "bets";align-items:start}
+.screen{grid-area:screen}.odds{grid-area:odds;min-width:0}.slipsbox{grid-area:slips;min-width:0}.logbox{grid-area:log}.bets{grid-area:bets;min-width:0}
+@media (min-width:760px){.arena{grid-template-columns:minmax(0,3fr) minmax(0,2fr);grid-template-areas:"screen screen" "odds slips" "log log" "bets bets"}}
+@media (min-width:1200px){
+  .wrap{max-width:1880px;padding-block:20px 40px}
+  header h1{font-size:44px}
+  .arena{grid-template-columns:minmax(320px,1.2fr) minmax(0,3.3fr) minmax(270px,.9fr);grid-template-rows:auto 1fr auto;
+    grid-template-areas:"odds screen slips" "odds log slips" "bets bets bets"}
+  .lede{max-width:none}
+  /* Der QR-Code steht groß rechts neben dem Bild, die kleine Einblendung im Sendebild entfällt */
+  .tvqr{display:none}
+  .slipsbox .handy{flex-direction:column;align-items:stretch}
+  .slipsbox .handy .qr{width:min(100%,190px)}
+  .odds td{padding-block:7px}
+  .slipsbox .bethead{flex-wrap:wrap;gap:4px 10px}
+  .bets{max-width:900px}
+}
 h2{font-family:var(--display);font-weight:400;font-size:18px;margin:0 0 10px}
 .board{background:var(--board);color:var(--board-text);border-radius:6px;padding:6px 14px 10px;min-width:0}
 table{width:100%;border-collapse:collapse;color:var(--board-text)}
@@ -94,13 +110,13 @@ td.p{color:var(--board-dim)}
 #log time{flex:none;font-family:var(--mono);font-size:13px;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}
 #log li.empty{color:var(--muted)}
 
-/* Wettbüro: Kasse, Wettschein und Wetten des Rennens nebeneinander, auf schmalen Bildschirmen untereinander */
+/* Wettbüro: Kasse und Wettschein nebeneinander, auf schmalen Bildschirmen untereinander; die Wetten des Rennens stehen oben beim Sendebild */
 .bethead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
 .bethead h2{margin:0}
 .pill{font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:2px;background:var(--line);color:var(--muted)}
 .pill.open{background:var(--turf);color:#fff}
-.betgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) minmax(0,1.3fr);gap:16px;align-items:start}
-@media (max-width:860px){.betgrid{grid-template-columns:minmax(0,1fr)}}
+.betgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px;align-items:start}
+@media (max-width:640px){.betgrid{grid-template-columns:minmax(0,1fr)}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
 h3{font:700 13px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0}
 .list{list-style:none;margin:0;padding:0}
@@ -131,6 +147,12 @@ button.x{border:0;padding:0 4px;font-size:18px;line-height:1;color:var(--muted)}
 #result li.won .n{color:var(--turf);font-weight:500}
 #result li.lost{color:var(--muted)}
 td.q2{color:var(--board-text)}
+/* Schmale Quotentafel neben dem Sendebild: enger gesetzt; Beschreibung und Siegchance fallen weg, die Vorstellung zeigt sie ohnehin */
+@media (min-width:1200px){
+.odds{container-type:inline-size}
+@container (max-width:440px){.board{padding-inline:8px}th,td{padding-inline:4px}th{letter-spacing:.02em}}
+@container (max-width:380px){.sub,th.p,td.p{display:none}td.q{font-size:17px}.name{font-size:14px}th{font-size:10px;letter-spacing:0}.odds .nr{width:22px;height:22px;font-size:11px}}
+}
 .board{overflow-x:auto}
 @media (max-width:480px){.board{padding-inline:8px}th,td{padding-inline:3px}td.q{font-size:16px}.nr{width:22px;height:22px;font-size:11px}}
 
@@ -159,7 +181,7 @@ td.q2{color:var(--board-text)}
 /* Browser geben Ton erst nach einer Bedienung frei: dezenter Hinweis oben rechts im Sendebild */
 .tonhint{position:absolute;right:2.5%;top:3%;z-index:4;font:500 12px var(--mono);letter-spacing:.08em;padding:6px 10px;border:0;border-radius:4px;background:rgba(16,25,15,.82);color:var(--board-text)}
 .tonhint::before{content:"♪ "}
-/* Wetten am Handy (js/remote.js): QR-Code im Wettbüro und klein im Sendebild, solange die Wetten offen sind */
+/* Wetten am Handy (js/remote.js): QR-Code bei den Wetten des Rennens und klein im Sendebild, solange die Wetten offen sind */
 .handy{display:flex;gap:12px;align-items:flex-start;margin-top:4px;padding-top:12px;border-top:1px solid var(--line)}
 .handy .qr{flex:none;width:112px;line-height:0}
 .handy svg,.tvqr svg{width:100%;height:auto;border-radius:3px}
