@@ -60,8 +60,15 @@ function mkRocket(f){
   f.flame.visible=false}
 // Modelle liegen als glTF in models/ und werden je Datei nur einmal geladen
 const modelText={};
-function loadModelText(name){return modelText[name]||(modelText[name]=fetch('models/'+name+'.gltf').then(r=>{if(!r.ok)throw new Error(name);return r.text()}))}
-function modelError(){$('nogl').textContent='Die Tiermodelle konnten nicht geladen werden. Die Seite muss über einen Webserver laufen, siehe README.';$('nogl').hidden=false}
+function loadModelText(name){if(!modelText[name]){loading.add('m'+name,.7);modelText[name]=fetchProg('models/'+name+'.gltf','m'+name,'text').then(t=>{loading.set('m'+name,1);return t})}return modelText[name]}
+const MODEL_ERR='Die Tiermodelle konnten nicht geladen werden. Die Seite muss über einen Webserver laufen, siehe README.';
+function modelError(){$('nogl').textContent=MODEL_ERR;$('nogl').hidden=false;for(const n in modelText)loading.fail('m'+n);figAll.forEach((f,k)=>loading.fail('f'+k,MODEL_ERR))}
+// Sobald alle Figuren da sind, die Shader einmal für alle übersetzen lassen, damit es beim ersten Auftritt eines Starters nicht ruckelt
+function warmUp(){
+  const vis=figAll.map(f=>f.root.visible);figAll.forEach(f=>{f.root.visible=true});
+  try{renderer.compile(scene,camera)}catch(e){}
+  figAll.forEach((f,k)=>{f.root.visible=vis[k]});
+}
 // Figuren entstehen erst, wenn ein Starter zum ersten Mal im Feld steht, und bleiben danach erhalten
 function figFor(k){return figAll[k]||(figAll[k]=mkModel(k))}
 function useField(field){
@@ -72,6 +79,7 @@ function mkModel(k){
   const d=ROSTER[k],cfg=VIS[d.id],M=MODELS[cfg.m],f=shell(1.4);f.cfg=f.V=cfg;f.id=d.id;f.d=d;
   f.jock=jockey(f.inner,0,2.2,0,d.col,cfg.js||1.15);
   if(cfg.rocket)mkRocket(f);
+  loading.add('f'+k,.15);
   loadModelText(cfg.m).then(txt=>new THREE.GLTFLoader().parse(txt,'',g=>{
     const m=g.scene;m.scale.setScalar(M.sc);m.rotation.y=PI/2;m.position.x=M.xo;
     const conv=mm=>{const c=mm.color.clone().convertLinearToSRGB();if(cfg.pal&&cfg.pal[mm.name])c.set(cfg.pal[mm.name]);return new THREE.MeshLambertMaterial({color:c,skinning:true,side:THREE.DoubleSide})};
@@ -80,6 +88,8 @@ function mkModel(k){
     g.animations.forEach(a=>{const ac=f.mixer.clipAction(a);ac.play();ac.setEffectiveWeight(0);f.act[a.name]=ac});
     f.bone={};['Back','Torso','Torso2','Neck1','Neck2','Head','Tail1','Tail2','Tail3',...FL,...FIK].forEach(n=>{f.bone[n]=m.getObjectByName(n)});
     if(cfg.up){let sk;m.traverse(o=>{if(o.isSkinnedMesh)sk=o.skeleton});f.ikRel=[0,1].map(k=>ikRel(sk,f.bone[FL[2*k+1]],f.bone[FIK[k]]))}
+    if(figAll.length===ROSTER.length&&figAll.every(f=>f&&f.model))warmUp();
+    loading.set('f'+k,1);
     if(gl&&race&&state!=='run'&&state!=='cer'&&!paraOn)frame(1,0);
   },modelError)).catch(modelError);
   label(f);

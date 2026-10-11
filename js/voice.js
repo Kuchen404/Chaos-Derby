@@ -21,10 +21,10 @@ const voice=(()=>{
   // Aufnahmen laden: eine MP3 mit allen Sätzen und eine Liste mit Start und Länge je Satz
   function load(){
     if(!AC||typeof fetch==='undefined'||ac)return;
-    try{ac=new AC()}catch(e){return}
-    Promise.all([fetch('audio/jikkyo.json').then(r=>r.json()),fetch('audio/jikkyo.mp3').then(r=>r.arrayBuffer())])
-      .then(([j,a])=>new Promise((ok,no)=>ac.decodeAudioData(a,ok,no)).then(b=>{map=j;buf=b}))
-      .catch(()=>{});
+    try{ac=new AC()}catch(e){loading.fail('a');return}
+    Promise.all([fetch('audio/jikkyo.json').then(r=>r.json()),fetchProg('audio/jikkyo.mp3','a')])
+      .then(([j,a])=>{loading.set('a',.95);return new Promise((ok,no)=>ac.decodeAudioData(a,ok,no)).then(b=>{map=j;buf=b;loading.set('a',1);if(voice.onload)voice.onload()})})
+      .catch(()=>loading.fail('a'));
   }
   const has=c=>!!(map&&buf&&map[c]);
   const tape=()=>mode==='ja'&&!!buf&&typeof jikkyo!=='undefined';
@@ -56,7 +56,7 @@ const voice=(()=>{
     u.onend=u.onerror=()=>{if(cur===l)cur=null};
     sy.speak(u);
   }
-  if(typeof document!=='undefined')setTimeout(load,0);
+  if(typeof document!=='undefined'&&AC&&typeof fetch!=='undefined'){loading.add('a',12);setTimeout(load,0)}
   return {
     ok:!!(sy||AC),
     get on(){return mode!=='aus'},
