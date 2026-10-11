@@ -42,7 +42,22 @@ const jikkyo=(()=>{
     sniff:()=>N[11]+'、何かの匂いを嗅いでいます。',
     zoom:()=>N[11]+'、突然スイッチが入りました。猛ダッシュです。',
     draft:()=>N[9]+'、前の馬の後ろにぴったりつけています。',
-    draftout:()=>N[9]+'、陰から飛び出した！'
+    draftout:()=>N[9]+'、陰から飛び出した！',
+    // Fehlschläge mit Kettenreaktion
+    trip:()=>'後ろの馬も巻き込まれました！',
+    pileup:()=>N[0]+'につまずいて、後続が転倒！',
+    chargefail:()=>N[2]+'、つまずいて転倒！後ろも巻き込まれます！',
+    rocketram:()=>'ロケットが逆走して、次々となぎ倒していきます！',
+    blast:()=>'爆風で周りの馬も吹き飛ばされました！',
+    landon:()=>N[7]+'、ほかの馬の上に着地！両者転倒！',
+    bullturn:()=>N[10]+'、相手を間違えました！'+N[2]+'が振り向いた！',
+    kick:()=>N[6]+'の後ろ蹴りが炸裂！',
+    freeze:()=>N[8]+'、逃げずに固まってしまいました。',
+    zoomhit:()=>N[11]+'、ジグザグに走って体当たり！',
+    headon:()=>N[4]+'、逆走して正面衝突！',
+    rearend:()=>N[9]+'、前の馬に追突しました！',
+    bump:()=>N[8]+'が急に止まって、後ろが追突！',
+    howlalong:()=>N[10]+'もつられて遠吠えです。'
   };
   // Welche Starter ein Satz betreffen kann (-1: keiner)
   const WHO={start:[0,1,2],jub:[0,4],knock:ALL.filter(i=>i!==2),lead1:ALL,lead:ALL,stand:ALL};

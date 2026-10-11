@@ -124,12 +124,12 @@ function label(f){
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:canvasTex(128,128,(c)=>{c.fillStyle=d.col;c.beginPath();c.arc(64,64,54,0,7);c.fill();c.lineWidth=9;c.strokeStyle='#fff';c.stroke();
     c.fillStyle=d.ink;c.font='70px "Dela Gothic One","Arial Black",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(d.nr,64,70)}),depthTest:false}));
   s.scale.set(.85,.85,1);s.position.set(0,top,0);s.renderOrder=5;f.root.add(s);
-  f.fx={};[[1,'Zzz'],[3,'mampf'],[7,'?!'],[2,'✶ ✶'],[8,'Jubel!'],[10,'Nö!'],[12,'!!'],[13,'Jagd!'],[14,'schnüff'],[15,'Zoomies!']].forEach(q=>{
+  f.fx={};[[1,'Zzz'],[3,'mampf'],[7,'?!'],[2,'✶ ✶'],[8,'Jubel!'],[10,'Nö!'],[12,'!!'],[13,'Jagd!'],[14,'schnüff'],[15,'Zoomies!'],[16,'Auuu!']].forEach(q=>{
     const e=new THREE.Sprite(new THREE.SpriteMaterial({map:canvasTex(256,96,(c)=>{c.font='56px "Dela Gothic One","Arial Black",sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=10;c.strokeStyle='#17231a';c.strokeText(q[1],128,50);c.fillStyle='#fff';c.fillText(q[1],128,50)}),depthTest:false}));
     e.scale.set(1.9,.7,1);e.position.set(1.3,top+.05,0);e.renderOrder=5;e.visible=false;f.root.add(e);f.fx[q[0]]=e})}
 
 /* ---------- Animation je Bild ---------- */
-const STAND={1:1,3:1,10:1,12:1,14:1};   // Zustände, in denen das Tier steht
+const STAND={1:1,3:1,10:1,12:1,14:1,16:1};   // Zustände, in denen das Tier steht
 function pose(i,x,st,rain,dt,sdt){
   const f=fig[i],id=f.id,k=Math.min(1,dt*8);
   if(STAND[st])f.sa=st===3||st===14?(f.act&&f.act.Eating?'Eating':'Idle'):'Idle';else if(!f.sa)f.sa='Idle';
