@@ -25,7 +25,7 @@ const loading=(()=>{
     $('lparts').innerHTML=Object.keys(g).map(k=>{const v=g[k].d/g[k].w;return '<li'+(v>=1?' class="ok"':'')+'><span>'+k+'</span><b>'+(v>=1?'fertig':Math.floor(v*100)+' %')+'</b></li>'}).join('');
     const m=MSG.find(([c])=>open(c));$('lmsg').textContent=ready?'Alle Starter sind im Ziel.':m?m[1]:'Gleich geht es los.';
     if(!sealed)return;
-    if(!ready&&settled()){ready=true;$('lgo').disabled=false;$('lgo').textContent='Los geht’s';$('lskip').hidden=true;$('lh').textContent='Fertig geladen'}
+    if(!ready&&settled()){ready=true;$('lskip').hidden=true;$('lh').textContent='Fertig geladen';setTimeout(start,700)}   // kurz zeigen, dass alle im Ziel sind, dann geht die Vorstellung los
     // Auf langsamen Leitungen dauert der Kommentator am längsten; ohne ihn kann es schon losgehen, er wird dann nachgeladen
     else if(!ready&&settled('mfqs'))$('lskip').hidden=false;
   }
@@ -51,11 +51,11 @@ const loading=(()=>{
   }
   // Die Schriften stecken auch in den Tafeln und Startnummern der 3D-Szene
   if(doc&&document.fonts&&document.fonts.ready){add('s',.3);document.fonts.ready.then(()=>set('s',1),()=>set('s',1))}
-  if(doc&&$('lgo')){$('lgo').onclick=start;$('lskip').onclick=start}
+  if(doc&&$('lskip'))$('lskip').onclick=start;
   return {add,set,fail,
     // alle Teile sind angemeldet; vorher kann die Anzeige nicht fertig werden
     seal(){sealed=true;kick()},get ready(){return ready},get started(){return started},
-    // wird beim Klick auf „Los geht’s“ aufgerufen (der Klick gibt zugleich den Ton frei)
+    // wird aufgerufen, sobald alles geladen ist (oder man ohne Kommentator anfängt)
     onStart(f){go=f}};
 })();
 // Datei laden und den Fortschritt melden. Kennt der Server die Größe nicht (oder liefert gepackt), springt der Teil erst am Ende auf fertig.
