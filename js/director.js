@@ -17,7 +17,7 @@ function direct(xs,dt){
   if(k==='start'){ax=lead;px=13;py=2.1;pz=9.5;tx=-3;ty=1.7}
   else if(k==='post'){px=L+9;py=6;pz=27;tx=L-12;ty=1}
   else if(k==='fin'){px=L+2;py=2.4;pz=21;tx=L-3.5;ty=2}
-  else if(k.startsWith('cut')){const i=regie.cutI,r=fig[i].root.position,w=[1,1.1,1.6,.9,1.3,1.2][i];ax=r.x;px=6.5*w;py=1.9*w;pz=r.z+7.5*w;tx=.5;ty=TOPY[i]*S*.42;tz=r.z}
+  else if(k.startsWith('cut')){const i=regie.cutI,r=fig[i].root.position,w=vis(i).cw;ax=r.x;px=6.5*w;py=1.9*w;pz=r.z+7.5*w;tx=.5;ty=vis(i).top*S*.42;tz=r.z}
   else{
     // Seitenkamera auf die Führungsgruppe oder auf die Verfolger. Die Gruppenbreite ändert sich sprunghaft, wenn jemand eine Grenze kreuzt;
     // geglättet zoomt die Kamera ruhig statt zu reißen.

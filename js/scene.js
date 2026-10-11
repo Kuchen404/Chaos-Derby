@@ -45,10 +45,7 @@ function build(){
   // Partikel
   const puff=canvasTex(64,64,c=>{const g=c.createRadialGradient(32,32,2,32,32,30);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,64,64)});
   for(let k=0;k<120;k++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:puff,transparent:true,depthWrite:false}));s.visible=false;scene.add(s);parts.push({s,life:0,max:1,v:new THREE.Vector3(),size:1})}
-  // Starter
-  fig=RUN.map((d,i)=>mkModel(i));
-  
-  fig.forEach((f,i)=>{label(f,i);f.root.position.z=laneZ(i)});
+  // Starter entstehen mit dem ersten Feld, siehe useField in figures.js
   buildPodium();
 }
 function emit(x,y,z,vx,vy,vz,life,size,col,op){const p=parts[pI=(pI+1)%parts.length];p.s.position.set(x,y,z);p.v.set(vx,vy,vz);p.life=p.max=life;p.size=size;p.op=op||.5;p.s.material.color.set(col);p.s.visible=true}

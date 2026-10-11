@@ -11,13 +11,13 @@ srv.listen(0,async()=>{
   const b=await chromium.launch({executablePath:process.env.CHROMIUM||undefined,args:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
   const p=await b.newPage();p.on('pageerror',e=>console.error('Fehler auf der Seite:',e.message));
   await p.route(/fonts\.googleapis/,r=>r.abort());
-  await p.goto('http://localhost:'+srv.address().port+'/');await p.waitForFunction(()=>fig.every(f=>f.model),null,{timeout:120000});
+  await p.goto('http://localhost:'+srv.address().port+'/');await p.evaluate(()=>{setField(CLASSIC);useField(CLASSIC)});await p.waitForFunction(()=>fig.every(f=>f.model),null,{timeout:120000});
   const res=await p.evaluate(N=>{
     renderer.render=()=>{};cancelAnimationFrame(raf);
-    const V=new THREE.Vector3(),seen=i=>{camera.updateMatrixWorld();const r=fig[i].root.position;V.set(r.x,TOPY[i]*S*.5,r.z).project(camera);return Math.abs(V.x)<.95&&Math.abs(V.y)<.95&&V.z<1};
+    const V=new THREE.Vector3(),seen=i=>{camera.updateMatrixWorld();const r=fig[i].root.position;V.set(r.x,vis(i).top*S*.5,r.z).project(camera);return Math.abs(V.x)<.95&&Math.abs(V.y)<.95&&V.z<1};
     const out=[];
     for(let s=0;s<N;s++){
-      race=simulate(1000+s*7919,true);reset();state='run';
+      race=simulate(1000+s*7919,true,0,CLASSIC);race.bod=0;reset();state='run';
       const o={side:0,leadOff:0,cut:0,cutOff:0,pack:0,jumps:0,short:[],win:false,frames:0};let k0='',t0=0;const P=new THREE.Vector3(),Q=new THREE.Vector3();
       for(;;){const done=step(1/30);o.frames++;
         const xs=race.frames[Math.min(Math.floor(t*30),race.frames.length-1)].x,li=xs.indexOf(Math.max(...xs)),k=shotK.replace(/[\d.]+$/,'');
