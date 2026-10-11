@@ -60,9 +60,24 @@ Es gibt 12 Starter (`ROSTER` in `js/sim.js`), pro Rennen laufen 6 davon. Das Fel
 
 Die Grundtempos sind so abgestimmt, dass jeder Starter über viele ausgeloste Felder ungefähr gleich oft gewinnt (fair wären 16,7 %). Wer in einem bestimmten Rennen Favorit ist, ergibt sich aus Feld und Boden.
 
-- Aktuelle Siegchancen (`node tools/odds.js`): siehe Tabelle unten.
+Aktuelle Siegchancen (`node tools/odds.js`, 6000 Rennen mit ausgelostem Feld und Boden; gezählt nur Rennen, in denen der Starter dabei ist):
 
-  Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
+| Nr | Starter | gesamt | gut | weich | schwer |
+|---|---|---|---|---|---|
+| 1 | Sekundenschlaf (Pferd) | 18 % | 23 % | 15 % | 12 % |
+| 2 | Hals über Kopf (Alpaka) | 16 % | 15 % | 18 % | 18 % |
+| 3 | Dampfwalze (Stier) | 15 % | 12 % | 16 % | 19 % |
+| 4 | Schmuddelwetter (Husky) | 15 % | 9 % | 16 % | 30 % |
+| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 18 % | 20 % | 16 % | 14 % |
+| 6 | Spätzünder (Kuh) | 14 % | 14 % | 13 % | 14 % |
+| 7 | Sturkopf (Esel) | 16 % | 13 % | 18 % | 18 % |
+| 8 | Platzhirsch (Hirsch) | 16 % | 19 % | 15 % | 10 % |
+| 9 | Schreckhaft (Reh) | 17 % | 23 % | 13 % | 6 % |
+| 10 | Schlitzohr (Fuchs) | 19 % | 18 % | 21 % | 21 % |
+| 11 | Hetzjagd (Wolf) | 18 % | 12 % | 22 % | 28 % |
+| 12 | Schnüffelnase (Shiba Inu) | 19 % | 22 % | 17 % | 12 % |
+
+Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 30 %, Pferd auf zwei Beinen 20 %, Alpaka 14 %, Kuh 14 %, Stier 11 %, Husky 11 %. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
 
 ## Wetten
 
@@ -72,7 +87,7 @@ Gewettet wird an einem gemeinsamen Bildschirm mit Spielgeld. Einer bedient das W
 - **Wettarten:** Sieg (Starter gewinnt), Platz (Starter wird Erster oder Zweiter) und Zweierwette (Erster und Zweiter in genau dieser Reihenfolge).
 - **Feste Quoten:** Alle drei kommen aus denselben Probeläufen mit 15 % Abzug, gerechnet für Boden und Feld des aktuellen Rennens. Das dauert nach „Neues Rennen“ einige Sekunden, das Wettbüro öffnet, sobald die Quoten stehen. Kommt ein neues Rennen („Neues Rennen“ oder Neuladen der Seite), gehen offene Wetten an die Kasse zurück, weil ihre Quoten für ein anderes Feld galten. Angezeigt wird eine Nachkommastelle, und genau diese Quote wird ausgezahlt. Sie gilt ab Abgabe der Wette. Obergrenze 99 für Sieg und Platz, 250 für die Zweierwette, Untergrenze 1,1.
 - **Ablauf:** Der Einsatz geht sofort von der Kasse ab, bis zum Start lässt sich eine Wette zurücknehmen. Mit dem Start schließt das Wettbüro. Nach dem Zieleinlauf wird einmal abgerechnet, eine Wiederholung zahlt nicht noch einmal aus. „Neues Rennen“ startet nicht mehr sofort, sondern öffnet zuerst das Wettbüro.
-- **Gegenprobe:** `node tools/odds.js` setzt in 3000 Rennen mit ausgelostem Boden, die nicht in die Quoten eingeflossen sind, auf jede Möglichkeit einen Taler, jeweils zur Quote dieses Bodens. Ergebnis zuletzt: Sieg zahlt 0,86 je Taler aus, Platz 0,85, Zweierwette 0,80. Platz kann durch das Runden kleiner Quoten (Pferd auf gutem Boden 1,3) etwas unter 0,85 liegen, die Zweierwette durch seltene Einläufe und die Obergrenze. Für ein Partyspiel reicht das.
+- **Gegenprobe:** `node tools/odds.js` lost 40 Felder mit Boden aus, rechnet für jedes die Quoten und setzt dann in je 75 neuen Rennen auf jede Möglichkeit einen Taler. Ergebnis zuletzt: Sieg zahlt 0,86 je Taler aus, Platz 0,87, Zweierwette 0,82. Platz kann durch das Runden kleiner Quoten (Pferd auf gutem Boden 1,3) etwas unter 0,85 liegen, die Zweierwette durch seltene Einläufe und die Obergrenze. Für ein Partyspiel reicht das.
 
 ## Darstellung
 
