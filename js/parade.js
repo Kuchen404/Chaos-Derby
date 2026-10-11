@@ -78,7 +78,7 @@ const GAG={
 /* ---------- Ablauf ---------- */
 function paradeStart(){
   if(!gl)return;cancelAnimationFrame(raf);paraOn=true;pt=0;paraFrame.go=0;paraAnn=new Set();paraCur=-2;
-  $('strip').hidden=true;last=performance.now();raf=requestAnimationFrame(paraTick)}
+  $('strip').hidden=true;sfx.music('calm');last=performance.now();raf=requestAnimationFrame(paraTick)}
 function paradeStop(){
   if(!paraOn)return;paraOn=false;$('intro').classList.remove('on');$('strip').hidden=false;
   fig.forEach(f=>{f.inner.rotation.set(0,0,0);f.inner.position.set(0,-f.c,0);f.spin.rotation.set(0,0,0);f.spin.position.set(0,f.c,0);f.root.rotation.set(0,0,0);
@@ -119,11 +119,15 @@ function paraQuotes(){if(paraOn&&paraCur>=0)$('iq').textContent=Q?fmtQ(Q.win[par
 function paraPose(f,i,g,dt){
   const V=f.V,o={W:null,T:{},x:0,y:0,rz:0,ry:0,dz:0,s:'',b:null,up:false};
   let step=0;
+  if(g<0)f.pgg=-9;
   if(g>=0){
     // vortreten (bis 1,1 s), Szene, zurückgehen (ab SEG-1,1 s), dabei Schritt- oder Galoppbewegung
     const fw=ease((g-.15)/.95),bk=ease((g-(SEG-1.1))/.9);step=STEP*(fw-bk);
     const gg=g-1.1;
     if(f.model&&gg>=0&&g<SEG-1.1&&GAG[f.id])GAG[f.id](f,gg,o,f.act);
+    // Geräusche der Szene, jedes genau einmal, wenn sein Zeitpunkt erreicht ist
+    for(const [ts,n,a] of sfx.scene(f.id))if(f.pgg<ts&&gg>=ts)sfx.play(n,0,a);
+    f.pgg=gg;
     if((fw>0&&fw<1)||(bk>0&&bk<1)){const c=f.act&&(f.act.Walk?'Walk':'Gallop');if(c){o.W={[c]:1};o.T[c]=(((step/(c==='Walk'?V.ws:V.gs))%1)+1)%1*f.act[c].getClip().duration}}
   }
   const r=f.root;

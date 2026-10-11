@@ -138,6 +138,15 @@ Gewettet wird an einem gemeinsamen Bildschirm mit Spielgeld. Einer bedient das W
 - Die Zeilen kommen schneller, als man sie sprechen kann. Jede Zeile hat deshalb ein Gewicht (`p`): 3 für den Zieleinlauf, 2 für Ereignisse, 1 für Führungswechsel und Ähnliches. Es wartet höchstens eine Zeile; eine neue mit mindestens gleichem Gewicht verdrängt sie, und was zu lange gewartet hat, fällt weg. Der Sieg unterbricht alles.
 - Längere Pausen füllt die Wiedergabe mit dem Stand an der Spitze. Diese Sätze entstehen beim Abspielen und stehen nicht im Textverlauf.
 
+## Musik und Geräusche
+
+- Alles wird im Browser per Web Audio erzeugt (`js/sfx.js`): keine Tondateien, keine fremden Lizenzen, nichts zu laden.
+- **Musik:** drei kleine Schleifen aus Akkordfolge, Bass und Schlagwerk. Ruhig und verspielt in der Vorstellung (C, Am, F, G), treibend mit Galopp-Bass im Rennen (Am, F, G, E), Fanfare bei der Siegerehrung. Solange der Sprecher redet, wird die Musik leiser.
+- **Geräusche:** je Szene der Vorstellung ein kleiner Zeitplan (`SCENE`), etwa Gähnen und Schnarchen beim Pferd, Regen und Heulen beim Husky, Stottern und Rußwolke bei der Kuh, I-Ah und Tritte beim Esel. Im Rennen hat jede Art von Ereignis (`k`) ihr Geräusch (`EV`), dazu Startglocke, Jubel im Ziel, Regen als Dauergeräusch und ein „Boing“ bei jedem Sprung des Hirschs.
+- Der Ton-Knopf schaltet Musik und Geräusche mit dem Sprecher zusammen an und aus. Wie der Sprecher bleibt alles stumm, bis jemand einmal auf die Seite geklickt hat, weil Browser Ton erst danach erlauben.
+- Musik und Sprecher teilen sich einen Audio-Kontext.
+- `node tools/sfx-test.js` rendert jedes Geräusch ohne Lautsprecher und meldet stumme oder übersteuerte.
+
 ## Zielfoto und Siegerehrung
 
 - **Zieldurchgang:** Die Simulation rechnet den Moment, in dem ein Starter die Linie erreicht, auf einen Bruchteil des Zeitschritts genau aus (`fin` im Ergebnis von `simulate`). Überqueren zwei Starter die Linie im selben Zeitschritt, entscheidet dieser genaue Zeitpunkt, vorher entschied die Reihenfolge der Starternummern. Das kann nur bei Abständen unter 1/30 s passieren, also in gut 1 % der Rennen; die Siegchancen haben sich dadurch nicht messbar verschoben.

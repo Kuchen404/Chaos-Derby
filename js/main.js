@@ -7,7 +7,7 @@ function frame(dt,sdt){
   const {A,xs}=posAt(t);
   xs.forEach((x,i)=>pose(i,x,A.s[i],A.rain,dt,sdt));
   stepParts(sdt);
-  rainFx.visible=A.rain;
+  rainFx.visible=A.rain;if(state==='run')sfx.rain(A.rain);
   if(A.rain){const pa=rainFx.geometry.attributes.position,ar=pa.array;for(let q=1;q<ar.length;q+=3){ar[q]-=sdt*26;}
     for(let q=1;q<ar.length;q+=6)if(ar[q]<0){ar[q]+=22;ar[q+3]+=22}pa.needsUpdate=true}
   const w=A.rain?1:0;frame.w=(frame.w||0)+(w-(frame.w||0))*Math.min(1,dt*2);
@@ -24,7 +24,7 @@ function stamp(s){s=Math.floor(s);return Math.floor(s/60)+':'+String(s%60).padSt
 function logLine(e){
   $('cap').textContent=e.s;const ol=$('log');if(ol.firstChild&&ol.firstChild.className==='empty')ol.textContent='';
   const li=document.createElement('li'),tm=document.createElement('time'),sp=document.createElement('span');
-  voice.say(e.k==='start'?Object.assign({b:race.bod},e):e,clamp(e.t/race.winT,0,1));
+  voice.say(e.k==='start'?Object.assign({b:race.bod},e):e,clamp(e.t/race.winT,0,1));sfx.event(e.k);
   tm.textContent=stamp(e.t);sp.textContent=e.s;li.append(tm,sp);ol.prepend(li);while(ol.children.length>9)ol.lastChild.remove();
   if(e.cut&&(!cut||t>cut.until+1.2))cut={i:e.i,until:t+e.cut}}
 function step(dt){
@@ -56,7 +56,7 @@ function finish(){
   const res=settleBets(o);if(res&&res.length){const won=res.filter(r=>r.win).length;$('cap').textContent+=' · '+(won?won+(won>1?' Wetten':' Wette')+' gewonnen':'keine Wette gewonnen')}
 }
 function reset(){
-  cancelAnimationFrame(raf);paradeStop();voice.stop();t=0;evI=0;cut=null;shotK='';regie.sp=regie.alone=-1;regie.since=0;state='idle';$('slow').hidden=true;
+  cancelAnimationFrame(raf);paradeStop();voice.stop();sfx.music(null);sfx.rain(false);t=0;evI=0;cut=null;shotK='';regie.sp=regie.alone=-1;regie.since=0;state='idle';$('slow').hidden=true;
   endCeremony();
   $('log').innerHTML='<li class="empty">Der Kommentar läuft mit, sobald das Rennen startet.</li>';
   $('cap').textContent='Die Starter stehen an der Linie. Der Boden ist '+BODEN[race.bod].name+'.';
@@ -66,7 +66,7 @@ function reset(){
   trackMat.color.set(BODEN_COL[race.bod][0]);trackMat.emissive.set(BODEN_COL[race.bod][1]);
   fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.jp=0;f.dT=0;f.fT=0;f.lie=0;f.spin.rotation.z=0;f.spin.rotation.x=0;if(f.rocket){f.rocket.color.set('#c9ced4');f.cone.color.set('#d2232a')}});frame(1,0);
 }
-function start(){voice.unlock();reset();if(!gl)return;closeBets();state='run';$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
+function start(){voice.unlock();reset();if(!gl)return;closeBets();state='run';sfx.music('race');$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
 // Jedes Rennen bekommt einen ausgelosten Bahnzustand; die Quoten werden für genau diesen Boden gerechnet
 const BODEN_COL=[['#ffffff','#000000'],['#c8c09a','#14100a'],['#8f7a58','#2e1e0c']];   // Rasenfarbe und Schlammton je Boden
 // Jedes Rennen bekommt außerdem ein ausgelostes Feld von 6 aus allen Startern
@@ -88,7 +88,7 @@ try{
 }catch(err){gl=false;$('nogl').hidden=false}
 $('go').onclick=start;
 $('neu').onclick=()=>{fresh();reset();$('go').textContent='Rennen starten';openBets();paradeStart()};
-function voiceLabel(){$('ton').textContent='Ton: '+(voice.mode==='aus'?'aus':voice.mode==='de'?'Deutsch':voice.fallback?'Deutsch (keine japanische Stimme)':'Japanisch');$('ton').setAttribute('aria-pressed',voice.on)}
+function voiceLabel(){$('ton').textContent='Ton: '+(voice.mode==='aus'?'aus':voice.mode==='de'?'Deutsch':voice.fallback?'Deutsch (keine japanische Stimme)':'Japanisch');$('ton').setAttribute('aria-pressed',voice.on);sfx.setOn(voice.on)}
 if(voice.ok){voiceLabel();speechSynthesis.addEventListener&&speechSynthesis.addEventListener('voiceschanged',voiceLabel);$('ton').onclick=()=>{voice.unlock();voice.next();voiceLabel()}}else $('ton').hidden=true;
 // Quoten für Boden und Feld des aktuellen Rennens: in Häppchen rechnen, damit die Seite bedienbar bleibt, und je Rennen einmal merken
 const TL={};let oddsBusy=false;
@@ -115,5 +115,5 @@ function odds(){
 }
 fit();fresh();reset();paradeStart();
 window.addEventListener('resize',()=>{fit();if(gl&&state!=='run'&&state!=='cer'&&!paraOn)frame(1,0)});
-// Browser geben Ton erst nach einer Bedienung frei; danach kann der Sprecher schon die Starter vorstellen
+// Browser geben Ton erst nach einer Bedienung frei; danach kann der Sprecher schon die Starter vorstellen (Musik und Geräusche: js/sfx.js)
 document.addEventListener('pointerdown',()=>voice.unlock());
