@@ -49,5 +49,7 @@ function build(){
   fig=RUN.map((d,i)=>mkModel(i));
   
   fig.forEach((f,i)=>{label(f,i);f.root.position.z=laneZ(i)});
+  buildPodium();
 }
-function emit(x,y,z,vx,vy,vz,life,size,col){const p=parts[pI=(pI+1)%parts.length];p.s.position.set(x,y,z);p.v.set(vx,vy,vz);p.life=p.max=life;p.size=size;p.s.material.color.set(col);p.s.visible=true}
+function emit(x,y,z,vx,vy,vz,life,size,col,op){const p=parts[pI=(pI+1)%parts.length];p.s.position.set(x,y,z);p.v.set(vx,vy,vz);p.life=p.max=life;p.size=size;p.op=op||.5;p.s.material.color.set(col);p.s.visible=true}
+function stepParts(sdt){for(const p of parts)if(p.life>0){p.life-=sdt;p.s.position.addScaledVector(p.v,sdt);const u=Math.max(0,p.life/p.max);p.s.material.opacity=u*p.op;const z=p.size*(1.4-u*.8);p.s.scale.set(z,z,1);if(p.life<=0)p.s.visible=false}}
