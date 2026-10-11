@@ -13,7 +13,7 @@ Die Idee ist von der japanischen DVD-Reihe „Japan World Cup“ inspiriert. Fig
 
 ## Online spielen
 
-Die Seite wird bei jedem Push auf `main` automatisch auf GitHub Pages veröffentlicht: https://kuchen404.github.io/Japanworldcup/ (die 2D-Fassung unter `classic/`).
+Die Seite wird bei jedem Push auf `main` automatisch auf GitHub Pages veröffentlicht: https://kuchen404.github.io/Chaos-Derby/ (die 2D-Fassung unter `classic/`).
 
 ## Starten
 
