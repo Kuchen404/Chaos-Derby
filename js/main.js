@@ -37,7 +37,7 @@ function finish(){
   o.forEach((i,k)=>{$('pl'+i).textContent=(k+1)+'.'});
 }
 function reset(){
-  cancelAnimationFrame(raf);t=0;evI=0;cut=null;shotK='';state='idle';$('slow').hidden=true;
+  cancelAnimationFrame(raf);t=0;evI=0;cut=null;shotK='';regie.sp=regie.alone=-1;regie.since=0;state='idle';$('slow').hidden=true;
   $('log').innerHTML='<li class="empty">Der Kommentar läuft mit, sobald das Rennen startet.</li>';
   RUN.forEach((d,i)=>{$('pl'+i).textContent='–'});
   if(!gl)return;

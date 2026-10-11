@@ -40,10 +40,14 @@ Das Rennen wird im Hintergrund komplett berechnet (`simulate(seed, true)` in `js
 ## Darstellung
 
 - Three.js r128, klassische Skriptdateien ohne Build-Schritt.
-- Die Tiere sind fertige Modelle mit Skelett. Standardbewegungen (Galopp, Schritt, Stehen, Fressen, Umfallen) kommen aus den mitgelieferten Animationen. Die Sonderbewegungen entstehen per Code über einzelne Knochen: Aufrichten des weißen Pferds, Halsstrecken des Alpakas, gesenkter Kopf des Stiers.
+- Die Tiere sind fertige Modelle mit Skelett. Standardbewegungen (Galopp, Schritt, Stehen, Fressen, Umfallen) kommen aus den mitgelieferten Animationen. Die Sonderbewegungen entstehen per Code über einzelne Knochen: Aufrichten des weißen Pferds mit angewinkelten, im Schrittwechsel rudernden Vorderbeinen, Halsstrecken des Alpakas, gesenkter Kopf des Stiers.
+- Die Hufe hängen im Modell an eigenen IK-Knochen, nicht am Unterschenkel. Wer die Vorderbeine dreht, muss diese Knochen mitführen (`followBone` in `js/figures.js`), sonst bleiben die Hufe am Boden stehen.
 - Der Mixer von Three.js schreibt unveränderte Werte nicht neu. Zusatzdrehungen müssen deshalb vor jedem Bild zurückgenommen werden (siehe `poseModel` in `js/figures.js`), sonst summieren sie sich auf.
 - Jockeys, Rakete, Bahn und Tribünen bestehen aus Grundformen.
 - Kamera: Startfahrt vor dem Feld, mitfahrende Seitenkamera auf die Führungsgruppe, Schnitt auf den betroffenen Starter bei Ereignissen, feste Kamera an der Ziellinie mit Zeitlupe.
+- Liegt der Erste lange allein vorn, wechselt die Regie zwischen ihm (4 s) und den Verfolgern (3 s), bis 150 m vor dem Ziel. Sonst sähe man oft 15 s lang nur ein einzelnes Tier.
+- Jede Einstellung läuft mindestens 1,5 s. Ab 70 m vor dem Ziel bleibt die Einstellung stehen, bis die Zielkamera übernimmt. Die Breite der Führungsgruppe wird geglättet, damit die Kamera nicht reißt, wenn jemand die Gruppe verlässt oder einholt.
+- `node tools/regie.js 60` spielt Rennen im Browser ab und misst, ob Führender, betroffener Starter und Sieger im Bild sind, wie oft die Kamera ohne Schnitt springt und welche Einstellungen zu kurz sind. Vorher (60 Rennen): 515 Kamerasprünge, 21 Einstellungen unter 1,2 s. Nachher: 0 Sprünge, 1 kurze Einstellung.
 
 ## Warum diese Tiere
 
@@ -59,4 +63,4 @@ Ein kostenpflichtiges Paket mit Giraffe, Elefant und Robbe in einheitlichem Stil
 - **Mehr Abwechslung:** weitere Starter und Ereignisse, wechselnde Felder pro Rennen, Ereignisse, die gezielt auf die Zielgerade fallen.
 - **Kommentar als Sprache** statt nur als Text.
 - **Zielfoto** und Siegerehrung nach dem Rennen.
-- **Bekannte Schwächen:** Die Vorderbeine des aufrechten Pferds hängen steif nach unten. Die Kameraregie wurde nur an Standbildern geprüft.
+- **Bekannte Schwächen:** Bei Schnitten auf einen Starter in einer hinteren Bahn läuft manchmal ein anderer Starter groß durchs Bild. Die Startnummer sehr großer Figuren wird in nahen Einstellungen oben angeschnitten.

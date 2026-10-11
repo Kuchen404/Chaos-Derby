@@ -48,6 +48,7 @@ Der wichtigste Grundsatz: **erst simulieren, dann zeigen.** Ein Rennen wird voll
 | `models/` | die fünf Tiermodelle, auf die benutzten Animationen verkleinert |
 | `vendor/` | Three.js r128 und der glTF-Lader |
 | `tools/odds.js` | Balance prüfen: `node tools/odds.js 3000` |
+| `tools/regie.js` | Kameraregie in Bewegung prüfen: `node tools/regie.js 60` (braucht Playwright) |
 | `tools/slim-models.js` | Modelle aus den Originaldateien neu erzeugen |
 
 Die Skripte sind einfache Skriptdateien ohne Build-Schritt. Sie teilen sich globale Namen und müssen in der Reihenfolge aus `index.html` geladen werden.
