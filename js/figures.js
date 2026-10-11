@@ -17,6 +17,21 @@ const WHITE={Main:'#b2b2a3',Main_Dark:'#a3a394',Main_Light:'#928f92',Hooves:'#92
 const MODELS={horse:{sc:.6,xo:-.37},alpaca:{sc:.6,xo:-.25},bull:{sc:.55,xo:-.58},husky:{sc:.5,xo:-.235},cow:{sc:.46,xo:-.485}};
 const CAST=[{m:'horse'},{m:'alpaca'},{m:'bull'},{m:'husky',js:.8},{m:'horse',pal:WHITE,up:true},{m:'cow',rocket:true,js:.9}];
 let UPA=1.1,UPN=-.55,NRA=-.8,NST=1.5,HDA=-.6;   // Zusatzdrehungen über das Skelett
+// Vorderbeine des aufrechten Pferds: Winkel unter der Waagerechten nach vorn (Bogenmaß), Grundhaltung und Ausschlag im Schrittzyklus
+const ARM={up:.35,upS:.45,lo:1.75,loS:.35};
+const FL=['FrontUpperLegL','FrontLowerLegL','FrontUpperLegR','FrontLowerLegR'],FIK=['IKFrontLegL','IKFrontLegR'];   // GLTFLoader entfernt die Punkte aus den Knochennamen
+const tmpQ=new THREE.Quaternion(),tmpQ2=new THREE.Quaternion(),tmpD=new THREE.Vector3(),tmpD2=new THREE.Vector3();
+// Dreht einen Knochen so, dass er (lokale y-Achse) in Richtung a unter der Waagerechten zeigt, gemessen in Laufrichtung der Figur
+function aimBone(b,f,a){
+  b.parent.updateWorldMatrix(true,false);f.inner.getWorldQuaternion(tmpQ2);
+  tmpD.set(Math.cos(a),-Math.sin(a),0).applyQuaternion(tmpQ2);
+  b.getWorldQuaternion(tmpQ);tmpD2.set(0,1,0).applyQuaternion(tmpQ);
+  tmpQ.premultiply(tmpQ2.setFromUnitVectors(tmpD2,tmpD));
+  b.parent.getWorldQuaternion(tmpQ2);b.quaternion.copy(tmpQ2.invert().multiply(tmpQ));b.updateMatrixWorld()}
+// Die Hufe hängen an den IK-Knochen. Sie werden in der Ruhelage relativ zum Unterschenkel mitgeführt.
+function ikRel(sk,lo,ik){const bi=n=>sk.boneInverses[sk.bones.indexOf(n)];return new THREE.Matrix4().copy(bi(lo)).multiply(tmpM.copy(bi(ik)).invert())}
+function followBone(b,lo,rel){b.parent.updateWorldMatrix(true,false);tmpM.multiplyMatrices(lo.matrixWorld,rel).premultiply(tmpM2.copy(b.parent.matrixWorld).invert());tmpM.decompose(b.position,b.quaternion,b.scale);b.updateMatrixWorld()}
+const tmpM=new THREE.Matrix4(),tmpM2=new THREE.Matrix4();
 function mkRocket(f){
   const h=f.rkH=G(f.inner,0,2.4,0),rk=G(h);rk.rotation.z=-PI/2;
   f.rocket=new THREE.MeshLambertMaterial({color:'#c9ced4'});f.cone=new THREE.MeshLambertMaterial({color:'#d2232a'});
@@ -40,13 +55,14 @@ function mkModel(i){
     m.traverse(o=>{if(o.isMesh){o.castShadow=true;o.frustumCulled=false;o.material=Array.isArray(o.material)?o.material.map(conv):conv(o.material)}});
     f.inner.add(m);f.model=m;f.mixer=new THREE.AnimationMixer(m);f.act={};
     g.animations.forEach(a=>{const ac=f.mixer.clipAction(a);ac.play();ac.setEffectiveWeight(0);f.act[a.name]=ac});
-    f.bone={};['Back','Torso','Torso2','Neck1','Head'].forEach(n=>{f.bone[n]=m.getObjectByName(n)});
-    if(gl&&race&&state!=='run')frame(1,0);
+    f.bone={};['Back','Torso','Torso2','Neck1','Head',...FL,...FIK].forEach(n=>{f.bone[n]=m.getObjectByName(n)});
+    if(cfg.up){let sk;m.traverse(o=>{if(o.isSkinnedMesh)sk=o.skeleton});f.ikRel=[0,1].map(k=>ikRel(sk,f.bone[FL[2*k+1]],f.bone[FIK[k]]))}
+    if(gl&&race&&state!=='run'&&state!=='cer')frame(1,0);
   },modelError)).catch(modelError);
   return f}
 function poseModel(f,i,x,st,sdt){
   if(!f.model)return;
-  const A=f.act,B=f.bone,idle=state!=='run'&&t===0,W={},cyc=(v,a)=>(((v%1)+1)%1)*a.getClip().duration;
+  const A=f.act,B=f.bone,idle=(state!=='run'&&t===0)||state==='cer',W={},cyc=(v,a)=>(((v%1)+1)%1)*a.getClip().duration;
   if(i===0){if(st===1)f.dT=Math.min(f.dT+sdt,A.Death.getClip().duration-.03);else if(f.b<.02)f.dT=0;A.Death.time=f.dT}
   if(i===1){if(st===3)f.dT+=sdt;else if(f.b<.02)f.dT=1;A.Eating.time=f.dT%A.Eating.getClip().duration}
   if(idle)W.Idle=1;
@@ -59,11 +75,14 @@ function poseModel(f,i,x,st,sdt){
   if(A.Gallop)A.Gallop.time=cyc(x/GS[i],A.Gallop);if(A.Walk)A.Walk.time=cyc(x/WS[i],A.Walk);A.Idle.time=.5;
   for(const n in A)A[n].setEffectiveWeight(W[n]||0);
   // Eigene Zusatzdrehungen vom letzten Bild zurücknehmen, weil der Mixer unveränderte Werte nicht neu schreibt
-  const sv=f.sv||(f.sv={});for(const q in sv){B[q].quaternion.copy(sv[q].q);B[q].scale.copy(sv[q].s)}
+  const sv=f.sv||(f.sv={});for(const q in sv){B[q].position.copy(sv[q].p);B[q].quaternion.copy(sv[q].q);B[q].scale.copy(sv[q].s)}
   f.mixer.update(0);
-  for(const q of ['Torso','Neck1']){const o=sv[q]||(sv[q]={q:new THREE.Quaternion(),s:new THREE.Vector3()});o.q.copy(B[q].quaternion);o.s.copy(B[q].scale)}
+  for(const q of i===4?['Torso','Neck1',...FL,...FIK]:['Torso','Neck1']){const o=sv[q]||(sv[q]={p:new THREE.Vector3(),q:new THREE.Quaternion(),s:new THREE.Vector3()});o.p.copy(B[q].position);o.q.copy(B[q].quaternion);o.s.copy(B[q].scale)}
   if(!idle){
-    if(i===4){B.Torso.rotateX(UPA);B.Neck1.rotateX(UPN)}
+    if(i===4){B.Torso.rotateX(UPA);B.Neck1.rotateX(UPN);
+      // Vorderbeine angewinkelt und im Wechsel rudernd, statt steif nach unten zu hängen
+      const ph=x/WS[4]*2*PI;
+      for(let k=0;k<2;k++){const sw=Math.sin(ph+k*PI);aimBone(B[FL[2*k]],f,ARM.up+ARM.upS*sw);aimBone(B[FL[2*k+1]],f,ARM.lo+ARM.loS*sw);followBone(B[FIK[k]],B[FL[2*k+1]],f.ikRel[k])}}
     if(i===1){const kk=clamp((x-(L-90))/60,0,1)*(1-f.b);if(kk>0){B.Neck1.rotateX(NRA*kk);B.Neck1.scale.y=1+NST*kk}}
     if(i===2&&f.ch>.01)B.Neck1.rotateX(HDA*f.ch);
   }

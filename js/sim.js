@@ -16,13 +16,14 @@ function simulate(seed,rec){
   const R=rng(seed), rs=RUN.map(()=>({x:0,st:0,T:0,n:0,fin:-1,used:false}));
   const order=[],frames=[],ev=[]; let t=0,lead=-1,leadT=0,m200=false,stretch=false,winT=-1,wasRain=false;
   const rain0=R()<.45?8+R()*20:-1, rain1=rain0+10;
-  const say=(s,i,cut)=>{if(rec)ev.push({t,s,i,cut})};
+  // p: Gewicht für den gesprochenen Kommentar, 3 = Zieleinlauf, 2 = Ereignis, 1 = Rest
+  const say=(s,i,cut,p)=>{if(rec)ev.push({t,s,i,cut,p:p||(cut?2:1)})};
   const p=h=>R()<h*DT;
   say('Das Feld ist unterwegs.');
   while(order.length<6&&t<150){
     const rain=rain0>=0&&t>=rain0&&t<rain1;
     if(rain!==wasRain){wasRain=rain;say(rain?'Es beginnt zu regnen. Jetzt wacht Schmuddelwetter auf.':'Der Regen hört auf. Schmuddelwetter trottet wieder.',3,rain?2.4:0)}
-    let li=-1,lx=-1; for(let i=0;i<6;i++)if(rs[i].fin<0&&rs[i].x>lx){lx=rs[i].x;li=i}
+    let li=-1,lx=-1,cross=[]; for(let i=0;i<6;i++)if(rs[i].fin<0&&rs[i].x>lx){lx=rs[i].x;li=i}
     for(let i=0;i<6;i++){
       const r=rs[i],d=RUN[i];
       r.n=r.n*.97+(R()-.5)*.05;
@@ -41,24 +42,26 @@ function simulate(seed,rec){
         if(r.st===1||r.st===2||r.st===3)v=0;else if(r.st===4)v*=1.7;else if(r.st===7)v*=-.6;else if(r.st===6)v=70;
         if(rain&&r.st!==6)v*=d.rain;
       }
-      r.x+=v*DT;
-      if(r.fin<0&&r.x+nose(i,r.x)>=L){
-        r.fin=t;r.st=0;r.T=0;order.push(i);
-        if(order.length===1){winT=t;say(d.name+' gewinnt!')}
-        else if(order.length===2&&t-winT<.2)say('Das war eng. '+d.name+' nur eine Nasenlänge dahinter.');
-      }
+      const x0=r.x;r.x+=v*DT;
+      // Zieldurchgang auf den Bruchteil des Zeitschritts genau, damit Zielfoto und Einlauf übereinstimmen
+      if(r.fin<0&&r.x+nose(i,r.x)>=L){const a0=x0+nose(i,x0),a1=r.x+nose(i,r.x);r.fin=t-DT+DT*clamp((L-a0)/(a1-a0),0,1);r.st=0;r.T=0;cross.push(i)}
     }
+    cross.sort((a,b)=>rs[a].fin-rs[b].fin).forEach(i=>{
+      order.push(i);
+      if(order.length===1){winT=rs[i].fin;say(RUN[i].name+' gewinnt!',i,0,3)}
+      else if(order.length===2&&rs[i].fin-winT<.2)say('Das war eng. '+RUN[i].name+' nur eine Nasenlänge dahinter.',i,0,3);
+    });
     const e=rs[2];
     if(e.st===4&&e.fin<0)for(let j=0;j<6;j++){const r=rs[j];
-      if(j!==2&&r.fin<0&&r.st!==2&&r.st!==6&&Math.abs(r.x-e.x)<5){r.st=2;r.T=2.2;say('Dampfwalze räumt '+RUN[j].name+' ab.')}}
+      if(j!==2&&r.fin<0&&r.st!==2&&r.st!==6&&Math.abs(r.x-e.x)<5){r.st=2;r.T=2.2;say('Dampfwalze räumt '+RUN[j].name+' ab.',j,0,2)}}
     if(!order.length&&t>4&&li!==lead&&t-leadT>2.5){say(RUN[li].name+(lead<0?' führt das Feld an.':' übernimmt die Führung.'));lead=li;leadT=t}
-    if(!m200&&lx>=L-200){m200=true;say('Noch 200 Meter.')}
-    if(!stretch&&rs[1].fin<0&&rs[1].x>=L-90){stretch=true;say('Hals über Kopf streckt den Hals nach vorn.')}
+    if(!m200&&lx>=L-200){m200=true;say('Noch 200 Meter.',-1,0,2)}
+    if(!stretch&&rs[1].fin<0&&rs[1].x>=L-90){stretch=true;say('Hals über Kopf streckt den Hals nach vorn.',1,0,2)}
     if(rec)frames.push({x:rs.map(r=>r.x),s:rs.map(r=>r.st),rain});
     t+=DT;
   }
   rs.map((r,i)=>i).filter(i=>rs[i].fin<0).sort((a,b)=>rs[b].x-rs[a].x).forEach(i=>order.push(i));
-  return {order,frames,ev,dur:t,winT};
+  return {order,frames,ev,dur:t,winT,fin:rs.map(r=>r.fin)};
 }
 
 if(typeof module!=='undefined')module.exports={simulate,RUN,L};
