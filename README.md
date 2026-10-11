@@ -8,7 +8,7 @@ Die Idee ist von der japanischen DVD-Reihe „Japan World Cup“ inspiriert. Fig
 
 - **3D-Rennen** (`index.html`): sechs Starter als Tiermodelle mit Skelett, Kameraregie mit Schnitten auf die Ereignisse, Zeitlupe im Ziel, Zielfoto und Siegerehrung auf dem Podest, Live-Kommentar als Text und als Sprachausgabe des Browsers, Quotentafel.
 - **2D-Rennen** (`classic/index.html`): die erste, flache Fassung in Seitenansicht. Sie zeigt noch das alte Starterfeld (Giraffe, Elefant, Robbe, Schildkröte) und wird nicht weiterentwickelt.
-- **Wetten fehlt noch.** Es gibt bisher nur die Anzeige der Quoten.
+- **Wetten** am gemeinsamen Bildschirm mit Spielgeld: Mitspieler anlegen, Sieg, Platz oder Zweierwette zu festen Quoten setzen, nach dem Rennen wird ausgezahlt. Wetten am Handy fehlt noch.
 
 ## Starten
 
@@ -40,16 +40,19 @@ Der wichtigste Grundsatz: **erst simulieren, dann zeigen.** Ein Rennen wird voll
 | Datei | Aufgabe |
 |---|---|
 | `js/sim.js` | Rennsimulation: Starterwerte, Ereignisse, Kommentarzeilen. Kennt keine Grafik und läuft auch in Node. |
+| `js/bets.js` | Wetten: Quoten für Sieg, Platz und Zweierwette, Kasse, Abrechnung. Ohne Grafik, läuft auch in Node. |
 | `js/state.js` | gemeinsame Konstanten und Zustand der 3D-Ansicht |
 | `js/figures.js` | Tiermodelle laden, Jockeys und Rakete, Animation je Bild |
 | `js/scene.js` | Bahn, Tribünen, Licht, Regen, Partikel |
 | `js/director.js` | Kameraregie |
 | `js/ceremony.js` | Zielfoto und Siegerehrung |
 | `js/voice.js` | gesprochener Kommentar über die Sprachausgabe des Browsers |
+| `js/betting.js` | Wettbüro auf der Seite: Mitspieler, Wettschein, Abrechnung |
 | `js/main.js` | Abspielen, Bedienung, Quotentafel |
 | `models/` | die fünf Tiermodelle, auf die benutzten Animationen verkleinert |
 | `vendor/` | Three.js r128 und der glTF-Lader |
-| `tools/odds.js` | Balance prüfen: `node tools/odds.js 3000` |
+| `tools/odds.js` | Balance und Quoten prüfen: `node tools/odds.js 3000` |
+| `tools/bets-test.js` | Wettlogik prüfen: `node tools/bets-test.js` |
 | `tools/regie.js` | Kameraregie in Bewegung prüfen: `node tools/regie.js 60` (braucht Playwright) |
 | `tools/slim-models.js` | Modelle aus den Originaldateien neu erzeugen |
 
