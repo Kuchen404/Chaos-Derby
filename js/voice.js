@@ -85,6 +85,16 @@ const voice=(()=>{
       if(p>=3&&!(cur&&cur.p>=3)){final=true;wait=null;if(cur)stopAll();cur=null;line.hot=1;if(l.k==='einlauf')line.m=.25;speak(line);return}
       if(!wait||p>=wait.p)wait=line;
     },
+    // Vorstellung vor dem Rennen: Name eines Starters (r: ROSTER-Index), ruhig gesprochen; s: deutscher Satz.
+    // Liefert false, solange der Browser den Ton noch nicht freigegeben hat, damit es beim nächsten Mal noch einmal versucht wird.
+    announce(r,s){
+      if(mode==='aus'||cur)return false;
+      if(tape()){const c='name.'+r;if(!has(c)||ac.state!=='running')return false;wait=null;const l={clips:[c],p:1};cur=l;quiet=0;playClips(l);return true}
+      if(!sy||typeof navigator!=='undefined'&&navigator.userActivation&&!navigator.userActivation.hasBeenActive)return false;
+      if(jpSpeech()){speak({s:jikkyo.N[r]+'。',p:1,ja:true,m:0});return true}
+      if(mode==='de'||!buf&&!ja){speak({s,p:1,hot:0});return true}
+      return false;
+    },
     // Grad der Aufregung des japanischen Sprechers, 0…3
     get level(){return typeof jikkyo!=='undefined'?jikkyo.level(m):0},
     // jedes Bild: wartende Zeile sprechen, sobald die vorige fertig ist; liefert Sekunden seit der letzten Zeile

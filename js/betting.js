@@ -33,7 +33,7 @@ function slipPreview(){
   $('bq').textContent=q?fmtQ(q):'–';$('bw').textContent=q&&st>0?Math.round(st*q):'–';
 }
 function betMsg(s){$('berr').textContent=s;$('berr').hidden=!s}
-function setQuotes(q){Q=q;renderBets()}
+function setQuotes(q){Q=q;renderBets();if(typeof paraQuotes==='function')paraQuotes()}
 // Ab dem Start sind keine Wetten mehr möglich, abgerechnet wird einmal je Rennen
 function closeBets(){if(!betsOpen)return;betsOpen=false;betMsg('');renderBets()}
 function openBets(){betsOpen=true;lastRes=null;renderBets()}

@@ -56,7 +56,7 @@ function finish(){
   const res=settleBets(o);if(res&&res.length){const won=res.filter(r=>r.win).length;$('cap').textContent+=' · '+(won?won+(won>1?' Wetten':' Wette')+' gewonnen':'keine Wette gewonnen')}
 }
 function reset(){
-  cancelAnimationFrame(raf);voice.stop();t=0;evI=0;cut=null;shotK='';regie.sp=regie.alone=-1;regie.since=0;state='idle';$('slow').hidden=true;
+  cancelAnimationFrame(raf);paradeStop();voice.stop();t=0;evI=0;cut=null;shotK='';regie.sp=regie.alone=-1;regie.since=0;state='idle';$('slow').hidden=true;
   endCeremony();
   $('log').innerHTML='<li class="empty">Der Kommentar läuft mit, sobald das Rennen startet.</li>';
   $('cap').textContent='Die Starter stehen an der Linie. Der Boden ist '+BODEN[race.bod].name+'.';
@@ -87,7 +87,7 @@ try{
   $('view').prepend(renderer.domElement);build();
 }catch(err){gl=false;$('nogl').hidden=false}
 $('go').onclick=start;
-$('neu').onclick=()=>{fresh();reset();$('go').textContent='Rennen starten';openBets()};
+$('neu').onclick=()=>{fresh();reset();$('go').textContent='Rennen starten';openBets();paradeStart()};
 function voiceLabel(){$('ton').textContent='Ton: '+(voice.mode==='aus'?'aus':voice.mode==='de'?'Deutsch':voice.fallback?'Deutsch (keine japanische Stimme)':'Japanisch');$('ton').setAttribute('aria-pressed',voice.on)}
 if(voice.ok){voiceLabel();speechSynthesis.addEventListener&&speechSynthesis.addEventListener('voiceschanged',voiceLabel);$('ton').onclick=()=>{voice.unlock();voice.next();voiceLabel()}}else $('ton').hidden=true;
 // Quoten für Boden und Feld des aktuellen Rennens: in Häppchen rechnen, damit die Seite bedienbar bleibt, und je Rennen einmal merken
@@ -113,5 +113,7 @@ function odds(){
   else setQuotes(null);
   if(!oddsBusy){oddsBusy=true;setTimeout(oddsLoop,0)}
 }
-fit();fresh();reset();
-window.addEventListener('resize',()=>{fit();if(gl&&state!=='run'&&state!=='cer')frame(1,0)});
+fit();fresh();reset();paradeStart();
+window.addEventListener('resize',()=>{fit();if(gl&&state!=='run'&&state!=='cer'&&!paraOn)frame(1,0)});
+// Browser geben Ton erst nach einer Bedienung frei; danach kann der Sprecher schon die Starter vorstellen
+document.addEventListener('pointerdown',()=>voice.unlock());

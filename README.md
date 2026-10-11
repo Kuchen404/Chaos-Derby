@@ -6,7 +6,7 @@ Die Idee ist von der japanischen DVD-Reihe „Japan World Cup“ inspiriert. Fig
 
 ## Stand
 
-- **3D-Rennen** (`index.html`): zwölf Starter als Tiermodelle mit Skelett, pro Rennen ein ausgelostes Feld von sechs, Fehlschläge, die andere Starter mitreißen, Kameraregie mit Schnitten auf die Ereignisse, Zeitlupe im Ziel, Zielfoto und Siegerehrung auf dem Podest, Live-Kommentar als Text und gesprochen von einem japanischen Sprecher, der im Rennverlauf immer mehr abdreht (wahlweise deutsch), Quotentafel.
+- **3D-Rennen** (`index.html`): zwölf Starter als Tiermodelle mit Skelett, pro Rennen ein ausgelostes Feld von sechs, Fehlschläge, die andere Starter mitreißen, Kameraregie mit Schnitten auf die Ereignisse, Zeitlupe im Ziel, Zielfoto und Siegerehrung auf dem Podest, vor dem Start eine Vorstellung aller Starter in Nahaufnahme mit eigener Szene je Tier, Live-Kommentar als Text und gesprochen von einem japanischen Sprecher, der im Rennverlauf immer mehr abdreht (wahlweise deutsch), Quotentafel.
 - **2D-Rennen** (`classic/index.html`): die erste, flache Fassung in Seitenansicht. Sie zeigt noch das alte Starterfeld (Giraffe, Elefant, Robbe, Schildkröte) und wird nicht weiterentwickelt.
 - **Wetten** am gemeinsamen Bildschirm mit Spielgeld: Mitspieler anlegen, Sieg, Platz oder Zweierwette zu festen Quoten setzen, nach dem Rennen wird ausgezahlt. Wetten am Handy fehlt noch.
 - **Bahnzustand:** Vor jedem Rennen wird der Boden ausgelost (gut, weich, schwer). Quoten und Wetten gelten für diesen Boden.
@@ -59,6 +59,7 @@ Der wichtigste Grundsatz: **erst simulieren, dann zeigen.** Ein Rennen wird voll
 | `js/scene.js` | Bahn, Tribünen, Licht, Regen, Partikel |
 | `js/director.js` | Kameraregie |
 | `js/ceremony.js` | Zielfoto und Siegerehrung |
+| `js/parade.js` | Vorstellung der Starter vor dem Rennen (Kamerafahrt, Szenen, Bauchbinde) |
 | `js/voice.js` | gesprochener Kommentar über die Sprachausgabe des Browsers |
 | `js/jikkyo.js` | japanische Ansagen mit steigender Aufregung (Quelle für die Aufnahmen) |
 | `audio/` | die japanischen Ansagen als Aufnahmen, erzeugt mit VOICEVOX |
