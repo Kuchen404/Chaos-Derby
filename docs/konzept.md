@@ -45,6 +45,13 @@ Das Rennen wird im Hintergrund komplett berechnet (`simulate(seed, true)` in `js
 - Jockeys, Rakete, Bahn und Tribünen bestehen aus Grundformen.
 - Kamera: Startfahrt vor dem Feld, mitfahrende Seitenkamera auf die Führungsgruppe, Schnitt auf den betroffenen Starter bei Ereignissen, feste Kamera an der Ziellinie mit Zeitlupe.
 
+## Zielfoto und Siegerehrung
+
+- **Zieldurchgang:** Die Simulation rechnet den Moment, in dem ein Starter die Linie erreicht, auf einen Bruchteil des Zeitschritts genau aus (`fin` im Ergebnis von `simulate`). Überqueren zwei Starter die Linie im selben Zeitschritt, entscheidet dieser genaue Zeitpunkt, vorher entschied die Reihenfolge der Starternummern. Das kann nur bei Abständen unter 1/30 s passieren, also in gut 1 % der Rennen; die Siegchancen haben sich dadurch nicht messbar verschoben.
+- **Zielfoto:** Im Moment des Siegs rendert eine zweite Kamera das Feld genau von der Seite auf Höhe der Ziellinie. Die Linie steht dadurch senkrecht in der Bildmitte. Das Bild wird leicht sepia eingefärbt, bekommt die Siegerzeit und einen Satz zum Abstand („mit einer Kopflänge vor …“). Der Abstand ergibt sich aus der Strecke, die dem Zweiten zu diesem Zeitpunkt noch fehlt.
+- **Siegerehrung:** Nach dem Rennen stehen die ersten drei auf einem Podest hinter dem Ziel, die übrigen daneben im Gras. Die Kamera fährt heran und pendelt langsam, es fällt Konfetti. Daneben (auf schmalen Bildschirmen darunter) zeigt eine Tafel den Einlauf mit Zeiten und Rückständen sowie das Zielfoto.
+- Der Code dafür steht in `js/ceremony.js`. Er liest nur das fertige Simulationsergebnis; `sim.js` bleibt ohne Grafik.
+
 ## Warum diese Tiere
 
 Das ursprüngliche Feld bestand aus Pferd, Giraffe, Elefant, Robbe, Pferd auf zwei Beinen und Schildkröte mit Rakete. Das kostenlose Modellpaket von Quaternius enthält davon nur das Pferd. Statt Modelle zuzukaufen, wurde das Feld an das Paket angepasst: Alpaka statt Giraffe, Stier statt Elefant, Husky statt Robbe, Kuh statt Schildkröte. Die Regeln blieben gleich.
@@ -58,5 +65,4 @@ Ein kostenpflichtiges Paket mit Giraffe, Elefant und Robbe in einheitlichem Stil
 - **Wetten:** Entweder ein gemeinsamer Bildschirm mit Spielgeld, bei dem einer die Tipps einträgt, oder Wetten am eigenen Handy per QR-Code. Die zweite Variante braucht einen kleinen Server. Als Wettarten reichen Sieg, Platz und Zweierwette. Alternative zu festen Quoten: Totalisator, bei dem die Quote aus den Einsätzen der Runde entsteht.
 - **Mehr Abwechslung:** weitere Starter und Ereignisse, wechselnde Felder pro Rennen, Ereignisse, die gezielt auf die Zielgerade fallen.
 - **Kommentar als Sprache** statt nur als Text.
-- **Zielfoto** und Siegerehrung nach dem Rennen.
 - **Bekannte Schwächen:** Die Vorderbeine des aufrechten Pferds hängen steif nach unten. Die Kameraregie wurde nur an Standbildern geprüft.

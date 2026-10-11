@@ -1,9 +1,12 @@
 // Chaos-Derby – Abspielen eines vorab simulierten Rennens, Bedienung, Quotentafel
+function posAt(tt){
+  const fr=race.frames,fi=Math.min(Math.floor(tt*30),fr.length-1),f2=Math.min(fi+1,fr.length-1),a=clamp(tt*30-fi,0,1);
+  const A=fr[fi],B=fr[f2];return {A,xs:A.x.map((v,i)=>v+(B.x[i]-v)*a)};
+}
 function frame(dt,sdt){
-  const fr=race.frames,fi=Math.min(Math.floor(t*30),fr.length-1),f2=Math.min(fi+1,fr.length-1),a=clamp(t*30-fi,0,1);
-  const A=fr[fi],B=fr[f2],xs=A.x.map((v,i)=>v+(B.x[i]-v)*a);
+  const {A,xs}=posAt(t);
   xs.forEach((x,i)=>pose(i,x,A.s[i],A.rain,dt,sdt));
-  for(const p of parts)if(p.life>0){p.life-=sdt;p.s.position.addScaledVector(p.v,sdt);const u=Math.max(0,p.life/p.max);p.s.material.opacity=u*.5;const z=p.size*(1.4-u*.8);p.s.scale.set(z,z,1);if(p.life<=0)p.s.visible=false}
+  stepParts(sdt);
   rainFx.visible=A.rain;
   if(A.rain){const pa=rainFx.geometry.attributes.position,ar=pa.array;for(let q=1;q<ar.length;q+=3){ar[q]-=sdt*26;}
     for(let q=1;q<ar.length;q+=6)if(ar[q]<0){ar[q]+=22;ar[q+3]+=22}pa.needsUpdate=true}
@@ -27,17 +30,19 @@ function step(dt){
   const slow=t>race.winT-.5&&t<race.winT+.45,sdt=dt*(slow?.28:1);
   $('slow').hidden=!slow;t+=sdt;
   while(evI<race.ev.length&&race.ev[evI].t<=t)logLine(race.ev[evI++]);
+  if(!photoTaken&&race.winT>=0&&t>=race.winT)snapPhoto();
   frame(dt,sdt);
   return t>=Math.min(race.dur,race.winT+7);
 }
 function tick(now){const dt=clamp((now-last)/1000,0,.1);last=now;if(step(dt)){finish();return}raf=requestAnimationFrame(tick)}
 function finish(){
-  state='done';$('go').textContent='Wiederholung ansehen';$('slow').hidden=true;
-  const o=race.order;$('cap').textContent='Einlauf: 1. '+RUN[o[0]].name+' · 2. '+RUN[o[1]].name+' · 3. '+RUN[o[2]].name;
-  o.forEach((i,k)=>{$('pl'+i).textContent=(k+1)+'.'});
+  $('go').textContent='Wiederholung ansehen';$('slow').hidden=true;
+  race.order.forEach((i,k)=>{$('pl'+i).textContent=(k+1)+'.'});
+  startCeremony();
 }
 function reset(){
   cancelAnimationFrame(raf);t=0;evI=0;cut=null;shotK='';state='idle';$('slow').hidden=true;
+  endCeremony();
   $('log').innerHTML='<li class="empty">Der Kommentar läuft mit, sobald das Rennen startet.</li>';
   RUN.forEach((d,i)=>{$('pl'+i).textContent='–'});
   if(!gl)return;
@@ -57,7 +62,7 @@ try{
 $('go').onclick=start;
 $('neu').onclick=()=>{fresh();start()};
 fit();fresh();reset();
-window.addEventListener('resize',()=>{fit();if(gl&&state!=='run')frame(1,0)});
+window.addEventListener('resize',()=>{fit();if(gl&&state==='idle')frame(1,0)});
 setTimeout(()=>{
   const N=1200,w=[0,0,0,0,0,0];for(let k=0;k<N;k++)w[simulate(1000+k*7919,false).order[0]]++;
   w.forEach((n,i)=>{const p=n/N,q=p>0?clamp(.85/p,1.1,99):99;

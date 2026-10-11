@@ -41,12 +41,12 @@ function mkModel(i){
     f.inner.add(m);f.model=m;f.mixer=new THREE.AnimationMixer(m);f.act={};
     g.animations.forEach(a=>{const ac=f.mixer.clipAction(a);ac.play();ac.setEffectiveWeight(0);f.act[a.name]=ac});
     f.bone={};['Back','Torso','Torso2','Neck1','Head'].forEach(n=>{f.bone[n]=m.getObjectByName(n)});
-    if(gl&&race&&state!=='run')frame(1,0);
+    if(gl&&race&&state==='idle')frame(1,0);
   },modelError)).catch(modelError);
   return f}
 function poseModel(f,i,x,st,sdt){
   if(!f.model)return;
-  const A=f.act,B=f.bone,idle=state!=='run'&&t===0,W={},cyc=(v,a)=>(((v%1)+1)%1)*a.getClip().duration;
+  const A=f.act,B=f.bone,idle=(state!=='run'&&t===0)||state==='cer',W={},cyc=(v,a)=>(((v%1)+1)%1)*a.getClip().duration;
   if(i===0){if(st===1)f.dT=Math.min(f.dT+sdt,A.Death.getClip().duration-.03);else if(f.b<.02)f.dT=0;A.Death.time=f.dT}
   if(i===1){if(st===3)f.dT+=sdt;else if(f.b<.02)f.dT=1;A.Eating.time=f.dT%A.Eating.getClip().duration}
   if(idle)W.Idle=1;
