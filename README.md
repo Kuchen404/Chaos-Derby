@@ -11,6 +11,10 @@ Die Idee ist von der japanischen DVD-Reihe „Japan World Cup“ inspiriert. Fig
 - **Wetten** am gemeinsamen Bildschirm mit Spielgeld: Mitspieler anlegen, Sieg, Platz oder Zweierwette zu festen Quoten setzen, nach dem Rennen wird ausgezahlt. Wetten am Handy fehlt noch.
 - **Bahnzustand:** Vor jedem Rennen wird der Boden ausgelost (gut, weich, schwer). Quoten und Wetten gelten für diesen Boden.
 
+## Online spielen
+
+Die Seite wird bei jedem Push auf `main` automatisch auf GitHub Pages veröffentlicht: https://kuchen404.github.io/Japanworldcup/ (die 2D-Fassung unter `classic/`).
+
 ## Starten
 
 Die 3D-Fassung lädt ihre Modelle nach und braucht deshalb einen Webserver. Ein Doppelklick auf `index.html` reicht nicht.
