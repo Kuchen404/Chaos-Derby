@@ -3,18 +3,18 @@ const L=1000, DT=1/30, FIELD=6;
 // Alle Starter. Pro Rennen laufen FIELD davon (siehe drawField); die Startnummer bleibt fest.
 // v: Grundtempo m/s, late: Faktor für die zweite Rennhälfte, rain: Faktor bei Regen, bod: Faktor je Bahnzustand [gut, weich, schwer]
 const ROSTER=[
- {id:'pferd',nr:1,name:'Sekundenschlaf',kind:'Pferd',trait:'Schnell, schläft in Führung aber gern ein',col:'#d2232a',ink:'#fff',v:23.16,late:-.04,rain:.85,bod:[1,.97,.95]},
- {id:'alpaka',nr:2,name:'Hals über Kopf',kind:'Alpaka',trait:'Streckt im Ziel den Hals, frisst unterwegs',col:'#f2b600',ink:'#111',v:22.52,late:.02,rain:.85,bod:[1,.99,.97]},
- {id:'stier',nr:3,name:'Dampfwalze',kind:'Stier',trait:'Langsam, räumt beim Sturmlauf alles ab',col:'#2f6fb8',ink:'#fff',v:19.17,late:.03,rain:.95,bod:[1,1,.99]},
- {id:'husky',nr:4,name:'Schmuddelwetter',kind:'Husky',trait:'Trottet lustlos, außer es regnet',col:'#12a08f',ink:'#fff',v:16.79,late:0,rain:2.33,bod:[1,1,1]},
- {id:'aufrecht',nr:5,name:'Aufrechter Gang',kind:'Pferd auf zwei Beinen',trait:'Der Schnellste, läuft manchmal zurück',col:'#8e44ad',ink:'#fff',v:25.15,late:0,rain:.8,bod:[1,.97,.95]},
- {id:'kuh',nr:6,name:'Spätzünder',kind:'Kuh mit Rakete',trait:'Trottet, bis die Rakete zündet',col:'#e0559b',ink:'#fff',v:11.8,late:0,rain:1,bod:[1,.98,.96]},
- {id:'esel',nr:7,name:'Sturkopf',kind:'Esel',trait:'Bleibt stur stehen, bis ihn einer überholt',col:'#ef7d1a',ink:'#111',v:22.45,late:.02,rain:.95,bod:[1,.99,.97]},
- {id:'hirsch',nr:8,name:'Platzhirsch',kind:'Hirsch',trait:'Springt in großen Sätzen, landet nicht immer',col:'#7a4b2a',ink:'#fff',v:21.76,late:0,rain:.9,bod:[1,.98,.95]},
- {id:'reh',nr:9,name:'Schreckhaft',kind:'Reh',trait:'Sehr schnell, erstarrt aber bei jedem Krach',col:'#f4f4f4',ink:'#111',v:23.15,late:0,rain:.85,bod:[1,.97,.94]},
- {id:'fuchs',nr:10,name:'Schlitzohr',kind:'Fuchs',trait:'Hängt sich hinter andere und zieht spät vorbei',col:'#8bc34a',ink:'#111',v:20.71,late:0,rain:.9,bod:[1,.99,.97]},
- {id:'wolf',nr:11,name:'Hetzjagd',kind:'Wolf',trait:'Jagt den Vordermann, der rennt dann um sein Leben',col:'#3a3f47',ink:'#fff',v:21.17,late:0,rain:1,bod:[1,1,.99]},
- {id:'shiba',nr:12,name:'Schnüffelnase',kind:'Shiba Inu',trait:'Schnüffelt herum, bekommt dann seine fünf Minuten',col:'#1c2f6b',ink:'#fff',v:22.39,late:0,rain:.8,bod:[1,.97,.94]}
+ {id:'pferd',nr:1,name:'Sekundenschlaf',kind:'Pferd',trait:'Schnell, schläft in Führung aber gern ein',col:'#d2232a',ink:'#fff',v:23.03,late:-.04,rain:.85,bod:[1,.97,.95]},
+ {id:'alpaka',nr:2,name:'Hals über Kopf',kind:'Alpaka',trait:'Streckt im Ziel den Hals, frisst unterwegs',col:'#f2b600',ink:'#111',v:22.48,late:.02,rain:.85,bod:[1,.99,.97]},
+ {id:'stier',nr:3,name:'Dampfwalze',kind:'Stier',trait:'Langsam, räumt beim Sturmlauf alles ab',col:'#2f6fb8',ink:'#fff',v:19.41,late:.03,rain:.95,bod:[1,1,.99]},
+ {id:'husky',nr:4,name:'Schmuddelwetter',kind:'Husky',trait:'Trottet lustlos, außer es regnet',col:'#12a08f',ink:'#fff',v:16.75,late:0,rain:2.33,bod:[1,1,1]},
+ {id:'aufrecht',nr:5,name:'Aufrechter Gang',kind:'Pferd auf zwei Beinen',trait:'Der Schnellste, läuft manchmal zurück',col:'#8e44ad',ink:'#fff',v:24.88,late:0,rain:.8,bod:[1,.97,.95]},
+ {id:'kuh',nr:6,name:'Spätzünder',kind:'Kuh mit Rakete',trait:'Trottet, bis die Rakete zündet',col:'#e0559b',ink:'#fff',v:12.02,late:0,rain:1,bod:[1,.98,.96]},
+ {id:'esel',nr:7,name:'Sturkopf',kind:'Esel',trait:'Bleibt stur stehen, bis ihn einer überholt',col:'#ef7d1a',ink:'#111',v:22.46,late:.02,rain:.95,bod:[1,.99,.97]},
+ {id:'hirsch',nr:8,name:'Platzhirsch',kind:'Hirsch',trait:'Springt in großen Sätzen, landet nicht immer',col:'#7a4b2a',ink:'#fff',v:21.7,late:0,rain:.9,bod:[1,.98,.95]},
+ {id:'reh',nr:9,name:'Schreckhaft',kind:'Reh',trait:'Sehr schnell, erstarrt aber bei jedem Krach',col:'#f4f4f4',ink:'#111',v:23.18,late:0,rain:.85,bod:[1,.97,.94]},
+ {id:'fuchs',nr:10,name:'Schlitzohr',kind:'Fuchs',trait:'Hängt sich hinter andere und zieht spät vorbei',col:'#8bc34a',ink:'#111',v:20.65,late:0,rain:.9,bod:[1,.99,.97]},
+ {id:'wolf',nr:11,name:'Hetzjagd',kind:'Wolf',trait:'Jagt den Vordermann, der rennt dann um sein Leben',col:'#3a3f47',ink:'#fff',v:21.3,late:0,rain:1,bod:[1,1,.99]},
+ {id:'shiba',nr:12,name:'Schnüffelnase',kind:'Shiba Inu',trait:'Schnüffelt herum, bekommt dann seine fünf Minuten',col:'#1c2f6b',ink:'#fff',v:22.21,late:0,rain:.8,bod:[1,.97,.94]}
 ];
 const CLASSIC=[0,1,2,3,4,5];   // das ursprüngliche Feld
 // Das Feld des aktuellen Rennens, Index = Bahn. Im Browser lesen Darstellung und Wetten daraus; setField tauscht den Inhalt aus.
@@ -30,12 +30,12 @@ const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 // Wie weit die Nase vor der Position liegt: das Alpaka streckt im Ziel den Hals
 const nose=(d,x)=>d.id==='alpaka'?2+4*clamp((x-(L-90))/60,0,1):0;
 // Zustände: 0 läuft, 1 schläft, 2 purzelt, 3 frisst, 4 Sturmlauf, 6 Rakete, 7 läuft zurück, 8 jubelt zu früh, 9 Rakete verkehrt herum,
-// 10 bockt, 11 springt, 12 erstarrt, 13 jagt, 14 schnüffelt, 15 Zoomies
-const STOP=[1,2,3,8,10,12,14];
+// 10 bockt, 11 springt, 12 erstarrt, 13 jagt, 14 schnüffelt, 15 Zoomies, 16 heult mit
+const STOP=[1,2,3,8,10,12,14,16];
 // bod: Index in BODEN (Standard 0 = gut), field: ROSTER-Indizes der Starter (Standard CLASSIC)
 function simulate(seed,rec,bod,field){
   const F=(field||CLASSIC).map(k=>ROSTER[k]),n=F.length,R=rng(seed);
-  const rs=F.map(()=>({x:0,st:0,T:0,n:0,fin:-1,used:false,fl:0,dr:-1,ahead:0}));
+  const rs=F.map(()=>({x:0,st:0,T:0,n:0,fin:-1,used:false,fl:0,dr:-1,ahead:0,hs:[]}));
   const has=id=>F.findIndex(d=>d.id===id);
   const order=[],frames=[],ev=[]; let t=0,lead=-1,leadT=0,m200=false,stretch=false,winT=-1,wasRain=false,howl=false,foxT=-9;
   bod=bod|0;
@@ -47,6 +47,19 @@ function simulate(seed,rec,bod,field){
   // Laute Ereignisse (Sturmlauf, Rakete, Stürze, Jagd, Zoomies): Ein Reh in der Nähe erschrickt und erstarrt
   function scare(i){for(let j=0;j<n;j++){const r=rs[j];
     if(j!==i&&F[j].id==='reh'&&r.st===0&&r.fin<0&&Math.abs(r.x-rs[i].x)<18&&R()<.7){r.st=12;r.T=1.4+R()*1.2;say(F[j].name+' erschrickt und bleibt wie angewurzelt stehen.',j,1.8,0,'scare',i)}}}
+  // Fehlschläge reißen andere mit. hit: Starter j stürzt, ausgelöst von src. Wer direkt dahinter läuft, kann über ihn fallen
+  // (eine Stufe Kettenreaktion, nicht mehr, sonst läge bei engem Feld jedes Mal alles am Boden).
+  const down=q=>q.fin>=0||q.st===2||q.st===6||q.st===9;
+  function hit(j,src,s,k,deep){const q=rs[j];if(down(q))return false;
+    q.st=2;q.T=2.2;say(s,j,deep?0:2,2,k,src);scare(j);
+    if(!deep)for(let b=0;b<n;b++){const g=q.x-rs[b].x;if(b!==j&&b!==src&&g>0&&g<2.5&&!down(rs[b])&&R()<.35){hit(b,j,F[b].name+' fällt über '+F[j].name+'.','trip',1);break}}
+    return true}
+  // Wer innerhalb von w Metern an Starter i vorbeikommt, wird je Ereignis einmal geprüft (r.hs merkt sich, wer schon dran war)
+  function passBy(i,w,pr,fn){const r=rs[i];for(let j=0;j<n;j++){if(j===i||r.hs.includes(j)||down(rs[j])||Math.abs(rs[j].x-r.x)>w)continue;r.hs.push(j);if(R()<pr)fn(j)}}
+  // Explosion der Rakete: wer im Umkreis von 7 m ist, wird mit 50 % umgeworfen
+  function blast(i){for(let j=0;j<n;j++)if(j!==i&&!down(rs[j])&&Math.abs(rs[j].x-rs[i].x)<7&&R()<.5)hit(j,i,'Die Druckwelle wirft '+F[j].name+' um.','blast',1)}
+  // der nächste laufende Starter hinter i, höchstens w Meter
+  function behind(i,w){let b=-1,g0=w;for(let j=0;j<n;j++){const g=rs[i].x-rs[j].x;if(j!==i&&g>0&&g<g0&&!down(rs[j])&&rs[j].st!==1){g0=g;b=j}}return b}
   const hu=has('husky'),huN=hu>=0?F[hu].name:'';
   say(bod?'Das Feld ist unterwegs. Der Boden ist '+BODEN[bod].name+'.':'Das Feld ist unterwegs.',-1,0,1,'start');
   while(order.length<n&&t<150){
@@ -65,32 +78,57 @@ function simulate(seed,rec,bod,field){
       if(r.fin>=0){v*=.6}
       else{
         if(r.st===0&&t>3){
-          if(id==='pferd'&&i===li&&r.x>150&&p(.035)){r.st=1;r.T=3.5+R()*2.5;say(d.name+' führt und legt sich hin. Er schläft.',i,2.6,0,'sleep')}
+          if(id==='pferd'&&i===li&&r.x>150&&p(.035)){r.st=1;r.T=3.5+R()*2.5;r.hs=[];say(d.name+' führt und legt sich hin. Er schläft.',i,2.6,0,'sleep')}
           else if((id==='pferd'||id==='aufrecht')&&!r.jub&&i===li&&r.x>L-80&&r.x<L-35&&lx-l2>9&&p(.16)){r.st=8;r.jub=true;r.T=1+R()*.6;say(id==='pferd'?d.name+' jubelt schon. Viel zu früh!':d.name+' reißt die Arme hoch. Er jubelt zu früh!',i,1.5,0,'jub')}
           else if(id==='alpaka'&&p(.015*z)){r.st=3;r.T=2+R()*1.5;say(d.name+' hat den Blumenschmuck entdeckt und frisst.',i,2.2,0,'eat')}
-          else if(id==='stier'&&p(.03*z)){r.st=4;r.T=4;say(d.name+' senkt den Kopf. Bitte alle zur Seite.',i,4,0,'charge');scare(i)}
+          else if(id==='stier'&&p(.03*z)){
+            // jeder achte Sturmlauf endet nach dem ersten Schritt im Gras, und wer dahinter läuft, fällt mit
+            if(R()<.125){r.st=2;r.T=2.5;say(d.name+' senkt den Kopf, stolpert über die eigenen Hufe und überschlägt sich.',i,2.4,0,'chargefail');scare(i);
+              const b=behind(i,7);if(b>=0)hit(b,i,F[b].name+' kann nicht mehr ausweichen und fällt über '+d.name+'.','trip')}
+            else{r.st=4;r.T=4;say(d.name+' senkt den Kopf. Bitte alle zur Seite.',i,4,0,'charge');scare(i)}}
           else if(id==='aufrecht'&&(rain&&p(.08)||bod===2&&p(.012))){r.st=2;r.T=2.2;say(rain?d.name+' rutscht auf dem nassen Gras aus.':d.name+' rutscht im tiefen Boden aus.',i,2,0,'slip');scare(i)}
-          else if(id==='aufrecht'&&p(.045*z)){r.st=7;r.T=1.8+R()*1.4;say(d.name+' hat sich umgedreht. Er läuft zurück.',i,2,0,'back')}
+          else if(id==='aufrecht'&&p(.045*z)){r.st=7;r.T=1.8+R()*1.4;r.hs=[];say(d.name+' hat sich umgedreht. Er läuft zurück.',i,2,0,'back')}
           else if(id==='kuh'&&!r.used&&t>6&&p(.026*(z>1?2.5:1))){r.used=true;
-            if(R()<.15){r.st=9;r.T=1+R()*.5;say('Zündung! Aber die Rakete zeigt in die falsche Richtung.',i,2.6,0,'rocketwrong')}
+            if(R()<.15){r.st=9;r.T=1+R()*.5;r.hs=[];say('Zündung! Aber die Rakete zeigt in die falsche Richtung.',i,2.6,0,'rocketwrong')}
             else{r.st=6;say('Zündung! Die Rakete von '+d.name+' brennt.',i,2.6,0,'rocket')}
             scare(i)}
-          else if(id==='husky'&&!howl&&!rain&&rain0<0&&t>5&&p(.006)){howl=true;rain0=t+1.5;rain1=rain0+10;say(d.name+' heult die Wolken an. Da zieht etwas auf.',i,1.8,0,'howl')}
+          else if(id==='husky'&&!howl&&!rain&&rain0<0&&t>5&&p(.006)){howl=true;rain0=t+1.5;rain1=rain0+10;say(d.name+' heult die Wolken an. Da zieht etwas auf.',i,1.8,0,'howl');
+            const w=has('wolf');if(w>=0&&rs[w].st===0&&rs[w].fin<0){rs[w].st=16;rs[w].T=1.8;say(F[w].name+' kann nicht anders und heult mit.',w,1.8,0,'howlalong',i)}}
           // Esel: bleibt stehen, bis ihn jemand überholt (höchstens 7 s)
-          else if(id==='esel'&&r.x>60&&p(.035*z)){r.st=10;r.T=7;r.ahead=rs.filter(q=>q.x>r.x).length;say(d.name+' bleibt einfach stehen. Er will nicht mehr.',i,2.2,0,'stubborn')}
+          else if(id==='esel'&&r.x>60&&p(.035*z)){r.st=10;r.T=7;r.hs=[];r.ahead=rs.filter(q=>q.x>r.x).length;say(d.name+' bleibt einfach stehen. Er will nicht mehr.',i,2.2,0,'stubborn')}
           // Hirsch: großer Satz nach vorn, jeder sechste geht schief
-          else if(id==='hirsch'&&p(.06)){if(R()<.17){r.st=2;r.T=2.2;say(d.name+' setzt zum Sprung an und landet auf der Nase.',i,2,0,'crash');scare(i)}else{r.st=11;r.T=.9}}
+          else if(id==='hirsch'&&p(.06)){if(R()<.17){
+              // misslungener Sprung: liegt jemand bis 6 m voraus, landet der Hirsch auf ihm
+              let tg=-1;for(let j=0;j<n;j++){const g=rs[j].x-r.x;if(j!==i&&g>0&&g<6&&!down(rs[j])){tg=j;break}}
+              r.st=2;r.T=2.2;
+              if(tg>=0){say(d.name+' springt zu kurz und landet mitten auf '+F[tg].name+'.',i,2.2,0,'landon',tg);scare(i);hit(tg,i,F[tg].name+' liegt unter '+d.name+'.','trip',1)}
+              else{say(d.name+' setzt zum Sprung an und landet auf der Nase.',i,2,0,'crash');scare(i)}}
+            else{r.st=11;r.T=.9}}
           // Reh: erschrickt auch ohne Grund
           else if(id==='reh'&&p(.016)){r.st=12;r.T=1.4+R()*1.2;say(d.name+' erschrickt vor einem Schmetterling.',i,1.8,0,'spook')}
           // Wolf: jagt den Vordermann, der flieht schneller als sonst
           else if(id==='wolf'&&p(.05)){let tg=-1,gx=1e9;for(let j=0;j<n;j++){const g=rs[j].x-r.x;if(j!==i&&rs[j].fin<0&&g>4&&g<20&&g<gx){gx=g;tg=j}}
-            if(tg>=0){const q=rs[tg];r.st=13;r.T=3;q.fl=3;if(STOP.includes(q.st)&&q.st!==2){q.st=0;q.T=0}
-              say(d.name+' hat '+F[tg].name+' im Visier. '+F[tg].name+' rennt um sein Leben.',i,2.2,0,'hunt',tg);scare(i)}}
+            if(tg>=0){const q=rs[tg],tid=F[tg].id;
+              // die Jagd geht schief, wenn sich der Wolf den Falschen aussucht
+              if(tid==='stier'&&q.st!==4&&!down(q)){q.st=4;q.T=4;r.st=0;say(d.name+' hat sich den Falschen ausgesucht. '+F[tg].name+' dreht sich um und senkt den Kopf.',tg,3,0,'bullturn',i);scare(tg)}
+              else if(tid==='esel'&&R()<.6){say(d.name+' kommt '+F[tg].name+' zu nah und kassiert einen Tritt.',i,2.2,0,'kick',tg);hit(i,tg,d.name+' liegt im Gras.','trip',1)}
+              else if(tid==='reh'&&q.st===0){q.st=12;q.T=2;say(F[tg].name+' rennt nicht weg, sondern erstarrt vor '+d.name+'. Der weiß jetzt auch nicht weiter.',tg,2,0,'freeze',i);r.st=12;r.T=1.2}
+              else{r.st=13;r.T=3;q.fl=3;if(STOP.includes(q.st)&&q.st!==2){q.st=0;q.T=0}
+                say(d.name+' hat '+F[tg].name+' im Visier. '+F[tg].name+' rennt um sein Leben.',i,2.2,0,'hunt',tg);scare(i)}}}
           else if(id==='shiba'&&p(.025*z)){r.st=14;r.T=1.8+R()*1.4;say(d.name+' hat eine Spur gefunden und schnüffelt.',i,2,0,'sniff')}
-          else if(id==='shiba'&&p(.018)){r.st=15;r.T=2.5;say(d.name+' bekommt seine fünf Minuten und rast los.',i,2.2,0,'zoom');scare(i)}
-        }else if(r.st===6&&p(.13)){r.st=2;r.T=3;say('Die Rakete ist explodiert. '+d.name+' geht zu Fuß weiter.',i,2.4,0,'explode');scare(i)}
-        else if(r.st===9&&r.T<=DT){r.st=2;r.T=3;say('Die Rakete ist explodiert. '+d.name+' sortiert sich neu.',i,2.4,0,'explode');scare(i)}
-        else if(r.st===10){const a=rs.filter(q=>q.x>r.x).length;if(a>r.ahead){const by=rs.findIndex((q,j)=>j!==i&&q.x>r.x&&q.x-r.x<3);r.st=0;r.T=0;say(by>=0?F[by].name+' zieht vorbei. Jetzt trottet '+d.name+' beleidigt hinterher.':d.name+' setzt sich wieder in Bewegung.',i,0,1,'unstubborn',by)}}
+          else if(id==='shiba'&&p(.018)){r.st=15;r.T=2.5;r.hs=[];say(d.name+' bekommt seine fünf Minuten und rast los.',i,2.2,0,'zoom');scare(i)}
+        }else if(r.st===6&&p(.13)){r.st=2;r.T=3;say('Die Rakete ist explodiert. '+d.name+' geht zu Fuß weiter.',i,2.4,0,'explode');scare(i);blast(i)}
+        else if(r.st===9&&r.T<=DT){r.st=2;r.T=3;say('Die Rakete ist explodiert. '+d.name+' sortiert sich neu.',i,2.4,0,'explode');scare(i);blast(i)}
+        // rückwärts fliegende Rakete: wer im Weg ist, wird umgemäht
+        else if(r.st===9)passBy(i,2,.6,j=>hit(j,i,'Die Rakete mäht '+F[j].name+' um.','rocketram'))
+        // rückwärts laufendes Pferd: Zusammenstoß mit dem, der von hinten kommt
+        else if(r.st===7)passBy(i,1.2,.1,j=>{if(hit(j,i,d.name+' läuft rückwärts in '+F[j].name+' hinein. Beide liegen.','headon')){r.st=2;r.T=2.2}})
+        // Zoomies im Zickzack: wer zu nah ist, wird umgerannt
+        else if(r.st===15)passBy(i,2.5,.2,j=>hit(j,i,d.name+' rennt im Zickzack '+F[j].name+' über den Haufen.','zoomhit'))
+        // schlafendes Pferd: der Nächste stolpert darüber
+        else if(r.st===1)passBy(i,1,.25,j=>hit(j,i,F[j].name+' stolpert über den schlafenden '+d.name+'.','pileup'))
+        // bockender Esel: tritt nach dem, der dicht vorbeiläuft; wird er überholt, trottet er weiter
+        else if(r.st===10){passBy(i,2,.15,j=>hit(j,i,d.name+' tritt aus und erwischt '+F[j].name+'.','kick'));const a=rs.filter(q=>q.x>r.x).length;if(a>r.ahead){const by=rs.findIndex((q,j)=>j!==i&&q.x>r.x&&q.x-r.x<3);r.st=0;r.T=0;say(by>=0?F[by].name+' zieht vorbei. Jetzt trottet '+d.name+' beleidigt hinterher.':d.name+' setzt sich wieder in Bewegung.',i,0,1,'unstubborn',by)}}
         if(STOP.includes(r.st))v=0;
         else if(r.st===4)v*=1.7;else if(r.st===7)v*=-.6;else if(r.st===6)v=70;else if(r.st===9)v=-35;
         else if(r.st===11)v*=1.8;else if(r.st===13)v*=1.45;else if(r.st===15)v*=1.9;
@@ -102,6 +140,7 @@ function simulate(seed,rec,bod,field){
           r.dr=dr}
         if(rain&&r.st!==6&&r.st!==9)v*=d.rain;
       }
+      if(r.st!==9&&r.st!==10&&r.st!==7&&r.st!==15&&r.st!==1&&r.st!==12&&r.hs.length)r.hs=[];
       const x0=r.x;r.x+=v*DT;
       // Zieldurchgang auf den Bruchteil des Zeitschritts genau, damit Zielfoto und Einlauf übereinstimmen
       if(r.fin<0&&r.x+nose(d,r.x)>=L){const a0=x0+nose(d,x0),a1=r.x+nose(d,r.x);r.fin=t-DT+DT*clamp((L-a0)/(a1-a0),0,1);r.st=0;r.T=0;cross.push(i)}
@@ -111,6 +150,10 @@ function simulate(seed,rec,bod,field){
       if(order.length===1){winT=rs[i].fin;say(F[i].name+' gewinnt!',i,0,3,'win')}
       else if(order.length===2&&rs[i].fin-winT<.2)say('Das war eng. '+F[i].name+' nur eine Nasenlänge dahinter.',i,0,3,'close');
     });
+    // Plötzliches Stehenbleiben: Wer im Windschatten klebt oder direkt hinter einem erstarrten Reh läuft, fährt auf
+    for(let i=0;i<n;i++){const r=rs[i],id=F[i].id;if(r.fin>=0)continue;
+      if(id==='fuchs'&&r.st===0&&r.dr>=0&&STOP.includes(rs[r.dr].st)&&rs[r.dr].x-r.x<2.5&&p(1.5))hit(i,r.dr,F[i].name+' klebt zu dicht an '+F[r.dr].name+' und fährt auf.','rearend');
+      if(id==='reh'&&r.st===12)passBy(i,1.5,.15,j=>{if(rs[j].x<r.x)hit(j,i,F[j].name+' rennt in das erstarrte '+F[i].name+'.','bump')})}
     for(let e=0;e<n;e++){const b=rs[e];if(F[e].id!=='stier'||b.st!==4||b.fin>=0)continue;
       for(let j=0;j<n;j++){const r=rs[j];
         if(j!==e&&r.fin<0&&r.st!==2&&r.st!==6&&r.st!==9&&r.st!==11&&Math.abs(r.x-b.x)<5){r.st=2;r.T=2.2;say(F[e].name+' räumt '+F[j].name+' ab.',j,0,2,'knock',e);scare(j)}}}

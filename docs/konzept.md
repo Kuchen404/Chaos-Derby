@@ -38,11 +38,35 @@ Das Rennen wird im Hintergrund komplett berechnet (`simulate(seed, true)` in `js
 | Husky heult | Husky, nur wenn es noch nicht geregnet hat | 1,5 s später regnet es 10 s lang |
 | bockt | Esel | bleibt stehen, bis ihn jemand überholt, höchstens 7 s |
 | springt | Hirsch | 0,9 s lang 1,8-faches Tempo; jeder sechste Sprung endet als Sturz (purzelt); über einen Stier im Sturmlauf springt er hinweg |
-| erstarrt | Reh, wenn bis 18 m entfernt etwas Lautes passiert (Sturmlauf, Rakete, Sturz, Jagd, Zoomies), sonst selten ohne Grund | steht 1,4 bis 2,6 s |
+| erstarrt | Reh, wenn bis 18 m entfernt etwas Lautes passiert (Sturmlauf, Rakete, Sturz, Jagd, Zoomies), sonst selten ohne Grund; auch wenn der Wolf es jagt | steht 1,4 bis 2,6 s |
 | Windschatten | Fuchs, bis 6 m hinter einem laufenden Starter | 1,12-faches Tempo, auf den letzten 150 m 1,3-faches |
 | jagt | Wolf, wenn ein Starter 4 bis 20 m vor ihm läuft | 3 s lang 1,45-faches Tempo; der Gejagte rennt 3 s lang mit 1,25-fachem Tempo und wacht dafür auch aus Schlaf oder Bocken auf |
 | schnüffelt | Shiba Inu | steht 1,8 bis 3,2 s |
 | Zoomies | Shiba Inu | 2,5 s lang 1,9-faches Tempo im Zickzack |
+| heult mit | Wolf, wenn der Husky heult | steht 1,8 s |
+
+### Fehlschläge mit Kettenreaktion
+
+Manche Eigenheiten gehen schief und reißen andere mit. Bedingung ist immer, dass der andere Starter nah genug dran ist; wer schon liegt, fliegt oder im Ziel ist, wird nicht noch einmal getroffen, und jeder Starter wird pro Ereignis höchstens einmal geprüft. Wer umfällt, purzelt (steht etwa 2 s); dicht dahinter (bis 2,5 m) fällt mit 35 % noch einer drüber, aber nur einmal pro Kette. Im Schnitt passiert so etwas gut einmal pro Rennen.
+
+| Art (`k`) | Was passiert | Bedingung |
+|---|---|---|
+| chargefail | Stier stolpert im Sturmlauf selbst, wer dahinter läuft, fällt drüber | jeder achte Sturmlauf, Hintermann bis 7 m |
+| rocketram | Rakete verkehrt herum mäht Starter um | bis 2 m, 60 % |
+| blast | Druckwelle der explodierenden Rakete | bis 7 m, 50 % |
+| kick | bockender Esel tritt aus | bis 2 m, 15 %; jagt der Wolf den Esel, kassiert er mit 60 % einen Tritt |
+| headon | Pferd auf zwei Beinen läuft rückwärts in einen Starter, beide liegen | bis 1,2 m, 10 % |
+| zoomhit | Shiba rennt im Zickzack jemanden um | bis 2,5 m, 20 % |
+| pileup | Starter stolpert über das schlafende Pferd | bis 1 m, 25 % |
+| landon | Hirsch springt zu kurz und landet auf einem Starter | gescheiterter Sprung, Starter bis 6 m voraus |
+| bullturn | Wolf jagt den Stier, der dreht um und stürmt los | Wolf wählt den Stier |
+| freeze | Wolf jagt das Reh, das erstarrt, der Wolf weiß nicht weiter | Wolf wählt das Reh |
+| howlalong | Wolf heult mit, wenn der Husky heult | Wolf im Feld und läuft |
+| rearend | Fuchs im Windschatten fährt auf, wenn der Vordermann stehen bleibt | bis 2,5 m |
+| bump | Starter rennt in das erstarrte Reh | von hinten, bis 1,5 m, 15 % |
+| trip | zweiter Starter fällt über den ersten | Folgeglied jeder Kette |
+
+Jeder Sturz in einer Kette ist laut und kann das Reh erschrecken.
 
 ### Bahnzustand
 
@@ -64,20 +88,20 @@ Aktuelle Siegchancen (`node tools/odds.js`, 6000 Rennen mit ausgelostem Feld und
 
 | Nr | Starter | gesamt | gut | weich | schwer |
 |---|---|---|---|---|---|
-| 1 | Sekundenschlaf (Pferd) | 18 % | 23 % | 15 % | 12 % |
-| 2 | Hals über Kopf (Alpaka) | 16 % | 15 % | 18 % | 18 % |
-| 3 | Dampfwalze (Stier) | 15 % | 12 % | 16 % | 19 % |
-| 4 | Schmuddelwetter (Husky) | 15 % | 9 % | 16 % | 30 % |
-| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 18 % | 20 % | 16 % | 14 % |
-| 6 | Spätzünder (Kuh) | 14 % | 14 % | 13 % | 14 % |
-| 7 | Sturkopf (Esel) | 16 % | 13 % | 18 % | 18 % |
-| 8 | Platzhirsch (Hirsch) | 16 % | 19 % | 15 % | 10 % |
-| 9 | Schreckhaft (Reh) | 17 % | 23 % | 13 % | 6 % |
-| 10 | Schlitzohr (Fuchs) | 19 % | 18 % | 21 % | 21 % |
-| 11 | Hetzjagd (Wolf) | 18 % | 12 % | 22 % | 28 % |
-| 12 | Schnüffelnase (Shiba Inu) | 19 % | 22 % | 17 % | 12 % |
+| 1 | Sekundenschlaf (Pferd) | 17 % | 21 % | 13 % | 13 % |
+| 2 | Hals über Kopf (Alpaka) | 18 % | 16 % | 20 % | 18 % |
+| 3 | Dampfwalze (Stier) | 17 % | 15 % | 18 % | 22 % |
+| 4 | Schmuddelwetter (Husky) | 17 % | 10 % | 18 % | 31 % |
+| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 16 % | 19 % | 16 % | 11 % |
+| 6 | Spätzünder (Kuh) | 16 % | 16 % | 15 % | 15 % |
+| 7 | Sturkopf (Esel) | 15 % | 13 % | 17 % | 19 % |
+| 8 | Platzhirsch (Hirsch) | 17 % | 21 % | 16 % | 9 % |
+| 9 | Schreckhaft (Reh) | 17 % | 24 % | 11 % | 7 % |
+| 10 | Schlitzohr (Fuchs) | 16 % | 14 % | 18 % | 18 % |
+| 11 | Hetzjagd (Wolf) | 19 % | 13 % | 23 % | 27 % |
+| 12 | Schnüffelnase (Shiba Inu) | 16 % | 19 % | 14 % | 10 % |
 
-Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 30 %, Pferd auf zwei Beinen 20 %, Alpaka 14 %, Kuh 14 %, Stier 11 %, Husky 11 %. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
+Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 29 %, Pferd auf zwei Beinen 19 %, Kuh 16 %, Alpaka 15 %, Stier 11 %, Husky 11 %. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
 
 ## Wetten
 
@@ -87,7 +111,7 @@ Gewettet wird an einem gemeinsamen Bildschirm mit Spielgeld. Einer bedient das W
 - **Wettarten:** Sieg (Starter gewinnt), Platz (Starter wird Erster oder Zweiter) und Zweierwette (Erster und Zweiter in genau dieser Reihenfolge).
 - **Feste Quoten:** Alle drei kommen aus denselben Probeläufen mit 15 % Abzug, gerechnet für Boden und Feld des aktuellen Rennens. Das dauert nach „Neues Rennen“ einige Sekunden, das Wettbüro öffnet, sobald die Quoten stehen. Kommt ein neues Rennen („Neues Rennen“ oder Neuladen der Seite), gehen offene Wetten an die Kasse zurück, weil ihre Quoten für ein anderes Feld galten. Angezeigt wird eine Nachkommastelle, und genau diese Quote wird ausgezahlt. Sie gilt ab Abgabe der Wette. Obergrenze 99 für Sieg und Platz, 250 für die Zweierwette, Untergrenze 1,1.
 - **Ablauf:** Der Einsatz geht sofort von der Kasse ab, bis zum Start lässt sich eine Wette zurücknehmen. Mit dem Start schließt das Wettbüro. Nach dem Zieleinlauf wird einmal abgerechnet, eine Wiederholung zahlt nicht noch einmal aus. „Neues Rennen“ startet nicht mehr sofort, sondern öffnet zuerst das Wettbüro.
-- **Gegenprobe:** `node tools/odds.js` lost 40 Felder mit Boden aus, rechnet für jedes die Quoten und setzt dann in je 75 neuen Rennen auf jede Möglichkeit einen Taler. Ergebnis zuletzt: Sieg zahlt 0,86 je Taler aus, Platz 0,87, Zweierwette 0,82. Platz kann durch das Runden kleiner Quoten (Pferd auf gutem Boden 1,3) etwas unter 0,85 liegen, die Zweierwette durch seltene Einläufe und die Obergrenze. Für ein Partyspiel reicht das.
+- **Gegenprobe:** `node tools/odds.js` lost 40 Felder mit Boden aus, rechnet für jedes die Quoten und setzt dann in je 75 neuen Rennen auf jede Möglichkeit einen Taler. Ergebnis zuletzt: Sieg zahlt 0,86 je Taler aus, Platz 0,86, Zweierwette 0,83. Platz kann durch das Runden kleiner Quoten (Pferd auf gutem Boden 1,3) etwas unter 0,85 liegen, die Zweierwette durch seltene Einläufe und die Obergrenze. Für ein Partyspiel reicht das.
 
 ## Darstellung
 
@@ -131,5 +155,5 @@ Ein kostenpflichtiges Paket mit Giraffe, Elefant und Robbe in einheitlichem Stil
 ## Offen
 
 - **Wetten am Handy:** Wetten am eigenen Handy per QR-Code. Braucht einen kleinen Server; die Wettlogik in `js/bets.js` lässt sich dafür übernehmen. Ebenfalls offen: Totalisator statt fester Quoten, bei dem die Quote aus den Einsätzen der Runde entsteht.
-- **Mehr Abwechslung:** Bahnzustand, Zielgeraden-Ereignisse, zwölf Starter und wechselnde Felder sind umgesetzt (siehe oben). Noch offen: Fehlschläge, die andere Starter mitreißen; Wettbewerbe mit anderer Distanz (800 oder 1200 m), die eine Bahn bräuchten, deren Länge nicht fest in `scene.js` steht.
+- **Mehr Abwechslung:** Bahnzustand, Zielgeraden-Ereignisse, zwölf Starter und wechselnde Felder sind umgesetzt (siehe oben). Fehlschläge, die andere Starter mitreißen, sind ebenfalls drin. Noch offen: Wettbewerbe mit anderer Distanz (800 oder 1200 m), die eine Bahn bräuchten, deren Länge nicht fest in `scene.js` steht.
 - **Bekannte Schwächen:** Bei Schnitten auf einen Starter in einer hinteren Bahn läuft manchmal ein anderer Starter groß durchs Bild. Die Startnummer sehr großer Figuren wird in nahen Einstellungen oben angeschnitten.
