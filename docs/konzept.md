@@ -105,13 +105,24 @@ Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 28 %, Pferd auf zwei Be
 
 ## Wetten
 
-Gewettet wird an einem gemeinsamen Bildschirm mit Spielgeld. Einer bedient das Wettbüro unter dem Sendebild, die Runde sagt ihre Tipps an. Die Logik steht in `js/bets.js` (ohne Grafik, läuft auch in Node), die Bedienung in `js/betting.js`.
+Gewettet wird mit Spielgeld, entweder am eigenen Handy (siehe unten) oder am Wettbüro unter dem Sendebild, wo einer für die Runde die Tipps einträgt. Die Logik steht in `js/bets.js` (ohne Grafik, läuft auch in Node), die Bedienung in `js/betting.js`.
 
 - **Mitspieler:** Jeder trägt sich mit Namen ein und bekommt 100 Taler. Kassen und offene Wetten bleiben im Browser gespeichert, auch nach dem Neuladen. „Kasse zurücksetzen“ löscht alles.
 - **Wettarten:** Sieg (Starter gewinnt), Platz (Starter wird Erster oder Zweiter) und Zweierwette (Erster und Zweiter in genau dieser Reihenfolge).
 - **Feste Quoten:** Alle drei kommen aus denselben Probeläufen mit 15 % Abzug, gerechnet für Boden und Feld des aktuellen Rennens. Das dauert nach „Neues Rennen“ einige Sekunden, das Wettbüro öffnet, sobald die Quoten stehen. Kommt ein neues Rennen („Neues Rennen“ oder Neuladen der Seite), gehen offene Wetten an die Kasse zurück, weil ihre Quoten für ein anderes Feld galten. Angezeigt wird eine Nachkommastelle, und genau diese Quote wird ausgezahlt. Sie gilt ab Abgabe der Wette. Obergrenze 99 für Sieg und Platz, 250 für die Zweierwette, Untergrenze 1,1.
 - **Ablauf:** Der Einsatz geht sofort von der Kasse ab, bis zum Start lässt sich eine Wette zurücknehmen. Mit dem Start schließt das Wettbüro. Nach dem Zieleinlauf wird einmal abgerechnet, eine Wiederholung zahlt nicht noch einmal aus. „Neues Rennen“ startet nicht mehr sofort, sondern öffnet zuerst das Wettbüro.
 - **Gegenprobe:** `node tools/odds.js` lost 40 Felder mit Boden aus, rechnet für jedes die Quoten und setzt dann in je 75 neuen Rennen auf jede Möglichkeit einen Taler. Ergebnis zuletzt: Sieg zahlt 0,87 je Taler aus, Platz 0,86, Zweierwette 0,83. Platz kann durch das Runden kleiner Quoten (Pferd auf gutem Boden 1,3) etwas unter 0,85 liegen, die Zweierwette durch seltene Einläufe und die Obergrenze. Für ein Partyspiel reicht das.
+
+### Wetten am Handy
+
+Jeder kann mit dem eigenen Handy wetten. Das Rennen läuft trotzdem nur am Fernseher, damit alle zum Zuschauen zusammenkommen.
+
+- **Ablauf:** Im Wettbüro und klein unten rechts im Sendebild (solange die Wetten offen sind) steht ein QR-Code. Er öffnet `handy.html?raum=CODE` auf derselben Seite. Dort trägt man seinen Namen ein und sieht Kasse, Wettschein mit den Quoten, die eigenen Wetten und nach dem Rennen Einlauf und Abrechnung. Während des Rennens steht auf dem Handy nur „Das Rennen läuft! Schau auf den Fernseher.“
+- **Der Fernseher ist die Kasse:** Das Handy schickt nur Wünsche („10 Taler auf Sieg von Bahn 2“). Der Fernseher prüft sie mit `js/bets.js` wie jede Wette im Wettbüro, führt alle Kassen und rechnet ab. Handy-Spieler stehen in der Kasse am Fernseher mit dem Zusatz „Handy“. Eine Wette mit veralteten Quoten (inzwischen neues Rennen) wird abgelehnt, ebenso jede Wette nach dem Start.
+- **Wiedererkennen:** Das Handy merkt sich Namen und ein zufälliges Kennwort. Nach dem Neuladen oder wenn das Handy eingeschlafen war, bekommt es dieselbe Kasse zurück. Einen Namen, den schon ein anderes Handy nutzt, kann man nicht nehmen. Wer schon am Fernseher eingetragen ist, kann seine Kasse einmal aufs Handy holen.
+- **Verbindung:** Handy und Fernseher reden direkt miteinander (WebRTC über die Bibliothek PeerJS, `vendor/peerjs.min.js`). Für den Verbindungsaufbau braucht es einen Vermittlungsserver; das ist der kostenlose öffentliche Server von PeerJS (0.peerjs.com). Er sieht nur, dass sich zwei Geräte finden wollen, nicht die Wetten. Wenn er ausfällt, können keine neuen Handys dazukommen; das Wettbüro am Fernseher funktioniert weiter. Der Raumcode bleibt im Browser des Fernsehers gespeichert, damit der QR-Code nach dem Neuladen gleich bleibt.
+- Code: `js/remote.js` (Fernseher), `js/handy.js` und `handy.html` (Handy), `js/link.js` (gemeinsam). QR-Code: `vendor/qrcode.js` (MIT).
+- **Prüfen:** `node tools/handy-test.js` startet einen eigenen PeerJS-Server und spielt mit einem Fernseher und zwei Handys im Browser einen Durchgang: Anmelden, Wetten, Ablehnungen, Zurücknehmen, Neuladen, Rennen, Abrechnung, neues Rennen.
 
 ## Darstellung
 

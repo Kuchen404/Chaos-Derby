@@ -12,7 +12,7 @@ function renderBets(){
   const sel=$('bp').value;
   $('bp').innerHTML=book.players.map((p,k)=>'<option value="'+k+'">'+esc(p.name)+'</option>').join('');
   if(sel&&book.players[sel])$('bp').value=sel;
-  $('players').innerHTML=book.players.length?book.players.map(p=>'<li><span>'+esc(p.name)+'</span><b>'+p.cash+'</b></li>').join(''):'<li class="empty">Noch niemand dabei. Jeder startet mit '+START_CASH+' Talern.</li>';
+  $('players').innerHTML=book.players.length?book.players.map(p=>'<li><span>'+esc(p.name)+(typeof remote!=='undefined'&&remote.online(p.name)?' <small class="ph">Handy</small>':'')+'</span><b>'+p.cash+'</b></li>').join(''):'<li class="empty">Noch niemand dabei. Jeder startet mit '+START_CASH+' Talern.</li>';
   $('slips').innerHTML=book.slips.length?book.slips.map((s,k)=>'<li><span class="who">'+esc(book.players[s.p].name)+'</span><span class="what">'+slipText(s)+'</span><span class="n">'+s.stake+' × '+fmtQ(s.q)+'</span>'+(betsOpen?'<button class="x" data-k="'+k+'" aria-label="Wette zurücknehmen">×</button>':'')+'</li>').join(''):'<li class="empty">'+(betsOpen?'Noch keine Wetten für dieses Rennen.':'Keine Wetten in diesem Rennen.')+'</li>';
   $('slips').hidden=!!lastRes&&!book.slips.length;$('result').hidden=!lastRes;
   if(lastRes)$('result').innerHTML='<h3>Abrechnung</h3><ul>'+(lastRes.length?lastRes.map(r=>'<li class="'+(r.win?'won':'lost')+'"><span class="who">'+esc(book.players[r.p].name)+'</span><span class="what">'+slipText(r)+'</span><span class="n">'+(r.win?'+'+r.win:'0')+'</span></li>').join(''):'<li class="empty">Es wurde nicht gewettet.</li>')+'</ul>';
@@ -22,6 +22,7 @@ function renderBets(){
   $('betstate').textContent=!Q?'Quoten werden berechnet …':betsOpen?'Wetten offen':'Wetten geschlossen';
   $('betstate').className='pill'+(betsOpen&&Q?' open':'');
   slipPreview();
+  if(typeof remote!=='undefined')remote.push();   // Handys auf denselben Stand bringen (js/remote.js)
 }
 // Neues Feld: Starterauswahl neu füllen, die Bahn (0…5) bleibt als Wert
 function fieldBets(){

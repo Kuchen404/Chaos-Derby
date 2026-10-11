@@ -28,6 +28,7 @@
       <div class="strip" id="strip"><div class="rail" id="rail"></div><div id="rest">noch 1000 m</div></div>
       <div id="slow" hidden>ZEITLUPE</div>
       <div class="intro" id="intro" aria-hidden="true"><span class="nr" id="inr"></span><div class="itext"><div class="ikind" id="ikind"></div><div class="iname" id="iname"></div><div class="itrait" id="itrait"></div></div><div class="iq"><span>Quote</span><b id="iq">…</b></div></div>
+      <div class="tvqr" id="tvqr" hidden><div id="tvqrc"></div><span>Mit dem Handy wetten</span></div>
       <div class="load" id="load" aria-labelledby="lh">
         <div class="lhead"><span class="ltag" id="lh">Gleich geht es los</span><span id="lmsg">Die Starter werden in die Boxen geführt.</span><b id="lpct">0 %</b></div>
         <div class="ltrack" id="ltrack" role="progressbar" aria-label="Ladefortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="lfin"></div></div>
@@ -54,6 +55,10 @@
         <ul class="list" id="players"></ul>
         <form class="row" id="addp"><input id="pname" maxlength="16" placeholder="Name" aria-label="Name des Mitspielers" autocomplete="off"><button>Mitspielen</button></form>
         <button type="button" class="link" id="resetp">Kasse zurücksetzen</button>
+        <div class="handy" id="handy" hidden>
+          <div class="qr" id="qr"></div>
+          <div><b>Am Handy wetten</b><p>QR-Code scannen oder <a id="hurl" target="_blank" rel="noopener"></a> öffnen<span id="hon" hidden>, Raum <b id="hcode"></b></span>. Das Rennen läuft nur hier.</p><p class="hmsg" id="hmsg"></p></div>
+        </div>
       </div>
       <form class="card slip" id="slip">
         <h3>Wettschein</h3>
@@ -109,6 +114,10 @@
 <script src="js/sfx.js?v=dev"></script>
 <script src="js/ceremony.js?v=dev"></script>
 <script src="js/betting.js?v=dev"></script>
+<script src="vendor/peerjs.min.js?v=dev"></script>
+<script src="vendor/qrcode.js?v=dev"></script>
+<script src="js/link.js?v=dev"></script>
+<script src="js/remote.js?v=dev"></script>
 <script src="js/parade.js?v=dev"></script>
 <script src="js/main.js?v=dev"></script>
 </body>
