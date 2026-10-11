@@ -5,21 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Chaos-Derby 3D</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=DM+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=dev">
 </head>
-<body class="loading">
-<div class="load" id="load" role="dialog" aria-modal="true" aria-labelledby="lh">
-  <div class="lbox">
-    <div class="eyebrow">Gleich geht es los</div>
-    <h1 id="lh">Chaos-Derby 3D</h1>
-    <p class="lmsg">Die Starter werden in die Boxen geführt.</p>
-    <div class="lbar" role="progressbar" aria-label="Ladefortschritt"><div id="lbar"></div></div>
-    <div class="lrow"><ul id="lparts"></ul><span id="lpct">0 %</span></div>
-    <p class="err" id="lerr" role="alert" hidden></p>
-    <button class="primary" id="lgo" disabled>Lädt …</button>
-    <button type="button" class="link" id="lskip" hidden>Schon anfangen, der Kommentator kommt nach</button>
-  </div>
-</div>
+<body>
 <div class="wrap">
   <header>
     <div>
@@ -27,8 +15,8 @@
       <h1>Chaos-Derby 3D</h1>
     </div>
     <div class="controls">
-      <button class="primary" id="go">Rennen starten</button>
-      <button id="neu">Neues Rennen</button>
+      <button class="primary" id="go" disabled>Rennen starten</button>
+      <button id="neu" disabled>Neues Rennen</button>
       <button id="ton" aria-pressed="true" title="Kommentar vorlesen: Japanisch, Deutsch oder aus">Ton: Japanisch</button>
     </div>
   </header>
@@ -40,6 +28,12 @@
       <div class="strip" id="strip"><div class="rail" id="rail"></div><div id="rest">noch 1000 m</div></div>
       <div id="slow" hidden>ZEITLUPE</div>
       <div class="intro" id="intro" aria-hidden="true"><span class="nr" id="inr"></span><div class="itext"><div class="ikind" id="ikind"></div><div class="iname" id="iname"></div><div class="itrait" id="itrait"></div></div><div class="iq"><span>Quote</span><b id="iq">…</b></div></div>
+      <div class="load" id="load" aria-labelledby="lh">
+        <div class="lhead"><span class="ltag" id="lh">Gleich geht es los</span><span id="lmsg">Die Starter werden in die Boxen geführt.</span><b id="lpct">0 %</b></div>
+        <div class="ltrack" id="ltrack" role="progressbar" aria-label="Ladefortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="lfin"></div></div>
+        <div class="lfoot"><ul id="lparts"></ul><div class="lbtns"><button type="button" class="link" id="lskip" hidden>Ohne Kommentator anfangen</button><button class="primary" id="lgo" disabled>Lädt …</button></div></div>
+        <p class="lerr" id="lerr" role="alert" hidden></p>
+      </div>
       <div id="nogl" hidden>Dieser Browser kann die 3D-Ansicht nicht darstellen (WebGL fehlt).</div>
     </div>
     <div class="cer" id="cer" hidden>
@@ -99,21 +93,22 @@
   </div>
 </div>
 
-<script src="vendor/three.min.js"></script>
-<script src="vendor/GLTFLoader.js"></script>
-<script src="js/sim.js"></script>
-<script src="js/bets.js"></script>
-<script src="js/state.js"></script>
-<script src="js/loader.js"></script>
-<script src="js/figures.js"></script>
-<script src="js/scene.js"></script>
-<script src="js/director.js"></script>
-<script src="js/jikkyo.js"></script>
-<script src="js/voice.js"></script>
-<script src="js/sfx.js"></script>
-<script src="js/ceremony.js"></script>
-<script src="js/betting.js"></script>
-<script src="js/parade.js"></script>
-<script src="js/main.js"></script>
+<!-- ?v=dev ersetzt die Veröffentlichung (.github/workflows/pages.yml) durch den Commit, damit Browser keine alten Dateien mischen -->
+<script src="vendor/three.min.js?v=dev"></script>
+<script src="vendor/GLTFLoader.js?v=dev"></script>
+<script src="js/sim.js?v=dev"></script>
+<script src="js/bets.js?v=dev"></script>
+<script src="js/state.js?v=dev"></script>
+<script src="js/loader.js?v=dev"></script>
+<script src="js/figures.js?v=dev"></script>
+<script src="js/scene.js?v=dev"></script>
+<script src="js/director.js?v=dev"></script>
+<script src="js/jikkyo.js?v=dev"></script>
+<script src="js/voice.js?v=dev"></script>
+<script src="js/sfx.js?v=dev"></script>
+<script src="js/ceremony.js?v=dev"></script>
+<script src="js/betting.js?v=dev"></script>
+<script src="js/parade.js?v=dev"></script>
+<script src="js/main.js?v=dev"></script>
 </body>
 </html>

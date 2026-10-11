@@ -109,9 +109,11 @@ function oddsLoop(){
   if(count(TL[k],250))oddsFinished(k);else oddsProgress(k,TL[k].N/ODDS_N);
   setTimeout(oddsLoop,0);
 }
+// Versionsanhang der Seite (?v=…), damit die Helfer dieselbe sim.js rechnen wie die Seite und keine alte aus dem Cache
+const VER=(()=>{const e=document.querySelector('script[src*="js/main.js"]');const q=e&&e.getAttribute('src').split('?')[1];return q?'?'+q:''})();
 function mkPool(){
   if(typeof Worker==='undefined')return null;
-  try{const n=Math.max(1,Math.min(4,(navigator.hardwareConcurrency||2)-1));return Array.from({length:n},()=>new Worker('js/odds-worker.js'))}catch(e){return null}
+  try{const n=Math.max(1,Math.min(4,(navigator.hardwareConcurrency||2)-1));return Array.from({length:n},()=>new Worker('js/odds-worker.js'+VER))}catch(e){return null}
 }
 function oddsWorkers(k,bod,field){
   if(oddsJob)pool.forEach(w=>w.terminate()),pool=mkPool();   // altes Feld abbrechen, das neue hat Vorrang

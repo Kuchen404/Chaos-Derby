@@ -4,7 +4,11 @@ const SPH=new THREE.SphereGeometry(1,20,14),CYL=new THREE.CylinderGeometry(1,1,1
 const mats={};const mat=c=>mats[c]||(mats[c]=new THREE.MeshLambertMaterial({color:c}));
 function G(par,x,y,z){const g=new THREE.Group();g.position.set(x||0,y||0,z||0);if(par)par.add(g);return g}
 function P(geo,col,par,x,y,z,sx,sy,sz){const m=new THREE.Mesh(geo,typeof col==='string'?mat(col):col);m.position.set(x,y,z);m.scale.set(sx,sy,sz);m.castShadow=true;par.add(m);return m}
-function canvasTex(w,h,fn){const cv=document.createElement('canvas');cv.width=w;cv.height=h;fn(cv.getContext('2d'),w,h);return new THREE.CanvasTexture(cv)}
+// Beschriftete Texturen merken: Sind die Schriften beim Zeichnen noch nicht geladen, werden sie danach neu gezeichnet
+const TEXS=[];
+function canvasTex(w,h,fn){const cv=document.createElement('canvas');cv.width=w;cv.height=h;fn(cv.getContext('2d'),w,h);const t=new THREE.CanvasTexture(cv);TEXS.push({cv,fn,t});return t}
+function redrawTex(){for(const {cv,fn,t} of TEXS){const c=cv.getContext('2d');c.clearRect(0,0,cv.width,cv.height);fn(c,cv.width,cv.height);t.needsUpdate=true}}
+if(typeof document!=='undefined'&&document.fonts){document.fonts.ready.then(redrawTex);document.fonts.addEventListener&&document.fonts.addEventListener('loadingdone',redrawTex)}
 function jockey(par,x,y,z,col,s){
   const g=G(par,x,y,z);g.scale.setScalar(s||1);
   const tr=P(SPH,col,g,.05,.3,0,.17,.3,.17);tr.rotation.z=-.5;

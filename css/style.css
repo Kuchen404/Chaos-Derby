@@ -134,17 +134,27 @@ td.q2{color:var(--board-text)}
 .board{overflow-x:auto}
 @media (max-width:480px){.board{padding-inline:8px}th,td{padding-inline:3px}td.q{font-size:16px}.nr{width:22px;height:22px;font-size:11px}}
 
-/* Ladebildschirm: deckt die Seite ab, bis Modelle, Kommentator und Quoten da sind; der Klick auf „Los geht’s“ gibt zugleich den Ton frei */
-body.loading{overflow:hidden}
-.load{position:fixed;inset:0;z-index:50;background:var(--bg);display:grid;place-items:center;padding:16px}
-.lbox{width:min(100%,540px);display:flex;flex-direction:column;gap:12px}
-.lmsg{margin:0;color:var(--muted)}
-.lbar{height:14px;border-radius:7px;background:var(--line);overflow:hidden}
-#lbar{height:100%;width:0;background:var(--turf);transition:width .25s}
-.lrow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-#lparts{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted)}
+/* Ladeanzeige im Sendebild: Mini-Rennen der Starter als Fortschrittsbalken, bis Modelle, Kommentator und Quoten da sind.
+   Der Klick auf „Los geht’s“ gibt zugleich den Ton frei und startet die Vorstellung. */
+.load{position:absolute;inset:0;z-index:5;background:var(--board);color:var(--board-text);display:flex;flex-direction:column;gap:clamp(6px,2.2%,16px);padding:clamp(10px,4%,36px) clamp(12px,4%,40px);box-sizing:border-box}
+.lhead{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px}
+.ltag{font:500 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--board-fg)}
+#lmsg{flex:1;min-width:0;font-size:clamp(13px,1.9vw,17px)}
+#lpct{font:500 clamp(18px,3.4vw,32px) var(--mono);color:var(--board-fg);font-variant-numeric:tabular-nums}
+.ltrack{position:relative;flex:1;min-height:0;border-radius:6px;overflow:hidden;border-block:3px solid #f4f4f4;
+  background:repeating-linear-gradient(90deg,#4aa655 0 40px,#3f9a4b 40px 80px)}
+.lfin{position:absolute;top:0;bottom:0;left:calc(92% + 6px);width:12px;background:conic-gradient(#111 25%,#fff 0 50%,#111 0 75%,#fff 0) 0 0/12px 12px}
+.ldot{--d:clamp(18px,5vw,48px);position:absolute;width:var(--d);height:var(--d);margin:calc(var(--d)/-2) 0 0 calc(var(--d)/-2);border-radius:50%;border:2px solid #fff;box-sizing:border-box;
+  display:grid;place-items:center;font:400 calc(var(--d)*.46) var(--display);box-shadow:0 2px 0 rgba(0,0,0,.25);animation:gallop .38s ease-in-out infinite alternate}
+@keyframes gallop{from{transform:translateY(-14%) rotate(-6deg)}to{transform:translateY(14%) rotate(6deg)}}
+@media (prefers-reduced-motion:reduce){.ldot{animation:none}}
+.lfoot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px}
+#lparts{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:2px 14px;font-size:13px;color:var(--board-dim)}
 #lparts li{display:flex;gap:6px}
-#lparts b{font:500 13px var(--mono);font-variant-numeric:tabular-nums}
-#lparts li.ok b{color:var(--turf)}
-#lpct{flex:none;font:500 15px var(--mono);font-variant-numeric:tabular-nums}
-.lbox .primary{align-self:flex-start;min-width:12em}
+#lparts b{font:500 13px var(--mono);font-variant-numeric:tabular-nums;color:var(--board-text)}
+#lparts li.ok b{color:#6fd27c}
+.lbtns{display:flex;align-items:center;gap:14px;margin-left:auto}
+.load button.primary{min-width:9em}
+.load button.link{color:var(--board-dim)}
+.lerr{margin:0;font-size:13px;color:#ff8a8e}
+@media (max-width:560px){#lparts,#lmsg{display:none}.load{gap:6px;padding:8px 10px}.lfoot{flex-wrap:nowrap}.load button{padding:6px 10px;font-size:13px}.load button.primary{min-width:0}.ltrack{border-width:2px}}
