@@ -78,9 +78,9 @@ function mkModel(k){
     m.traverse(o=>{if(o.isMesh){o.castShadow=true;o.frustumCulled=false;o.material=Array.isArray(o.material)?o.material.map(conv):conv(o.material)}});
     f.inner.add(m);f.model=m;f.mixer=new THREE.AnimationMixer(m);f.act={};
     g.animations.forEach(a=>{const ac=f.mixer.clipAction(a);ac.play();ac.setEffectiveWeight(0);f.act[a.name]=ac});
-    f.bone={};['Back','Torso','Torso2','Neck1','Head',...FL,...FIK].forEach(n=>{f.bone[n]=m.getObjectByName(n)});
+    f.bone={};['Back','Torso','Torso2','Neck1','Neck2','Head','Tail1','Tail2','Tail3',...FL,...FIK].forEach(n=>{f.bone[n]=m.getObjectByName(n)});
     if(cfg.up){let sk;m.traverse(o=>{if(o.isSkinnedMesh)sk=o.skeleton});f.ikRel=[0,1].map(k=>ikRel(sk,f.bone[FL[2*k+1]],f.bone[FIK[k]]))}
-    if(gl&&race&&state!=='run'&&state!=='cer')frame(1,0);
+    if(gl&&race&&state!=='run'&&state!=='cer'&&!paraOn)frame(1,0);
   },modelError)).catch(modelError);
   label(f);
   return f}
@@ -103,9 +103,7 @@ function poseModel(f,x,st,sdt){
   if(A.Gallop_Jump)A.Gallop_Jump.time=cyc(f.jT||0,A.Gallop_Jump);
   for(const n in A)A[n].setEffectiveWeight(W[n]||0);
   // Eigene Zusatzdrehungen vom letzten Bild zurücknehmen, weil der Mixer unveränderte Werte nicht neu schreibt
-  const sv=f.sv||(f.sv={});for(const q in sv){B[q].position.copy(sv[q].p);B[q].quaternion.copy(sv[q].q);B[q].scale.copy(sv[q].s)}
-  f.mixer.update(0);
-  for(const q of id==='aufrecht'?['Torso','Neck1',...FL,...FIK]:['Torso','Neck1']){if(!B[q])continue;const o=sv[q]||(sv[q]={p:new THREE.Vector3(),q:new THREE.Quaternion(),s:new THREE.Vector3()});o.p.copy(B[q].position);o.q.copy(B[q].quaternion);o.s.copy(B[q].scale)}
+  boneReset(f);f.mixer.update(0);boneSave(f,id==='aufrecht'?['Torso','Neck1',...FL,...FIK]:['Torso','Neck1']);
   if(!idle){
     if(id==='aufrecht'){B.Torso.rotateX(UPA);B.Neck1.rotateX(UPN);
       // Vorderbeine angewinkelt und im Wechsel rudernd, statt steif nach unten zu hängen
@@ -114,7 +112,15 @@ function poseModel(f,x,st,sdt){
     if(id==='alpaka'){const kk=clamp((x-(L-90))/60,0,1)*(1-f.b);if(kk>0){B.Neck1.rotateX(NRA*kk);B.Neck1.scale.y=1+NST*kk}}
     if(id==='stier'&&f.ch>.01)B.Neck1.rotateX(HDA*f.ch);
   }
-  const up=f.cfg.up&&!idle,tb=B.Torso2||B.Torso;
+  seatJockey(f,f.cfg.up&&!idle);
+}
+// Eigene Zusatzdrehungen vom letzten Bild zurücknehmen (alle gemerkten Knochen) bzw. den Stand nach dem Mixer merken
+function boneReset(f){const B=f.bone,sv=f.sv||(f.sv={});for(const q in sv){B[q].position.copy(sv[q].p);B[q].quaternion.copy(sv[q].q);B[q].scale.copy(sv[q].s)}}
+function boneSave(f,list){const B=f.bone,sv=f.sv||(f.sv={});
+  for(const q of list){if(!B[q])continue;const o=sv[q]||(sv[q]={p:new THREE.Vector3(),q:new THREE.Quaternion(),s:new THREE.Vector3()});o.p.copy(B[q].position);o.q.copy(B[q].quaternion);o.s.copy(B[q].scale)}}
+// Jockey (und Rakete der Kuh) sitzen auf dem Rücken des Modells; up: Pferd auf zwei Beinen steht aufrecht
+function seatJockey(f,up){
+  const B=f.bone,tb=B.Torso2||B.Torso;
   tb.getWorldPosition(tmpV);f.inner.worldToLocal(tmpV);f.jock.position.copy(tmpV);
   if(up){f.jock.rotation.z=1.1;f.jock.position.x-=.5;f.jock.position.y-=.1}else{f.jock.rotation.z=0;f.jock.position.y+=.22;f.jock.position.x-=.25}
   if(f.rkH){B.Back.getWorldPosition(tmpV);f.inner.worldToLocal(tmpV);f.rkH.position.set(tmpV.x+.55,tmpV.y+.62,0);f.jock.position.set(tmpV.x+.45,tmpV.y+.82,0)}
@@ -123,7 +129,7 @@ function label(f){
   const d=f.d,top=f.V.top;
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:canvasTex(128,128,(c)=>{c.fillStyle=d.col;c.beginPath();c.arc(64,64,54,0,7);c.fill();c.lineWidth=9;c.strokeStyle='#fff';c.stroke();
     c.fillStyle=d.ink;c.font='70px "Dela Gothic One","Arial Black",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(d.nr,64,70)}),depthTest:false}));
-  s.scale.set(.85,.85,1);s.position.set(0,top,0);s.renderOrder=5;f.root.add(s);
+  s.scale.set(.85,.85,1);s.position.set(0,top,0);s.renderOrder=5;f.root.add(s);f.lbl=s;
   f.fx={};[[1,'Zzz'],[3,'mampf'],[7,'?!'],[2,'✶ ✶'],[8,'Jubel!'],[10,'Nö!'],[12,'!!'],[13,'Jagd!'],[14,'schnüff'],[15,'Zoomies!'],[16,'Auuu!']].forEach(q=>{
     const e=new THREE.Sprite(new THREE.SpriteMaterial({map:canvasTex(256,96,(c)=>{c.font='56px "Dela Gothic One","Arial Black",sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=10;c.strokeStyle='#17231a';c.strokeText(q[1],128,50);c.fillStyle='#fff';c.fillText(q[1],128,50)}),depthTest:false}));
     e.scale.set(1.9,.7,1);e.position.set(1.3,top+.05,0);e.renderOrder=5;e.visible=false;f.root.add(e);f.fx[q[0]]=e})}
