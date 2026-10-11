@@ -45,6 +45,15 @@ Das Rennen wird im Hintergrund komplett berechnet (`simulate(seed, true)` in `js
 - Jockeys, Rakete, Bahn und Tribünen bestehen aus Grundformen.
 - Kamera: Startfahrt vor dem Feld, mitfahrende Seitenkamera auf die Führungsgruppe, Schnitt auf den betroffenen Starter bei Ereignissen, feste Kamera an der Ziellinie mit Zeitlupe.
 
+## Gesprochener Kommentar
+
+- Die Kommentarzeilen werden zusätzlich vorgelesen, über die Sprachausgabe des Browsers (Web Speech API, `js/voice.js`). Das kostet keine Audiodateien und funktioniert ohne Server. Wie die Stimme klingt, hängt vom Gerät ab: Chrome und Edge bringen gute deutsche Stimmen mit, unter Linux ist die Auswahl oft dürftig.
+- Die Zeilen kommen schneller, als man sie sprechen kann. Jede Zeile bekommt deshalb in der Simulation ein Gewicht (`p`): 3 für den Zieleinlauf, 2 für Ereignisse, 1 für Führungswechsel und Ähnliches. Es wartet höchstens eine Zeile; eine neue mit mindestens gleichem Gewicht verdrängt sie, und was zu lange gewartet hat, fällt weg. Der Sieg unterbricht alles, danach kommt nur noch das Ergebnis.
+- Gegen Ende spricht die Stimme schneller und höher.
+- Längere Pausen füllt die Wiedergabe mit dem Stand an der Spitze („X führt mit 12 Metern vor Y“). Diese Sätze entstehen aus den Positionen beim Abspielen und stehen nicht im Textverlauf.
+- Der Ton lässt sich über „Ton: an/aus“ abschalten; die Wahl merkt sich der Browser.
+- Nicht umgesetzt: eigene Sprachaufnahmen oder eine KI-Stimme. Beides klänge besser, bräuchte aber Audiodateien pro Satz und Starter oder einen Dienst im Netz.
+
 ## Warum diese Tiere
 
 Das ursprüngliche Feld bestand aus Pferd, Giraffe, Elefant, Robbe, Pferd auf zwei Beinen und Schildkröte mit Rakete. Das kostenlose Modellpaket von Quaternius enthält davon nur das Pferd. Statt Modelle zuzukaufen, wurde das Feld an das Paket angepasst: Alpaka statt Giraffe, Stier statt Elefant, Husky statt Robbe, Kuh statt Schildkröte. Die Regeln blieben gleich.
@@ -57,6 +66,5 @@ Ein kostenpflichtiges Paket mit Giraffe, Elefant und Robbe in einheitlichem Stil
 
 - **Wetten:** Entweder ein gemeinsamer Bildschirm mit Spielgeld, bei dem einer die Tipps einträgt, oder Wetten am eigenen Handy per QR-Code. Die zweite Variante braucht einen kleinen Server. Als Wettarten reichen Sieg, Platz und Zweierwette. Alternative zu festen Quoten: Totalisator, bei dem die Quote aus den Einsätzen der Runde entsteht.
 - **Mehr Abwechslung:** weitere Starter und Ereignisse, wechselnde Felder pro Rennen, Ereignisse, die gezielt auf die Zielgerade fallen.
-- **Kommentar als Sprache** statt nur als Text.
 - **Zielfoto** und Siegerehrung nach dem Rennen.
 - **Bekannte Schwächen:** Die Vorderbeine des aufrechten Pferds hängen steif nach unten. Die Kameraregie wurde nur an Standbildern geprüft.

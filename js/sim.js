@@ -16,7 +16,8 @@ function simulate(seed,rec){
   const R=rng(seed), rs=RUN.map(()=>({x:0,st:0,T:0,n:0,fin:-1,used:false}));
   const order=[],frames=[],ev=[]; let t=0,lead=-1,leadT=0,m200=false,stretch=false,winT=-1,wasRain=false;
   const rain0=R()<.45?8+R()*20:-1, rain1=rain0+10;
-  const say=(s,i,cut)=>{if(rec)ev.push({t,s,i,cut})};
+  // p: Gewicht für den gesprochenen Kommentar, 3 = Zieleinlauf, 2 = Ereignis, 1 = Rest
+  const say=(s,i,cut,p)=>{if(rec)ev.push({t,s,i,cut,p:p||(cut?2:1)})};
   const p=h=>R()<h*DT;
   say('Das Feld ist unterwegs.');
   while(order.length<6&&t<150){
@@ -44,16 +45,16 @@ function simulate(seed,rec){
       r.x+=v*DT;
       if(r.fin<0&&r.x+nose(i,r.x)>=L){
         r.fin=t;r.st=0;r.T=0;order.push(i);
-        if(order.length===1){winT=t;say(d.name+' gewinnt!')}
-        else if(order.length===2&&t-winT<.2)say('Das war eng. '+d.name+' nur eine Nasenlänge dahinter.');
+        if(order.length===1){winT=t;say(d.name+' gewinnt!',i,0,3)}
+        else if(order.length===2&&t-winT<.2)say('Das war eng. '+d.name+' nur eine Nasenlänge dahinter.',i,0,3);
       }
     }
     const e=rs[2];
     if(e.st===4&&e.fin<0)for(let j=0;j<6;j++){const r=rs[j];
-      if(j!==2&&r.fin<0&&r.st!==2&&r.st!==6&&Math.abs(r.x-e.x)<5){r.st=2;r.T=2.2;say('Dampfwalze räumt '+RUN[j].name+' ab.')}}
+      if(j!==2&&r.fin<0&&r.st!==2&&r.st!==6&&Math.abs(r.x-e.x)<5){r.st=2;r.T=2.2;say('Dampfwalze räumt '+RUN[j].name+' ab.',j,0,2)}}
     if(!order.length&&t>4&&li!==lead&&t-leadT>2.5){say(RUN[li].name+(lead<0?' führt das Feld an.':' übernimmt die Führung.'));lead=li;leadT=t}
-    if(!m200&&lx>=L-200){m200=true;say('Noch 200 Meter.')}
-    if(!stretch&&rs[1].fin<0&&rs[1].x>=L-90){stretch=true;say('Hals über Kopf streckt den Hals nach vorn.')}
+    if(!m200&&lx>=L-200){m200=true;say('Noch 200 Meter.',-1,0,2)}
+    if(!stretch&&rs[1].fin<0&&rs[1].x>=L-90){stretch=true;say('Hals über Kopf streckt den Hals nach vorn.',1,0,2)}
     if(rec)frames.push({x:rs.map(r=>r.x),s:rs.map(r=>r.st),rain});
     t+=DT;
   }
