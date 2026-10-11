@@ -78,7 +78,8 @@ const voice=(()=>{
       const mm=p>=3&&l.k!=='einlauf'?1:m;
       let s=l.s,useJa=false,clips=null;
       if(tape())clips=jikkyo.clips(l,mm,has);
-      else if(jpSpeech()){const j=jikkyo.text(l,mm);if(j){s=j;useJa=true}}
+      // ohne passende Aufnahme (etwa für neue Starter) spricht die japanische Stimme des Browsers, sonst die deutsche
+      if(!clips&&(jpSpeech()||tape()&&ja)){const j=jikkyo.text(l,mm);if(j){s=j;useJa=true}}
       if(!clips&&(!sy||!s))return;
       const line={s,p,at:performance.now(),hot:Math.max(0,Math.min(1,(prog-.73)/.27)),m:mm,ja:useJa,clips};
       if(p>=3&&!(cur&&cur.p>=3)){final=true;wait=null;if(cur)stopAll();cur=null;line.hot=1;if(l.k==='einlauf')line.m=.25;speak(line);return}

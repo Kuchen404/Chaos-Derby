@@ -6,7 +6,11 @@ Die Idee ist von der japanischen DVD-Reihe „Japan World Cup“ inspiriert. Fig
 
 ## Stand
 
+<<<<<<< HEAD
+- **3D-Rennen** (`index.html`): zwölf Starter als Tiermodelle mit Skelett, pro Rennen ein ausgelostes Feld von sechs, Kameraregie mit Schnitten auf die Ereignisse, Zeitlupe im Ziel, Zielfoto und Siegerehrung auf dem Podest, Live-Kommentar als Text und als Sprachausgabe des Browsers, Quotentafel.
+=======
 - **3D-Rennen** (`index.html`): sechs Starter als Tiermodelle mit Skelett, Kameraregie mit Schnitten auf die Ereignisse, Zeitlupe im Ziel, Zielfoto und Siegerehrung auf dem Podest, Live-Kommentar als Text und gesprochen von einem japanischen Sprecher, der im Rennverlauf immer mehr abdreht (wahlweise deutsch), Quotentafel.
+>>>>>>> origin/main
 - **2D-Rennen** (`classic/index.html`): die erste, flache Fassung in Seitenansicht. Sie zeigt noch das alte Starterfeld (Giraffe, Elefant, Robbe, Schildkröte) und wird nicht weiterentwickelt.
 - **Wetten** am gemeinsamen Bildschirm mit Spielgeld: Mitspieler anlegen, Sieg, Platz oder Zweierwette zu festen Quoten setzen, nach dem Rennen wird ausgezahlt. Wetten am Handy fehlt noch.
 - **Bahnzustand:** Vor jedem Rennen wird der Boden ausgelost (gut, weich, schwer). Quoten und Wetten gelten für diesen Boden.
@@ -37,6 +41,14 @@ Das Spiel läuft ohne Internet. Nur die Schriften kommen von Google Fonts; ohne 
 | 4 | Schmuddelwetter | Husky | trottet lustlos, außer es regnet |
 | 5 | Aufrechter Gang | Pferd auf zwei Beinen | der Schnellste, läuft manchmal zurück |
 | 6 | Spätzünder | Kuh mit Rakete | trottet, bis die Rakete zündet |
+| 7 | Sturkopf | Esel | bleibt stur stehen, bis ihn einer überholt |
+| 8 | Platzhirsch | Hirsch | springt in großen Sätzen, landet nicht immer |
+| 9 | Schreckhaft | Reh | sehr schnell, erstarrt aber bei jedem Krach |
+| 10 | Schlitzohr | Fuchs | hängt sich in den Windschatten und zieht spät vorbei |
+| 11 | Hetzjagd | Wolf | jagt den Vordermann, der rennt dann um sein Leben |
+| 12 | Schnüffelnase | Shiba Inu | schnüffelt herum, bekommt dann seine fünf Minuten |
+
+Pro Rennen laufen sechs davon, ausgelost vor jedem Rennen.
 
 ## Aufbau
 
@@ -56,7 +68,7 @@ Der wichtigste Grundsatz: **erst simulieren, dann zeigen.** Ein Rennen wird voll
 | `audio/` | die japanischen Ansagen als Aufnahmen, erzeugt mit VOICEVOX |
 | `js/betting.js` | Wettbüro auf der Seite: Mitspieler, Wettschein, Abrechnung |
 | `js/main.js` | Abspielen, Bedienung, Quotentafel |
-| `models/` | die fünf Tiermodelle, auf die benutzten Animationen verkleinert |
+| `models/` | die elf Tiermodelle, auf die benutzten Animationen verkleinert |
 | `vendor/` | Three.js r128 und der glTF-Lader |
 | `tools/jikkyo-render.js` | Aufnahmen des Kommentators neu erzeugen (braucht VOICEVOX und ffmpeg) |
 | `tools/odds.js` | Balance und Quoten prüfen: `node tools/odds.js 3000` |

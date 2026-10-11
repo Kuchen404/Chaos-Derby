@@ -35,7 +35,7 @@ function snapPhoto(){
   c.fillStyle='rgba(255,255,255,.9)';c.fillRect(W/2-1,0,2,H);
   c.font='500 20px "DM Mono",ui-monospace,monospace';c.textBaseline='top';
   const lbl=clock(w);c.fillStyle='rgba(16,25,15,.8)';c.fillRect(10,10,c.measureText(lbl).width+20,32);c.fillStyle='#ffc233';c.fillText(lbl,20,16);
-  const d=L-(xs[o[1]]+nose(o[1],xs[o[1]]));
+  const d=L-(xs[o[1]]+nose(RUN[o[1]],xs[o[1]]));
   $('photocap').textContent=RUN[o[0]].name+' gewinnt mit '+margin(d)+' vor '+RUN[o[1]].name+'.';
 }
 
@@ -44,7 +44,7 @@ function startCeremony(){
   state='cer';ct=0;podium.visible=true;rainFx.visible=false;frame.w=0;$('strip').hidden=true;
   bgc.copy(SKY);scene.fog.color.copy(bgc);sun.intensity=.7;hemi.intensity=.8;
   fig.forEach(f=>{f.spin.rotation.z=0;f.spin.position.y=f.c;for(const q in f.fx)f.fx[q].visible=false});
-  const k=fig[5];k.inner.rotation.z=0;k.inner.position.y=-k.c;k.flame.visible=false;
+  fig.forEach(k=>{if(k.flame){k.inner.rotation.z=0;k.inner.position.y=-k.c;k.flame.visible=false}});
   const o=race.order,fin=race.fin,w=fin[o[0]];
   $('podl').innerHTML=o.map((i,k)=>{const d=RUN[i],tm=fin[i]<0?'nicht im Ziel':k?'+'+(fin[i]-w).toFixed(2).replace('.',',')+' s':clock(w);
     return '<li'+(k<3?' class="top"':'')+'><span class="rk">'+(k+1)+'.</span><span class="nr" style="background:'+d.col+';color:'+d.ink+'">'+d.nr+'</span><span class="nm">'+d.name+'</span><span class="tm">'+tm+'</span></li>'}).join('');

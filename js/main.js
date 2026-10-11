@@ -19,7 +19,7 @@ function frame(dt,sdt){
 }
 
 /* ---------- Ablauf ---------- */
-const dots=RUN.map(d=>{const e=document.createElement('div');e.className='dot';e.textContent=d.nr;e.style.background=d.col;e.style.color=d.ink;$('rail').append(e);return e});
+const dots=RUN.map(()=>{const e=document.createElement('div');e.className='dot';$('rail').append(e);return e});
 function stamp(s){s=Math.floor(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
 function logLine(e){
   $('cap').textContent=e.s;const ol=$('log');if(ol.firstChild&&ol.firstChild.className==='empty')ol.textContent='';
@@ -64,16 +64,24 @@ function reset(){
   if(!gl)return;
   for(const p of parts){p.life=0;p.s.visible=false}
   trackMat.color.set(BODEN_COL[race.bod][0]);trackMat.emissive.set(BODEN_COL[race.bod][1]);
-  fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.dT=0;f.spin.rotation.z=0});
-  fig[5].rocket.color.set('#c9ced4');fig[5].cone.color.set('#d2232a');frame(1,0);
+  fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.jp=0;f.dT=0;f.spin.rotation.z=0;if(f.rocket){f.rocket.color.set('#c9ced4');f.cone.color.set('#d2232a')}});frame(1,0);
 }
 function start(){voice.unlock();reset();if(!gl)return;closeBets();state='run';$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
 // Jedes Rennen bekommt einen ausgelosten Bahnzustand; die Quoten werden für genau diesen Boden gerechnet
 const BODEN_COL=[['#ffffff','#000000'],['#c8c09a','#14100a'],['#8f7a58','#2e1e0c']];   // Rasenfarbe und Schlammton je Boden
-function fresh(){const b=drawBoden(Math.random());race=simulate((Math.random()*2**31)|0,true,b);race.bod=b;$('bod').textContent=BODEN[b].name;odds()}
+// Jedes Rennen bekommt außerdem ein ausgelostes Feld von 6 aus allen Startern
+function fresh(){
+  const b=drawBoden(Math.random()),f=drawField(Math.random);setField(f);
+  race=simulate((Math.random()*2**31)|0,true,b,f);race.bod=b;race.key=oddsKey(b,f);$('bod').textContent=BODEN[b].name;
+  if(gl)useField(f);showField();odds()}
+// Startnummern auf der Leiste, Quotentafel und Wettschein an das neue Feld anpassen
+function showField(){
+  RUN.forEach((d,i)=>{const e=dots[i];e.textContent=d.nr;e.style.background=d.col;e.style.color=d.ink});
+  $('tb').innerHTML=RUN.map((d,i)=>'<tr><td><span class="nr" style="background:'+d.col+';color:'+d.ink+'">'+d.nr+'</span></td><td><div class="name">'+d.name+'</div><div class="sub">'+d.kind+'. '+d.trait+'.</div></td><td class="n p" id="pc'+i+'">…</td><td class="n q" id="qt'+i+'">…</td><td class="n q2" id="qp'+i+'">…</td><td class="n" id="pl'+i+'">–</td></tr>').join('');
+  fieldBets();
+}
 function fit(){if(!gl)return;const w=$('view').clientWidth;renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.setSize(w,Math.round(w*9/16),false)}
 
-$('tb').innerHTML=RUN.map((d,i)=>'<tr><td><span class="nr" style="background:'+d.col+';color:'+d.ink+'">'+d.nr+'</span></td><td><div class="name">'+d.name+'</div><div class="sub">'+d.kind+'. '+d.trait+'.</div></td><td class="n p" id="pc'+i+'">…</td><td class="n q" id="qt'+i+'">…</td><td class="n q2" id="qp'+i+'">…</td><td class="n" id="pl'+i+'">–</td></tr>').join('');
 try{
   renderer=new THREE.WebGLRenderer({antialias:true});renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   $('view').prepend(renderer.domElement);build();
@@ -82,29 +90,27 @@ $('go').onclick=start;
 $('neu').onclick=()=>{fresh();reset();$('go').textContent='Rennen starten';openBets()};
 function voiceLabel(){$('ton').textContent='Ton: '+(voice.mode==='aus'?'aus':voice.mode==='de'?'Deutsch':voice.fallback?'Deutsch (keine japanische Stimme)':'Japanisch');$('ton').setAttribute('aria-pressed',voice.on)}
 if(voice.ok){voiceLabel();speechSynthesis.addEventListener&&speechSynthesis.addEventListener('voiceschanged',voiceLabel);$('ton').onclick=()=>{voice.unlock();voice.next();voiceLabel()}}else $('ton').hidden=true;
-// Quoten je Bahnzustand: in Häppchen rechnen, damit die Seite bedienbar bleibt, und für jeden Boden einmal merken.
-// Zuerst der Boden des aktuellen Rennens, die übrigen danach im Leerlauf, damit ein neues Rennen nicht warten muss.
-const TL=[];let oddsBusy=false;
-const oddsDone=b=>TL[b]&&TL[b].N>=ODDS_N;
-function showOdds(b){
-  const q=quotes(TL[b]);
+// Quoten für Boden und Feld des aktuellen Rennens: in Häppchen rechnen, damit die Seite bedienbar bleibt, und je Rennen einmal merken
+const TL={};let oddsBusy=false;
+const oddsDone=k=>TL[k]&&TL[k].N>=ODDS_N;
+function showOdds(k){
+  const q=quotes(TL[k]);
   RUN.forEach((d,i)=>{$('pc'+i).textContent=(q.pWin[i]*100).toFixed(0)+' %';$('qt'+i).textContent=fmtQ(q.win[i]);$('qp'+i).textContent=fmtQ(q.place[i])});
-  $('mc').textContent='Die Quoten stammen aus '+q.N+' unsichtbar vorab gerechneten Rennen mit diesen Startern auf '+BODEN[b].name+'em Boden, abzüglich 15 % für die Bank. Platz heißt: Erster oder Zweiter.';
+  $('mc').textContent='Die Quoten stammen aus '+q.N+' unsichtbar vorab gerechneten Rennen mit diesen Startern auf '+BODEN[q.bod].name+'em Boden, abzüglich 15 % für die Bank. Platz heißt: Erster oder Zweiter.';
   setQuotes(q);
 }
 function oddsLoop(){
-  const cur=race.bod,b=oddsDone(cur)?BODEN.findIndex((d,k)=>!oddsDone(k)):cur;
-  if(b<0){oddsBusy=false;return}
-  if(b!==cur&&state==='run'){setTimeout(oddsLoop,500);return}
-  TL[b]=TL[b]||tally(b);
-  const done=count(TL[b],250);
-  if(b===cur){if(done)showOdds(b);else $('mc').textContent='Quoten werden berechnet … '+Math.round(TL[b].N/ODDS_N*100)+' %'}
-  setTimeout(oddsLoop,b===cur?0:30);
+  const k=race.key;
+  if(oddsDone(k)){oddsBusy=false;return}
+  TL[k]=TL[k]||tally(race.bod,race.field);
+  const done=count(TL[k],250);
+  if(done)showOdds(k);else $('mc').textContent='Quoten werden berechnet … '+Math.round(TL[k].N/ODDS_N*100)+' %';
+  setTimeout(oddsLoop,0);
 }
 function odds(){
-  const b=race.bod;dropStaleBets(b);
-  if(oddsDone(b))showOdds(b);
-  else{for(let i=0;i<RUN.length;i++){$('pc'+i).textContent='…';$('qt'+i).textContent='…';$('qp'+i).textContent='…'}setQuotes(null)}
+  const k=race.key;dropStaleBets(k);
+  if(oddsDone(k))showOdds(k);
+  else setQuotes(null);
   if(!oddsBusy){oddsBusy=true;setTimeout(oddsLoop,0)}
 }
 fit();fresh();reset();

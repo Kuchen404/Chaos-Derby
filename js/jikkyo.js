@@ -4,8 +4,12 @@
 // - js/voice.js wählt beim Abspielen über clip() die passende Aufnahme.
 // Die deutschen Textzeilen der Simulation bleiben als Untertitel.
 const jikkyo=(()=>{
-  // Namen der Starter in Katakana, so wie ein japanischer Sprecher sie aussprechen würde
-  const N=['ゼクンデンシュラーフ','ハルス・ユーバー・コップフ','ダンプヴァルツェ','シュムッデルヴェッター','アウフレヒター・ガング','シュペーツュンダー'];
+  // Namen der Starter in Katakana, so wie ein japanischer Sprecher sie aussprechen würde; Index wie ROSTER in sim.js
+  const N=['ゼクンデンシュラーフ','ハルス・ユーバー・コップフ','ダンプヴァルツェ','シュムッデルヴェッター','アウフレヒター・ガング','シュペーツュンダー',
+    'シュトゥアコップフ','プラッツヒルシュ','シュレックハフト','シュリッツオーア','ヘッツヤークト','シュニュッフェルナーゼ'];
+  // Ereignisse zählen nach Bahn im aktuellen Feld (0…5), Sätze und Aufnahmen nach Starter (ROSTER-Index)
+  const rid=i=>i>=0&&typeof RUN!=='undefined'&&RUN[i]?ROSTER.indexOf(RUN[i]):-1;
+  const ALL=N.map((n,i)=>i);
   const BABA=['良','稍重','重'];
   // Grundsätze, sachlich formuliert; i ist der betroffene Starter
   const T={
@@ -27,10 +31,24 @@ const jikkyo=(()=>{
     lead:i=>'先頭が変わります。'+N[i]+'です。',
     m200:()=>'残り200メートル。',
     stretch:()=>N[1]+'、首をぐーんと伸ばしています。',
-    stand:i=>'先頭は'+N[i]+'。'
+    stand:i=>'先頭は'+N[i]+'。',
+    // Eigenheiten der Starter 7 bis 12
+    stubborn:()=>N[6]+'、突然立ち止まりました。もう走りたくないようです。',
+    unstubborn:()=>N[6]+'、抜かれて、しぶしぶ走り出しました。',
+    crash:()=>N[7]+'、ジャンプに失敗、顔から着地です。',
+    scare:()=>N[8]+'、びっくりして固まってしまいました。',
+    spook:()=>N[8]+'、蝶々に驚いて立ち止まりました。',
+    hunt:()=>N[10]+'、前を行く馬に狙いを定めました。逃げろ、逃げろ。',
+    sniff:()=>N[11]+'、何かの匂いを嗅いでいます。',
+    zoom:()=>N[11]+'、突然スイッチが入りました。猛ダッシュです。',
+    draft:()=>N[9]+'、前の馬の後ろにぴったりつけています。',
+    draftout:()=>N[9]+'、陰から飛び出した！'
   };
   // Welche Starter ein Satz betreffen kann (-1: keiner)
-  const WHO={start:[0,1,2],jub:[0,4],knock:[0,1,3,4,5],lead1:[0,1,2,3,4,5],lead:[0,1,2,3,4,5],stand:[0,1,2,3,4,5]};
+  const WHO={start:[0,1,2],jub:[0,4],knock:ALL.filter(i=>i!==2),lead1:ALL,lead:ALL,stand:ALL};
+  // Regen ohne Husky im Feld: eigener Satz, dafür gibt es keine Aufnahme
+  const RAIN={rain:'雨が降ってきました。',rainstop:'雨が上がりました。'};
+  const noHusky=e=>RAIN[e.k]&&e.i<0;
   const ONLY0={start:1,lead1:1};          // fallen immer in die ruhige Anfangsphase
   // Zuschnitt je Stufe: 0 sachlich, 1 lebhaft, 2 aufgeregt, 3 außer sich; je Stufe zwei Fassungen ab Stufe 2
   const LEAD1='おっと、',LEAD2=['なんと！','これは！'],LEAD3=['うわあああああ！','な、な、なんということだ！'];
@@ -58,7 +76,7 @@ const jikkyo=(()=>{
       const out=[];
       for(const k in T)for(const i of WHO[k]||[-1])for(let lv=0;lv<(ONLY0[k]?1:4);lv++)for(let v=0;v<VARS[lv];v++)
         out.push({id:id(k,i,lv,v),text:dress(T[k](i),i,lv,v),lv});
-      for(let i=0;i<6;i++){
+      for(const i of ALL){
         out.push({id:id('win',i,3,0),text:'ゴール！ゴール！ゴーーール！'+N[i]+'、優勝です！',lv:'win'});
         out.push({id:id('close',i,3,0),text:'大接戦！'+N[i]+'、鼻差の二着！',lv:'win'});
         out.push({id:'name.'+i,text:N[i]+'。',lv:'calm'});
@@ -72,21 +90,22 @@ const jikkyo=(()=>{
       const pick=(k,i,lv)=>{for(let l=lv;l>=0;l--){const n=VARS[l],v0=Math.floor(Math.random()*n);
         for(let q=0;q<n;q++){const c=id(k,i,l,(v0+q)%n);if(has(c))return c}}return null};
       if(e.rant){const r=Math.floor(Math.random()*RANT.length),c='rant.'+r+'.'+(level(m)>=3?3:2);return has(c)?[c]:null}
-      if(e.k==='win'||e.k==='close'){const c=id(e.k,e.i,3,0);return has(c)?[c]:null}
-      if(e.k==='einlauf'){const o=e.o,l=['ein.intro','ein.p1','name.'+o[0],'ein.p2','name.'+o[1],'ein.p3','name.'+o[2]];return l.every(has)?l:null}
-      if(!T[e.k])return null;
-      const i=e.k==='start'?(e.b|0):e.k==='stand'?e.a:WHO[e.k]?e.i:-1;
+      if(e.k==='win'||e.k==='close'){const c=id(e.k,rid(e.i),3,0);return has(c)?[c]:null}
+      if(e.k==='einlauf'){const o=e.o.map(rid),l=['ein.intro','ein.p1','name.'+o[0],'ein.p2','name.'+o[1],'ein.p3','name.'+o[2]];return l.every(has)?l:null}
+      if(!T[e.k]||noHusky(e))return null;
+      const i=e.k==='start'?(e.b|0):e.k==='stand'?rid(e.a):WHO[e.k]?rid(e.i):-1;
       const c=pick(e.k,i,ONLY0[e.k]?0:level(m));
       return c?[c]:null;
     },
     // Satz für die Sprachausgabe des Browsers, falls die Aufnahmen fehlen
     text(e,m){
       if(e.rant)return RANT[Math.floor(Math.random()*RANT.length)];
-      if(e.k==='win')return 'ゴール！ゴール！ゴーーール！'+N[e.i]+'、優勝です！';
-      if(e.k==='close')return '大接戦！'+N[e.i]+'、鼻差の二着！';
-      if(e.k==='einlauf')return EIN.intro+EIN.p1+N[e.o[0]]+'。'+EIN.p2+N[e.o[1]]+'。'+EIN.p3+N[e.o[2]]+'。';
+      if(e.k==='win')return 'ゴール！ゴール！ゴーーール！'+N[rid(e.i)]+'、優勝です！';
+      if(e.k==='close')return '大接戦！'+N[rid(e.i)]+'、鼻差の二着！';
+      if(e.k==='einlauf'){const o=e.o.map(rid);return EIN.intro+EIN.p1+N[o[0]]+'。'+EIN.p2+N[o[1]]+'。'+EIN.p3+N[o[2]]+'。'}
+      if(noHusky(e))return RAIN[e.k];
       if(!T[e.k])return null;
-      const i=e.k==='start'?(e.b|0):e.k==='stand'?e.a:WHO[e.k]?e.i:-1,lv=ONLY0[e.k]?0:level(m);
+      const i=e.k==='start'?(e.b|0):e.k==='stand'?rid(e.a):WHO[e.k]?rid(e.i):-1,lv=ONLY0[e.k]?0:level(m);
       return dress(T[e.k](i),i,lv,Math.floor(Math.random()*VARS[lv]));
     }
   };

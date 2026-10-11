@@ -9,8 +9,6 @@ const slipText=s=>BET[s.type].name+' '+runner(s.a)+(s.b>=0?'<span class="then">v
 const fmtQ=q=>q.toFixed(1).replace('.',',');
 
 function renderBets(){
-  const opts=RUN.map((d,i)=>'<option value="'+i+'">'+d.nr+' '+esc(d.name)+'</option>').join('');
-  if(!$('ba').options.length){$('ba').innerHTML=opts;$('bb').innerHTML=opts;$('bb').value='1'}
   const sel=$('bp').value;
   $('bp').innerHTML=book.players.map((p,k)=>'<option value="'+k+'">'+esc(p.name)+'</option>').join('');
   if(sel&&book.players[sel])$('bp').value=sel;
@@ -25,6 +23,10 @@ function renderBets(){
   $('betstate').className='pill'+(betsOpen&&Q?' open':'');
   slipPreview();
 }
+// Neues Feld: Starterauswahl neu füllen, die Bahn (0…5) bleibt als Wert
+function fieldBets(){
+  const opts=RUN.map((d,i)=>'<option value="'+i+'">'+d.nr+' '+esc(d.name)+'</option>').join(''),a=$('ba').value||'0',b=$('bb').value||'1';
+  $('ba').innerHTML=opts;$('bb').innerHTML=opts;$('ba').value=a;$('bb').value=b;renderBets()}
 function slipPreview(){
   const a=+$('ba').value,b=+$('bb').value,t=$('bt').value,st=Math.floor(+$('bs').value);
   const q=Q?betQuote(Q,t,a,b):0;
@@ -35,10 +37,10 @@ function setQuotes(q){Q=q;renderBets()}
 // Ab dem Start sind keine Wetten mehr möglich, abgerechnet wird einmal je Rennen
 function closeBets(){if(!betsOpen)return;betsOpen=false;betMsg('');renderBets()}
 function openBets(){betsOpen=true;lastRes=null;renderBets()}
-// Quoten gelten nur für den Boden, auf dem gewettet wurde. Wechselt der Boden, gehen offene Wetten an die Kasse zurück.
-function dropStaleBets(b){
-  let n=0;for(let k=book.slips.length-1;k>=0;k--)if(book.slips[k].bod!==b){cancelBet(book,k);n++}
-  if(n){saveBook();betMsg('Neuer Boden, neue Quoten: '+(n>1?n+' offene Wetten wurden':'eine offene Wette wurde')+' zurückgegeben.');renderBets()}}
+// Quoten gelten nur für Boden und Feld, für die gewettet wurde. Kommt ein neues Rennen, gehen offene Wetten an die Kasse zurück.
+function dropStaleBets(key){
+  let n=0;for(let k=book.slips.length-1;k>=0;k--)if(book.slips[k].key!==key){cancelBet(book,k);n++}
+  if(n){saveBook();betMsg('Neues Rennen, neue Quoten: '+(n>1?n+' offene Wetten wurden':'eine offene Wette wurde')+' zurückgegeben.');renderBets()}}
 function settleBets(order){if(race.settled)return null;race.settled=true;lastRes=settle(book,order);saveBook();renderBets();return lastRes}
 
 $('addp').onsubmit=e=>{e.preventDefault();const err=addPlayer(book,$('pname').value);betMsg(err);if(!err){$('pname').value='';saveBook();renderBets();$('bp').value=book.players.length-1}};
