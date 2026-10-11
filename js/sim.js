@@ -35,7 +35,7 @@ const STOP=[1,2,3,8,10,12,14,16];
 // bod: Index in BODEN (Standard 0 = gut), field: ROSTER-Indizes der Starter (Standard CLASSIC)
 function simulate(seed,rec,bod,field){
   const F=(field||CLASSIC).map(k=>ROSTER[k]),n=F.length,R=rng(seed);
-  const rs=F.map(()=>({x:0,st:0,T:0,n:0,fin:-1,used:false,fl:0,dr:-1,ahead:0,hs:[]}));
+  const rs=F.map(()=>({x:0,st:0,T:0,n:0,fin:-1,used:false,fl:0,dr:-1,ahead:0,hs:[],fT:-9}));
   const has=id=>F.findIndex(d=>d.id===id);
   const order=[],frames=[],ev=[]; let t=0,lead=-1,leadT=0,m200=false,stretch=false,winT=-1,wasRain=false,howl=false,foxT=-9;
   bod=bod|0;
@@ -49,7 +49,7 @@ function simulate(seed,rec,bod,field){
     if(j!==i&&F[j].id==='reh'&&r.st===0&&r.fin<0&&Math.abs(r.x-rs[i].x)<18&&R()<.7){r.st=12;r.T=1.4+R()*1.2;say(F[j].name+' erschrickt und bleibt wie angewurzelt stehen.',j,1.8,0,'scare',i)}}}
   // Fehlschläge reißen andere mit. hit: Starter j stürzt, ausgelöst von src. Wer direkt dahinter läuft, kann über ihn fallen
   // (eine Stufe Kettenreaktion, nicht mehr, sonst läge bei engem Feld jedes Mal alles am Boden).
-  const down=q=>q.fin>=0||q.st===2||q.st===6||q.st===9;
+  const down=q=>q.fin>=0||q.st===2||q.st===6||q.st===9||t-q.fT<1.5;   // fT: zuletzt am Boden; wer gerade aufsteht, fällt nicht gleich wieder
   function hit(j,src,s,k,deep){const q=rs[j];if(down(q))return false;
     q.st=2;q.T=2.2;say(s,j,deep?0:2,2,k,src);scare(j);
     if(!deep)for(let b=0;b<n;b++){const g=q.x-rs[b].x;if(b!==j&&b!==src&&g>0&&g<2.5&&!down(rs[b])&&R()<.35){hit(b,j,F[b].name+' fällt über '+F[j].name+'.','trip',1);break}}
@@ -77,7 +77,7 @@ function simulate(seed,rec,bod,field){
       const z=r.x>L-200?1.5:1;   // Zielgerade: Pannen werden häufiger
       if(r.fin>=0){v*=.6}
       else{
-        if(r.st===0&&t>3){
+        if(r.st===0&&t>3&&t-r.fT>1.5){
           if(id==='pferd'&&i===li&&r.x>150&&p(.035)){r.st=1;r.T=3.5+R()*2.5;r.hs=[];say(d.name+' führt und legt sich hin. Er schläft.',i,2.6,0,'sleep')}
           else if((id==='pferd'||id==='aufrecht')&&!r.jub&&i===li&&r.x>L-80&&r.x<L-35&&lx-l2>9&&p(.16)){r.st=8;r.jub=true;r.T=1+R()*.6;say(id==='pferd'?d.name+' jubelt schon. Viel zu früh!':d.name+' reißt die Arme hoch. Er jubelt zu früh!',i,1.5,0,'jub')}
           else if(id==='alpaka'&&p(.015*z)){r.st=3;r.T=2+R()*1.5;say(d.name+' hat den Blumenschmuck entdeckt und frisst.',i,2.2,0,'eat')}
@@ -141,6 +141,7 @@ function simulate(seed,rec,bod,field){
         if(rain&&r.st!==6&&r.st!==9)v*=d.rain;
       }
       if(r.st!==9&&r.st!==10&&r.st!==7&&r.st!==15&&r.st!==1&&r.st!==12&&r.hs.length)r.hs=[];
+      if(r.st===2)r.fT=t;
       const x0=r.x;r.x+=v*DT;
       // Zieldurchgang auf den Bruchteil des Zeitschritts genau, damit Zielfoto und Einlauf übereinstimmen
       if(r.fin<0&&r.x+nose(d,r.x)>=L){const a0=x0+nose(d,x0),a1=r.x+nose(d,r.x);r.fin=t-DT+DT*clamp((L-a0)/(a1-a0),0,1);r.st=0;r.T=0;cross.push(i)}
@@ -156,7 +157,7 @@ function simulate(seed,rec,bod,field){
       if(id==='reh'&&r.st===12)passBy(i,1.5,.15,j=>{if(rs[j].x<r.x)hit(j,i,F[j].name+' rennt in das erstarrte '+F[i].name+'.','bump')})}
     for(let e=0;e<n;e++){const b=rs[e];if(F[e].id!=='stier'||b.st!==4||b.fin>=0)continue;
       for(let j=0;j<n;j++){const r=rs[j];
-        if(j!==e&&r.fin<0&&r.st!==2&&r.st!==6&&r.st!==9&&r.st!==11&&Math.abs(r.x-b.x)<5){r.st=2;r.T=2.2;say(F[e].name+' räumt '+F[j].name+' ab.',j,0,2,'knock',e);scare(j)}}}
+        if(j!==e&&!down(r)&&r.st!==11&&Math.abs(r.x-b.x)<5){r.st=2;r.T=2.2;say(F[e].name+' räumt '+F[j].name+' ab.',j,0,2,'knock',e);scare(j)}}}
     if(!order.length&&t>4&&li!==lead&&t-leadT>2.5){say(F[li].name+(lead<0?' führt das Feld an.':' übernimmt die Führung.'),li,0,1,lead<0?'lead1':'lead');lead=li;leadT=t}
     if(!m200&&lx>=L-200){m200=true;say('Noch 200 Meter.',-1,0,2,'m200')}
     const al=has('alpaka');
