@@ -10,7 +10,7 @@ function jockey(par,x,y,z,col,s){
   const tr=P(SPH,col,g,.05,.3,0,.17,.3,.17);tr.rotation.z=-.5;
   P(SPH,'#f1c9a5',g,.24,.6,0,.13,.13,.13);P(SPH,col,g,.25,.66,0,.14,.09,.14);
   P(CYL,'#f4f4f4',g,.02,.02,.17,.05,.34,.05);P(CYL,'#f4f4f4',g,.02,.02,-.17,.05,.34,.05);return g}
-function shell(c){const root=G(scene),spin=G(root,0,c,0),inner=G(spin,0,-c,0);root.scale.setScalar(S);return {root,spin,inner,c,ry:0,b:0,zo:0,prev:0,ch:0,sl:0,rk:0,dT:0}}
+function shell(c){const root=G(scene),spin=G(root,0,c,0),inner=G(spin,0,-c,0);root.scale.setScalar(S);return {root,spin,inner,c,ry:0,b:0,zo:0,prev:0,ch:0,sl:0,rk:0,jb:0,dT:0}}
 
 /* ---------- Die sechs Starter: Modelle mit Skelett (Quaternius, Ultimate Animated Animals, CC0) ---------- */
 const WHITE={Main:'#b2b2a3',Main_Dark:'#a3a394',Main_Light:'#928f92',Hooves:'#928351',Hair:'#aca088',Muzzle:'#977c62'};
@@ -56,6 +56,7 @@ function poseModel(f,i,x,st,sdt){
   else if(i===3){W.Walk=1-f.sl;W.Gallop=f.sl}
   else if(i===4)W.Walk=1;
   else{W.Walk=1-f.rk;W.Idle=f.rk}
+  if(!idle&&f.jb>.01){for(const n in W)W[n]*=1-f.jb;W.Idle=(W.Idle||0)+f.jb}   // jubelt: steht still
   if(A.Gallop)A.Gallop.time=cyc(x/GS[i],A.Gallop);if(A.Walk)A.Walk.time=cyc(x/WS[i],A.Walk);A.Idle.time=.5;
   for(const n in A)A[n].setEffectiveWeight(W[n]||0);
   // Eigene Zusatzdrehungen vom letzten Bild zurücknehmen, weil der Mixer unveränderte Werte nicht neu schreibt
@@ -77,30 +78,30 @@ function label(f,i){
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:canvasTex(128,128,(c)=>{c.fillStyle=d.col;c.beginPath();c.arc(64,64,54,0,7);c.fill();c.lineWidth=9;c.strokeStyle='#fff';c.stroke();
     c.fillStyle=d.ink;c.font='70px "Dela Gothic One","Arial Black",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(d.nr,64,70)}),depthTest:false}));
   s.scale.set(.85,.85,1);s.position.set(0,TOPY[i],0);s.renderOrder=5;f.root.add(s);
-  f.fx={};[[1,'Zzz'],[3,'mampf'],[7,'?!'],[2,'✶ ✶']].forEach(q=>{
+  f.fx={};[[1,'Zzz'],[3,'mampf'],[7,'?!'],[2,'✶ ✶'],[8,'Jubel!']].forEach(q=>{
     const e=new THREE.Sprite(new THREE.SpriteMaterial({map:canvasTex(256,96,(c)=>{c.font='56px "Dela Gothic One","Arial Black",sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=10;c.strokeStyle='#17231a';c.strokeText(q[1],128,50);c.fillStyle='#fff';c.fillText(q[1],128,50)}),depthTest:false}));
     e.scale.set(1.9,.7,1);e.position.set(1.3,TOPY[i]+.05,0);e.renderOrder=5;e.visible=false;f.root.add(e);f.fx[q[0]]=e})}
 
 /* ---------- Animation je Bild ---------- */
 function pose(i,x,st,rain,dt,sdt){
   const f=fig[i],k=Math.min(1,dt*8);
-  f.b+=((st===1||st===3?1:0)-f.b)*k;f.ch+=((st===4?1:0)-f.ch)*k;f.sl+=((i===3&&rain?1:0)-f.sl)*k;f.rk+=((st===6?1:0)-f.rk)*k;
-  f.ry+=((st===7?PI:0)-f.ry)*Math.min(1,dt*9);f.root.rotation.y=f.ry;
+  f.b+=((st===1||st===3?1:0)-f.b)*k;f.ch+=((st===4?1:0)-f.ch)*k;f.sl+=((i===3&&rain?1:0)-f.sl)*k;f.rk+=((st===6||st===9?1:0)-f.rk)*k;f.jb+=((st===8?1:0)-f.jb)*k;
+  f.ry+=((st===7||st===9?PI:0)-f.ry)*Math.min(1,dt*9);f.root.rotation.y=f.ry;
   f.zo+=((i===2&&st===4?Math.sin(t*2.3)*4:0)-f.zo)*Math.min(1,dt*4);
   const wx=x+(i===1?2:0)-FRONT[i]*S,wz=laneZ(i)+f.zo;
   f.root.position.set(wx,0,wz);
   if(st===2){f.spin.rotation.z-=sdt*10;f.spin.position.y=f.c+Math.abs(Math.sin(t*5))*1.3}
-  else{f.spin.rotation.z=0;f.spin.position.y=f.c}
+  else{f.spin.rotation.z=0;f.spin.position.y=f.c+f.jb*Math.abs(Math.sin(t*9))*.35}
   for(const q in f.fx)f.fx[q].visible=(+q===st);
   poseModel(f,i,x,st,sdt);
   if(i===2&&st===4&&Math.random()<sdt*40)emit(wx-2-Math.random()*2,.4,wz+Math.random()*2-1,-3,1.5,0,.9,1.3,'#d6c8a0');
   if(i===3&&rain&&Math.random()<sdt*45)emit(wx-1,.25,wz+Math.random()-.5,-5,2+Math.random()*2,Math.random()*2-1,.5,.4,'#ffffff');
   if(i===5){
     f.inner.rotation.z=f.rk*.12;f.inner.position.y=-f.c+f.rk*.5;
-    f.flame.visible=st===6;
-    if(st===6){f.flame.scale.y=.8+Math.random()*.6;
-      if(Math.random()<sdt*60)emit(wx-1.6,3.2,wz,-9-Math.random()*5,Math.random()*1.5,Math.random()*2-1,.8,1.1,Math.random()<.3?'#ffb347':'#e8e8e8')}
-    if(f.prev===6&&st===2){f.rocket.color.set('#3a3a3a');f.cone.color.set('#222222');
+    f.flame.visible=st===6||st===9;
+    if(st===6||st===9){const sg=st===9?-1:1;f.flame.scale.y=.8+Math.random()*.6;   // 9: Rakete zeigt nach hinten
+      if(Math.random()<sdt*60)emit(wx-1.6*sg,3.2,wz,(-9-Math.random()*5)*sg,Math.random()*1.5,Math.random()*2-1,.8,1.1,Math.random()<.3?'#ffb347':'#e8e8e8')}
+    if((f.prev===6||f.prev===9)&&st===2){f.rocket.color.set('#3a3a3a');f.cone.color.set('#222222');
       for(let q=0;q<26;q++)emit(wx+1,3,wz,Math.random()*10-5,Math.random()*8,Math.random()*10-5,1.1,1.8,q%3?'#444444':'#ff8a1e')}
   }
   f.prev=st;

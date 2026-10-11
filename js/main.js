@@ -39,14 +39,18 @@ function finish(){
 function reset(){
   cancelAnimationFrame(raf);t=0;evI=0;cut=null;shotK='';state='idle';$('slow').hidden=true;
   $('log').innerHTML='<li class="empty">Der Kommentar läuft mit, sobald das Rennen startet.</li>';
+  $('cap').textContent='Die Starter stehen an der Linie. Der Boden ist '+BODEN[race.bod].name+'.';
   RUN.forEach((d,i)=>{$('pl'+i).textContent='–'});
   if(!gl)return;
   for(const p of parts){p.life=0;p.s.visible=false}
-  fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.dT=0;f.spin.rotation.z=0});
+  trackMat.color.set(BODEN_COL[race.bod][0]);trackMat.emissive.set(BODEN_COL[race.bod][1]);
+  fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.dT=0;f.spin.rotation.z=0});
   fig[5].rocket.color.set('#c9ced4');fig[5].cone.color.set('#d2232a');frame(1,0);
 }
 function start(){reset();if(!gl)return;state='run';$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
-function fresh(){race=simulate((Math.random()*2**31)|0,true)}
+// Jedes Rennen bekommt einen ausgelosten Bahnzustand; die Quoten werden für genau diesen Boden gerechnet
+const BODEN_COL=[['#ffffff','#000000'],['#c8c09a','#14100a'],['#8f7a58','#2e1e0c']];   // Rasenfarbe und Schlammton je Boden
+function fresh(){const b=drawBoden(Math.random());race=simulate((Math.random()*2**31)|0,true,b);race.bod=b;$('bod').textContent=BODEN[b].name;odds()}
 function fit(){if(!gl)return;const w=$('view').clientWidth;renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.setSize(w,Math.round(w*9/16),false)}
 
 $('tb').innerHTML=RUN.map((d,i)=>'<tr><td><span class="nr" style="background:'+d.col+';color:'+d.ink+'">'+d.nr+'</span></td><td><div class="name">'+d.name+'</div><div class="sub">'+d.kind+'. '+d.trait+'.</div></td><td class="n p" id="pc'+i+'">…</td><td class="n q" id="qt'+i+'">…</td><td class="n" id="pl'+i+'">–</td></tr>').join('');
@@ -56,11 +60,22 @@ try{
 }catch(err){gl=false;$('nogl').hidden=false}
 $('go').onclick=start;
 $('neu').onclick=()=>{fresh();start()};
+// Quoten je Bahnzustand werden einmal gerechnet und gemerkt, weil 1200 Probeläufe knapp eine Sekunde dauern
+const ODDS=[];
+function calcOdds(b){
+  if(!ODDS[b]){const N=1200,w=RUN.map(()=>0);for(let k=0;k<N;k++)w[simulate(1000+k*7919,false,b).order[0]]++;ODDS[b]={N,p:w.map(n=>n/N)}}
+  return ODDS[b]}
+function showOdds(b){
+  const o=calcOdds(b);if(race.bod!==b)return;
+  o.p.forEach((p,i)=>{const q=p>0?clamp(.85/p,1.1,99):99;
+    $('pc'+i).textContent=(p*100).toFixed(0)+' %';$('qt'+i).textContent=q.toFixed(1).replace('.',',')});
+  $('mc').textContent='Die Quoten stammen aus '+o.N+' unsichtbar vorab gerechneten Rennen mit diesen Startern auf '+BODEN[b].name+'em Boden, abzüglich 15 % für die Bank.';
+}
+function odds(){
+  const b=race.bod;if(ODDS[b]){showOdds(b);return}
+  for(let i=0;i<RUN.length;i++){$('pc'+i).textContent='…';$('qt'+i).textContent='…'}
+  $('mc').textContent='Quoten werden berechnet …';setTimeout(()=>showOdds(b),60)}
 fit();fresh();reset();
 window.addEventListener('resize',()=>{fit();if(gl&&state!=='run')frame(1,0)});
-setTimeout(()=>{
-  const N=1200,w=[0,0,0,0,0,0];for(let k=0;k<N;k++)w[simulate(1000+k*7919,false).order[0]]++;
-  w.forEach((n,i)=>{const p=n/N,q=p>0?clamp(.85/p,1.1,99):99;
-    $('pc'+i).textContent=(p*100).toFixed(0)+' %';$('qt'+i).textContent=q.toFixed(1).replace('.',',')});
-  $('mc').textContent='Die Quoten stammen aus '+N+' unsichtbar vorab gerechneten Rennen mit diesen Startern, abzüglich 15 % für die Bank.';
-},60);
+// Die übrigen Bahnzustände im Leerlauf vorrechnen, damit ein neues Rennen nicht ruckelt
+BODEN.forEach((d,b)=>setTimeout(()=>{if(state!=='run')calcOdds(b)},1500+b*1200));

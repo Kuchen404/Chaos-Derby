@@ -9,6 +9,7 @@ Die Idee ist von der japanischen DVD-Reihe „Japan World Cup“ inspiriert. Fig
 - **3D-Rennen** (`index.html`): sechs Starter als Tiermodelle mit Skelett, Kameraregie mit Schnitten auf die Ereignisse, Zeitlupe im Ziel, Live-Kommentar als Text und Quotentafel.
 - **2D-Rennen** (`classic/index.html`): die erste, flache Fassung in Seitenansicht. Sie zeigt noch das alte Starterfeld (Giraffe, Elefant, Robbe, Schildkröte) und wird nicht weiterentwickelt.
 - **Wetten fehlt noch.** Es gibt bisher nur die Anzeige der Quoten.
+- **Bahnzustand:** Vor jedem Rennen wird der Boden ausgelost (gut, weich, schwer). Die Quoten gelten für diesen Boden.
 
 ## Starten
 
