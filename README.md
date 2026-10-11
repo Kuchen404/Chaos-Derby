@@ -6,7 +6,7 @@ Die Idee ist von der japanischen DVD-Reihe „Japan World Cup“ inspiriert. Fig
 
 ## Stand
 
-- **3D-Rennen** (`index.html`): sechs Starter als Tiermodelle mit Skelett, Kameraregie mit Schnitten auf die Ereignisse, Zeitlupe im Ziel, Zielfoto und Siegerehrung auf dem Podest, Live-Kommentar als Text und als Sprachausgabe des Browsers, Quotentafel.
+- **3D-Rennen** (`index.html`): sechs Starter als Tiermodelle mit Skelett, Kameraregie mit Schnitten auf die Ereignisse, Zeitlupe im Ziel, Zielfoto und Siegerehrung auf dem Podest, Live-Kommentar als Text und gesprochen von einem japanischen Sprecher, der im Rennverlauf immer mehr abdreht (wahlweise deutsch), Quotentafel.
 - **2D-Rennen** (`classic/index.html`): die erste, flache Fassung in Seitenansicht. Sie zeigt noch das alte Starterfeld (Giraffe, Elefant, Robbe, Schildkröte) und wird nicht weiterentwickelt.
 - **Wetten** am gemeinsamen Bildschirm mit Spielgeld: Mitspieler anlegen, Sieg, Platz oder Zweierwette zu festen Quoten setzen, nach dem Rennen wird ausgezahlt. Wetten am Handy fehlt noch.
 - **Bahnzustand:** Vor jedem Rennen wird der Boden ausgelost (gut, weich, schwer). Quoten und Wetten gelten für diesen Boden.
@@ -52,6 +52,7 @@ Der wichtigste Grundsatz: **erst simulieren, dann zeigen.** Ein Rennen wird voll
 | `js/director.js` | Kameraregie |
 | `js/ceremony.js` | Zielfoto und Siegerehrung |
 | `js/voice.js` | gesprochener Kommentar über die Sprachausgabe des Browsers |
+| `js/jikkyo.js` | japanische Ansagen mit steigender Aufregung |
 | `js/betting.js` | Wettbüro auf der Seite: Mitspieler, Wettschein, Abrechnung |
 | `js/main.js` | Abspielen, Bedienung, Quotentafel |
 | `models/` | die fünf Tiermodelle, auf die benutzten Animationen verkleinert |

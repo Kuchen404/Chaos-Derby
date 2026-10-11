@@ -22,12 +22,13 @@ function simulate(seed,rec,bod){
   bod=bod|0;
   let rain0=R()<.45?8+R()*20:-1, rain1=rain0+10;
   // p: Gewicht für den gesprochenen Kommentar, 3 = Zieleinlauf, 2 = Ereignis, 1 = Rest
-  const say=(s,i,cut,p)=>{if(rec)ev.push({t,s,i,cut,p:p||(cut?2:1)})};
+  // k: Art des Ereignisses, damit die Wiedergabe es auch in anderen Sprachen ansagen kann
+  const say=(s,i,cut,p,k)=>{if(rec)ev.push({t,s,i,cut,p:p||(cut?2:1),k})};
   const p=h=>R()<h*DT;
-  say(bod?'Das Feld ist unterwegs. Der Boden ist '+BODEN[bod].name+'.':'Das Feld ist unterwegs.');
+  say(bod?'Das Feld ist unterwegs. Der Boden ist '+BODEN[bod].name+'.':'Das Feld ist unterwegs.',-1,0,1,'start');
   while(order.length<6&&t<150){
     const rain=rain0>=0&&t>=rain0&&t<rain1;
-    if(rain!==wasRain){wasRain=rain;say(rain?'Es beginnt zu regnen. Jetzt wacht Schmuddelwetter auf.':'Der Regen hört auf. Schmuddelwetter trottet wieder.',3,rain?2.4:0)}
+    if(rain!==wasRain){wasRain=rain;say(rain?'Es beginnt zu regnen. Jetzt wacht Schmuddelwetter auf.':'Der Regen hört auf. Schmuddelwetter trottet wieder.',3,rain?2.4:0,0,rain?'rain':'rainstop')}
     let li=-1,lx=-1,l2=-1,cross=[]; for(let i=0;i<6;i++)if(rs[i].fin<0){if(rs[i].x>lx){l2=lx;lx=rs[i].x;li=i}else if(rs[i].x>l2)l2=rs[i].x}
     for(let i=0;i<6;i++){
       const r=rs[i],d=RUN[i];
@@ -38,19 +39,19 @@ function simulate(seed,rec,bod){
       if(r.fin>=0){v*=.6}
       else{
         if(r.st===0&&t>3){
-          if(i===0&&i===li&&r.x>150&&p(.035)){r.st=1;r.T=3.5+R()*2.5;say('Sekundenschlaf führt und legt sich hin. Er schläft.',0,2.6)}
-          else if(i===0&&!r.jub&&i===li&&r.x>L-80&&r.x<L-35&&lx-l2>9&&p(.16)){r.st=8;r.jub=true;r.T=1+R()*.6;say('Sekundenschlaf jubelt schon. Viel zu früh!',0,1.5)}
-          else if(i===1&&p(.015*z)){r.st=3;r.T=2+R()*1.5;say('Hals über Kopf hat den Blumenschmuck entdeckt und frisst.',1,2.2)}
-          else if(i===2&&p(.03*z)){r.st=4;r.T=4;say('Dampfwalze senkt den Kopf. Bitte alle zur Seite.',2,4)}
-          else if(i===4&&(rain&&p(.08)||bod===2&&p(.012))){r.st=2;r.T=2.2;say(rain?'Aufrechter Gang rutscht auf dem nassen Gras aus.':'Aufrechter Gang rutscht im tiefen Boden aus.',4,2)}
-          else if(i===4&&!r.jub&&i===li&&r.x>L-80&&r.x<L-35&&lx-l2>9&&p(.16)){r.st=8;r.jub=true;r.T=1+R()*.6;say('Aufrechter Gang reißt die Arme hoch. Er jubelt zu früh!',4,1.5)}
-          else if(i===4&&p(.045*z)){r.st=7;r.T=1.8+R()*1.4;say('Aufrechter Gang hat sich umgedreht. Er läuft zurück.',4,2)}
+          if(i===0&&i===li&&r.x>150&&p(.035)){r.st=1;r.T=3.5+R()*2.5;say('Sekundenschlaf führt und legt sich hin. Er schläft.',0,2.6,0,'sleep')}
+          else if(i===0&&!r.jub&&i===li&&r.x>L-80&&r.x<L-35&&lx-l2>9&&p(.16)){r.st=8;r.jub=true;r.T=1+R()*.6;say('Sekundenschlaf jubelt schon. Viel zu früh!',0,1.5,0,'jub')}
+          else if(i===1&&p(.015*z)){r.st=3;r.T=2+R()*1.5;say('Hals über Kopf hat den Blumenschmuck entdeckt und frisst.',1,2.2,0,'eat')}
+          else if(i===2&&p(.03*z)){r.st=4;r.T=4;say('Dampfwalze senkt den Kopf. Bitte alle zur Seite.',2,4,0,'charge')}
+          else if(i===4&&(rain&&p(.08)||bod===2&&p(.012))){r.st=2;r.T=2.2;say(rain?'Aufrechter Gang rutscht auf dem nassen Gras aus.':'Aufrechter Gang rutscht im tiefen Boden aus.',4,2,0,'slip')}
+          else if(i===4&&!r.jub&&i===li&&r.x>L-80&&r.x<L-35&&lx-l2>9&&p(.16)){r.st=8;r.jub=true;r.T=1+R()*.6;say('Aufrechter Gang reißt die Arme hoch. Er jubelt zu früh!',4,1.5,0,'jub')}
+          else if(i===4&&p(.045*z)){r.st=7;r.T=1.8+R()*1.4;say('Aufrechter Gang hat sich umgedreht. Er läuft zurück.',4,2,0,'back')}
           else if(i===5&&!r.used&&t>6&&p(.026*(z>1?2.5:1))){r.used=true;
-            if(R()<.15){r.st=9;r.T=1+R()*.5;say('Zündung! Aber die Rakete zeigt in die falsche Richtung.',5,2.6)}
-            else{r.st=6;say('Zündung! Die Rakete von Spätzünder brennt.',5,2.6)}}
-          else if(i===3&&!howl&&!rain&&rain0<0&&t>5&&p(.006)){howl=true;rain0=t+1.5;rain1=rain0+10;say('Schmuddelwetter heult die Wolken an. Da zieht etwas auf.',3,1.8)}
-        }else if(r.st===6&&p(.13)){r.st=2;r.T=3;say('Die Rakete ist explodiert. Spätzünder geht zu Fuß weiter.',5,2.4)}
-        else if(r.st===9&&r.T<=DT){r.st=2;r.T=3;say('Die Rakete ist explodiert. Spätzünder sortiert sich neu.',5,2.4)}
+            if(R()<.15){r.st=9;r.T=1+R()*.5;say('Zündung! Aber die Rakete zeigt in die falsche Richtung.',5,2.6,0,'rocketwrong')}
+            else{r.st=6;say('Zündung! Die Rakete von Spätzünder brennt.',5,2.6,0,'rocket')}}
+          else if(i===3&&!howl&&!rain&&rain0<0&&t>5&&p(.006)){howl=true;rain0=t+1.5;rain1=rain0+10;say('Schmuddelwetter heult die Wolken an. Da zieht etwas auf.',3,1.8,0,'howl')}
+        }else if(r.st===6&&p(.13)){r.st=2;r.T=3;say('Die Rakete ist explodiert. Spätzünder geht zu Fuß weiter.',5,2.4,0,'explode')}
+        else if(r.st===9&&r.T<=DT){r.st=2;r.T=3;say('Die Rakete ist explodiert. Spätzünder sortiert sich neu.',5,2.4,0,'explode')}
         if(r.st===1||r.st===2||r.st===3||r.st===8)v=0;else if(r.st===4)v*=1.7;else if(r.st===7)v*=-.6;else if(r.st===6)v=70;else if(r.st===9)v=-35;
         if(rain&&r.st!==6&&r.st!==9)v*=d.rain;
       }
@@ -60,15 +61,15 @@ function simulate(seed,rec,bod){
     }
     cross.sort((a,b)=>rs[a].fin-rs[b].fin).forEach(i=>{
       order.push(i);
-      if(order.length===1){winT=rs[i].fin;say(RUN[i].name+' gewinnt!',i,0,3)}
-      else if(order.length===2&&rs[i].fin-winT<.2)say('Das war eng. '+RUN[i].name+' nur eine Nasenlänge dahinter.',i,0,3);
+      if(order.length===1){winT=rs[i].fin;say(RUN[i].name+' gewinnt!',i,0,3,'win')}
+      else if(order.length===2&&rs[i].fin-winT<.2)say('Das war eng. '+RUN[i].name+' nur eine Nasenlänge dahinter.',i,0,3,'close');
     });
     const e=rs[2];
     if(e.st===4&&e.fin<0)for(let j=0;j<6;j++){const r=rs[j];
-      if(j!==2&&r.fin<0&&r.st!==2&&r.st!==6&&r.st!==9&&Math.abs(r.x-e.x)<5){r.st=2;r.T=2.2;say('Dampfwalze räumt '+RUN[j].name+' ab.',j,0,2)}}
-    if(!order.length&&t>4&&li!==lead&&t-leadT>2.5){say(RUN[li].name+(lead<0?' führt das Feld an.':' übernimmt die Führung.'));lead=li;leadT=t}
-    if(!m200&&lx>=L-200){m200=true;say('Noch 200 Meter.',-1,0,2)}
-    if(!stretch&&rs[1].fin<0&&rs[1].x>=L-90){stretch=true;say('Hals über Kopf streckt den Hals nach vorn.',1,0,2)}
+      if(j!==2&&r.fin<0&&r.st!==2&&r.st!==6&&r.st!==9&&Math.abs(r.x-e.x)<5){r.st=2;r.T=2.2;say('Dampfwalze räumt '+RUN[j].name+' ab.',j,0,2,'knock')}}
+    if(!order.length&&t>4&&li!==lead&&t-leadT>2.5){say(RUN[li].name+(lead<0?' führt das Feld an.':' übernimmt die Führung.'),li,0,1,lead<0?'lead1':'lead');lead=li;leadT=t}
+    if(!m200&&lx>=L-200){m200=true;say('Noch 200 Meter.',-1,0,2,'m200')}
+    if(!stretch&&rs[1].fin<0&&rs[1].x>=L-90){stretch=true;say('Hals über Kopf streckt den Hals nach vorn.',1,0,2,'stretch')}
     if(rec)frames.push({x:rs.map(r=>r.x),s:rs.map(r=>r.st),rain});
     t+=DT;
   }
