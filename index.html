@@ -20,13 +20,20 @@
       <button id="ton" aria-pressed="true" title="Kommentar vorlesen">Ton: an</button>
     </div>
   </header>
-  <p class="lede">Alle sechs Starter sind jetzt fertige Tiermodelle mit Skelett. Die Regie schneidet auf die Ereignisse und zeigt den Zieleinlauf in Zeitlupe.</p>
+  <p class="lede">Alle sechs Starter sind jetzt fertige Tiermodelle mit Skelett. Die Regie schneidet auf die Ereignisse und zeigt den Zieleinlauf in Zeitlupe, danach folgen Zielfoto und Siegerehrung.</p>
 
   <div class="screen">
+    <div class="stage">
     <div class="view" id="view">
-      <div class="strip"><div class="rail" id="rail"></div><div id="rest">noch 1000 m</div></div>
+      <div class="strip" id="strip"><div class="rail" id="rail"></div><div id="rest">noch 1000 m</div></div>
       <div id="slow" hidden>ZEITLUPE</div>
       <div id="nogl" hidden>Dieser Browser kann die 3D-Ansicht nicht darstellen (WebGL fehlt).</div>
+    </div>
+    <div class="cer" id="cer" hidden>
+      <div class="cer-h">Einlauf</div>
+      <ol id="podl"></ol>
+      <figure id="photobox"><canvas id="photo" width="640" height="360"></canvas><figcaption><b>Zielfoto.</b> <span id="photocap"></span></figcaption></figure>
+    </div>
     </div>
     <div class="caption" aria-live="polite"><span class="tag">LIVE</span><span id="cap">Die Starter stehen an der Linie.</span></div>
   </div>
@@ -58,6 +65,7 @@
 <script src="js/scene.js"></script>
 <script src="js/director.js"></script>
 <script src="js/voice.js"></script>
+<script src="js/ceremony.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

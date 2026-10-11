@@ -23,7 +23,7 @@ function simulate(seed,rec){
   while(order.length<6&&t<150){
     const rain=rain0>=0&&t>=rain0&&t<rain1;
     if(rain!==wasRain){wasRain=rain;say(rain?'Es beginnt zu regnen. Jetzt wacht Schmuddelwetter auf.':'Der Regen hört auf. Schmuddelwetter trottet wieder.',3,rain?2.4:0)}
-    let li=-1,lx=-1; for(let i=0;i<6;i++)if(rs[i].fin<0&&rs[i].x>lx){lx=rs[i].x;li=i}
+    let li=-1,lx=-1,cross=[]; for(let i=0;i<6;i++)if(rs[i].fin<0&&rs[i].x>lx){lx=rs[i].x;li=i}
     for(let i=0;i<6;i++){
       const r=rs[i],d=RUN[i];
       r.n=r.n*.97+(R()-.5)*.05;
@@ -42,13 +42,15 @@ function simulate(seed,rec){
         if(r.st===1||r.st===2||r.st===3)v=0;else if(r.st===4)v*=1.7;else if(r.st===7)v*=-.6;else if(r.st===6)v=70;
         if(rain&&r.st!==6)v*=d.rain;
       }
-      r.x+=v*DT;
-      if(r.fin<0&&r.x+nose(i,r.x)>=L){
-        r.fin=t;r.st=0;r.T=0;order.push(i);
-        if(order.length===1){winT=t;say(d.name+' gewinnt!',i,0,3)}
-        else if(order.length===2&&t-winT<.2)say('Das war eng. '+d.name+' nur eine Nasenlänge dahinter.',i,0,3);
-      }
+      const x0=r.x;r.x+=v*DT;
+      // Zieldurchgang auf den Bruchteil des Zeitschritts genau, damit Zielfoto und Einlauf übereinstimmen
+      if(r.fin<0&&r.x+nose(i,r.x)>=L){const a0=x0+nose(i,x0),a1=r.x+nose(i,r.x);r.fin=t-DT+DT*clamp((L-a0)/(a1-a0),0,1);r.st=0;r.T=0;cross.push(i)}
     }
+    cross.sort((a,b)=>rs[a].fin-rs[b].fin).forEach(i=>{
+      order.push(i);
+      if(order.length===1){winT=rs[i].fin;say(RUN[i].name+' gewinnt!',i,0,3)}
+      else if(order.length===2&&rs[i].fin-winT<.2)say('Das war eng. '+RUN[i].name+' nur eine Nasenlänge dahinter.',i,0,3);
+    });
     const e=rs[2];
     if(e.st===4&&e.fin<0)for(let j=0;j<6;j++){const r=rs[j];
       if(j!==2&&r.fin<0&&r.st!==2&&r.st!==6&&Math.abs(r.x-e.x)<5){r.st=2;r.T=2.2;say('Dampfwalze räumt '+RUN[j].name+' ab.',j,0,2)}}
@@ -59,7 +61,7 @@ function simulate(seed,rec){
     t+=DT;
   }
   rs.map((r,i)=>i).filter(i=>rs[i].fin<0).sort((a,b)=>rs[b].x-rs[a].x).forEach(i=>order.push(i));
-  return {order,frames,ev,dur:t,winT};
+  return {order,frames,ev,dur:t,winT,fin:rs.map(r=>r.fin)};
 }
 
 if(typeof module!=='undefined')module.exports={simulate,RUN,L};
