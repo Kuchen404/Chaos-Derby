@@ -84,10 +84,6 @@ button:focus-visible{outline:3px solid var(--turf);outline-offset:2px}
   .arena{grid-template-columns:minmax(320px,1.2fr) minmax(0,3.3fr) minmax(270px,.9fr);grid-template-rows:auto 1fr auto;
     grid-template-areas:"odds screen slips" "odds log slips" "bets bets bets"}
   .lede{max-width:none}
-  /* Der QR-Code steht groß rechts neben dem Bild, die kleine Einblendung im Sendebild entfällt */
-  .tvqr{display:none}
-  .slipsbox .handy{flex-direction:column;align-items:stretch}
-  .slipsbox .handy .qr{width:min(100%,190px)}
   .odds td{padding-block:7px}
   .slipsbox .bethead{flex-wrap:wrap;gap:4px 10px}
   .bets{max-width:900px}
