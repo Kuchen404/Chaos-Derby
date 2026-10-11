@@ -10,7 +10,7 @@ const voice=(()=>{
   const MAXAGE=[0,2.5,4,8];             // so lange (s) darf eine Zeile je Gewicht warten
   const MODES=['ja','de','aus'];
   let mode='ja',de=null,ja=null,cur=null,wait=null,final=false,quiet=0,chaos=0,m=0;
-  let ac=null,buf=null,map=null,src=null;
+  let ac=null,buf=null,map=null,src=null,failed=false;
   try{const v=localStorage.getItem('derby-voice');mode=v==='aus'?'aus':v==='de'?'de':'ja'}catch(e){}
   function best(re){
     const vs=sy.getVoices().filter(v=>re.test(v.lang));
@@ -24,7 +24,7 @@ const voice=(()=>{
     try{ac=new AC()}catch(e){loading.fail('a');return}
     Promise.all([fetch('audio/jikkyo.json').then(r=>r.json()),fetchProg('audio/jikkyo.mp3','a')])
       .then(([j,a])=>{loading.set('a',.95);return new Promise((ok,no)=>ac.decodeAudioData(a,ok,no)).then(b=>{map=j;buf=b;loading.set('a',1);if(voice.onload)voice.onload()})})
-      .catch(()=>loading.fail('a'));
+      .catch(()=>{failed=true;loading.fail('a');if(voice.onload)voice.onload()});
   }
   const has=c=>!!(map&&buf&&map[c]);
   const tape=()=>mode==='ja'&&!!buf&&typeof jikkyo!=='undefined';
@@ -62,6 +62,7 @@ const voice=(()=>{
     get on(){return mode!=='aus'},
     get mode(){return mode},
     get ready(){return !!buf},
+    get pending(){return !!AC&&!buf&&!failed},   // Aufnahmen werden noch geladen
     get busy(){return !!cur},
     get ctx(){return ac},                  // Audio-Kontext, den auch js/sfx.js mitbenutzt             // spricht gerade (Musik wird dann leiser)             // Aufnahmen geladen
     // Japanisch gewählt, aber weder Aufnahmen noch japanische Stimme auf dem Gerät
