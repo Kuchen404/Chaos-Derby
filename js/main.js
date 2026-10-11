@@ -21,6 +21,7 @@ function stamp(s){s=Math.floor(s);return Math.floor(s/60)+':'+String(s%60).padSt
 function logLine(e){
   $('cap').textContent=e.s;const ol=$('log');if(ol.firstChild&&ol.firstChild.className==='empty')ol.textContent='';
   const li=document.createElement('li'),tm=document.createElement('time'),sp=document.createElement('span');
+  voice.say(e,clamp((e.t-race.winT+12)/12,0,1));
   tm.textContent=stamp(e.t);sp.textContent=e.s;li.append(tm,sp);ol.prepend(li);while(ol.children.length>9)ol.lastChild.remove();
   if(e.cut&&(!cut||t>cut.until+1.2))cut={i:e.i,until:t+e.cut}}
 function step(dt){
@@ -28,16 +29,27 @@ function step(dt){
   $('slow').hidden=!slow;t+=sdt;
   while(evI<race.ev.length&&race.ev[evI].t<=t)logLine(race.ev[evI++]);
   frame(dt,sdt);
+  if(voice.update(dt)>8&&t>3&&t<race.winT-6)filler();
   return t>=Math.min(race.dur,race.winT+7);
+}
+// Füllt längere Pausen im gesprochenen Kommentar mit dem Stand an der Spitze. Nur gesprochen, nicht im Verlauf.
+function filler(){
+  const x=race.frames[Math.min(Math.floor(t*30),race.frames.length-1)].x,o=x.map((v,i)=>i).sort((a,b)=>x[b]-x[a]);
+  const a=RUN[o[0]].name,b=RUN[o[1]].name,gap=Math.round(x[o[0]]-x[o[1]]),z=RUN[o[5]].name,k=Math.random();
+  const s=gap<3?'Kopf an Kopf an der Spitze: '+a+' und '+b+'.'
+    :k<.6?a+' führt mit '+gap+' Metern vor '+b+'.'
+    :'Vorne '+a+', ganz hinten '+z+'.';
+  voice.say({s,p:1},clamp((t-race.winT+12)/12,0,1));
 }
 function tick(now){const dt=clamp((now-last)/1000,0,.1);last=now;if(step(dt)){finish();return}raf=requestAnimationFrame(tick)}
 function finish(){
   state='done';$('go').textContent='Wiederholung ansehen';$('slow').hidden=true;
   const o=race.order;$('cap').textContent='Einlauf: 1. '+RUN[o[0]].name+' · 2. '+RUN[o[1]].name+' · 3. '+RUN[o[2]].name;
   o.forEach((i,k)=>{$('pl'+i).textContent=(k+1)+'.'});
+  voice.say({s:'Der Einlauf: Erster '+RUN[o[0]].name+', Zweiter '+RUN[o[1]].name+', Dritter '+RUN[o[2]].name+'.',p:3},0);
 }
 function reset(){
-  cancelAnimationFrame(raf);t=0;evI=0;cut=null;shotK='';regie.sp=regie.alone=-1;regie.since=0;state='idle';$('slow').hidden=true;
+  cancelAnimationFrame(raf);voice.stop();t=0;evI=0;cut=null;shotK='';regie.sp=regie.alone=-1;regie.since=0;state='idle';$('slow').hidden=true;
   $('log').innerHTML='<li class="empty">Der Kommentar läuft mit, sobald das Rennen startet.</li>';
   RUN.forEach((d,i)=>{$('pl'+i).textContent='–'});
   if(!gl)return;
@@ -56,6 +68,8 @@ try{
 }catch(err){gl=false;$('nogl').hidden=false}
 $('go').onclick=start;
 $('neu').onclick=()=>{fresh();start()};
+function voiceLabel(){$('ton').textContent=voice.on?'Ton: an':'Ton: aus';$('ton').setAttribute('aria-pressed',voice.on)}
+if(voice.ok){voiceLabel();$('ton').onclick=()=>{voice.set(!voice.on);voiceLabel()}}else $('ton').hidden=true;
 fit();fresh();reset();
 window.addEventListener('resize',()=>{fit();if(gl&&state!=='run')frame(1,0)});
 setTimeout(()=>{
