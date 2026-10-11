@@ -105,9 +105,12 @@ Gewettet wird an einem gemeinsamen Bildschirm mit Spielgeld. Einer bedient das W
 
 - Die Kommentarzeilen werden zusätzlich vorgelesen, über die Sprachausgabe des Browsers (Web Speech API, `js/voice.js`). Das kostet keine Audiodateien und funktioniert ohne Server. Wie die Stimme klingt, hängt vom Gerät ab: Chrome und Edge bringen gute deutsche Stimmen mit, unter Linux ist die Auswahl oft dürftig.
 - Die Zeilen kommen schneller, als man sie sprechen kann. Jede Zeile bekommt deshalb in der Simulation ein Gewicht (`p`): 3 für den Zieleinlauf, 2 für Ereignisse, 1 für Führungswechsel und Ähnliches. Es wartet höchstens eine Zeile; eine neue mit mindestens gleichem Gewicht verdrängt sie, und was zu lange gewartet hat, fällt weg. Der Sieg unterbricht alles, danach kommt nur noch das Ergebnis.
-- Gegen Ende spricht die Stimme schneller und höher.
+- **Japanischer Sprecher (Standard):** Wie in einer japanischen Rennübertragung kommentiert ein Sprecher auf Japanisch (`js/jikkyo.js`), die deutschen Zeilen bleiben als Untertitel. Dafür trägt jedes Ereignis in der Simulation eine Art (`k`), aus der die Wiedergabe den japanischen Satz baut. Die Namen der Starter spricht er in Katakana aus, so wie ein Japaner die deutschen Namen lesen würde.
+- **Er dreht ab:** Die Aufregung steigt mit dem Rennfortschritt und mit jedem Chaos-Ereignis und sinkt bis zum Ziel nicht mehr. Sie hat vier Stufen: sachlich, lebhaft („おっと…“), aufgeregt (Ausrufe statt Punkte) und außer sich (Schreie, Namen doppelt, Sätze wie „Das Kommentatorenpult ist im Chaos!“, in Pausen Ausbrüche ohne Anlass). Dazu wird die Stimme schneller, höher und lauter. Nach dem Sieg sagt er außer Atem, aber wieder gefasst, den Einlauf an.
+- Der Knopf „Ton“ wechselt zwischen Japanisch, Deutsch und aus. Hat das Gerät keine japanische Stimme, liest die deutsche Stimme die Textzeilen vor, und der Knopf sagt das. Japanische Stimmen bringen Windows, macOS, Android und Chrome in der Regel mit.
+- Der deutsche Sprecher spricht gegen Ende schneller und höher.
 - Längere Pausen füllt die Wiedergabe mit dem Stand an der Spitze („X führt mit 12 Metern vor Y“). Diese Sätze entstehen aus den Positionen beim Abspielen und stehen nicht im Textverlauf.
-- Der Ton lässt sich über „Ton: an/aus“ abschalten; die Wahl merkt sich der Browser.
+- Die Wahl beim Ton merkt sich der Browser.
 - Nicht umgesetzt: eigene Sprachaufnahmen oder eine KI-Stimme. Beides klänge besser, bräuchte aber Audiodateien pro Satz und Starter oder einen Dienst im Netz.
 
 ## Zielfoto und Siegerehrung
