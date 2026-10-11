@@ -64,7 +64,7 @@ function reset(){
   if(!gl)return;
   for(const p of parts){p.life=0;p.s.visible=false}
   trackMat.color.set(BODEN_COL[race.bod][0]);trackMat.emissive.set(BODEN_COL[race.bod][1]);
-  fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.jp=0;f.dT=0;f.spin.rotation.z=0;if(f.rocket){f.rocket.color.set('#c9ced4');f.cone.color.set('#d2232a')}});frame(1,0);
+  fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.jp=0;f.dT=0;f.fT=0;f.lie=0;f.spin.rotation.z=0;f.spin.rotation.x=0;if(f.rocket){f.rocket.color.set('#c9ced4');f.cone.color.set('#d2232a')}});frame(1,0);
 }
 function start(){voice.unlock();reset();if(!gl)return;closeBets();state='run';$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
 // Jedes Rennen bekommt einen ausgelosten Bahnzustand; die Quoten werden für genau diesen Boden gerechnet

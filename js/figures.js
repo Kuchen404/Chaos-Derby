@@ -10,7 +10,7 @@ function jockey(par,x,y,z,col,s){
   const tr=P(SPH,col,g,.05,.3,0,.17,.3,.17);tr.rotation.z=-.5;
   P(SPH,'#f1c9a5',g,.24,.6,0,.13,.13,.13);P(SPH,col,g,.25,.66,0,.14,.09,.14);
   P(CYL,'#f4f4f4',g,.02,.02,.17,.05,.34,.05);P(CYL,'#f4f4f4',g,.02,.02,-.17,.05,.34,.05);return g}
-function shell(c){const root=G(scene),spin=G(root,0,c,0),inner=G(spin,0,-c,0);root.scale.setScalar(S);return {root,spin,inner,c,ry:0,b:0,zo:0,prev:0,ch:0,sl:0,rk:0,jb:0,jp:0,dT:0}}
+function shell(c){const root=G(scene),spin=G(root,0,c,0),inner=G(spin,0,-c,0);root.scale.setScalar(S);return {root,spin,inner,c,ry:0,b:0,zo:0,prev:0,ch:0,sl:0,rk:0,jb:0,jp:0,dT:0,fT:0,lie:0}}
 
 /* ---------- Die Starter: Modelle mit Skelett (Quaternius, Ultimate Animated Animals, CC0) ---------- */
 const WHITE={Main:'#b2b2a3',Main_Dark:'#a3a394',Main_Light:'#928f92',Hooves:'#928351',Hair:'#aca088',Muzzle:'#977c62'};
@@ -139,8 +139,11 @@ function pose(i,x,st,rain,dt,sdt){
   f.zo+=((id==='stier'&&st===4?Math.sin(t*2.3)*4:id==='shiba'&&st===15?Math.sin(t*7)*1.6:0)-f.zo)*Math.min(1,dt*4);
   const wx=x+(id==='alpaka'?2:0)-f.V.front*S,wz=laneZ(i)+f.zo;
   f.root.position.set(wx,0,wz);
-  if(st===2){f.spin.rotation.z-=sdt*10;f.spin.position.y=f.c+Math.abs(Math.sin(t*5))*1.3}
-  else{f.spin.rotation.z=0;f.spin.position.y=f.c+f.jb*Math.abs(Math.sin(t*9))*.35}
+  // Sturz: genau ein Überschlag nach vorn mit kleinem Hüpfer, dann liegt das Tier auf der Seite und steht danach wieder auf
+  if(st===2){f.fT+=sdt;const u=Math.min(1,f.fT/.65),e=u*u*(3-2*u);f.spin.rotation.z=-2*PI*e;
+    f.lie+=((u>=1?1:0)-f.lie)*Math.min(1,dt*10);f.spin.position.y=f.c*(1-.45*f.lie)+Math.sin(PI*u)*1.4}
+  else{f.fT=0;f.lie+=(0-f.lie)*Math.min(1,dt*7);f.spin.rotation.z=0;f.spin.position.y=f.c*(1-.45*f.lie)+f.jb*Math.abs(Math.sin(t*9))*.35}
+  f.spin.rotation.x=f.lie*1.35;
   for(const q in f.fx)f.fx[q].visible=(+q===st);
   poseModel(f,x,st,sdt);
   if(id==='stier'&&st===4&&Math.random()<sdt*40)emit(wx-2-Math.random()*2,.4,wz+Math.random()*2-1,-3,1.5,0,.9,1.3,'#d6c8a0');
