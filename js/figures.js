@@ -150,6 +150,7 @@ function pose(i,x,st,rain,dt,sdt){
   const f=fig[i],id=f.id,k=Math.min(1,dt*8);
   if(STAND[st])f.sa=st===3||st===14?(f.act&&f.act.Eating?'Eating':'Idle'):'Idle';else if(!f.sa)f.sa='Idle';
   f.b+=((STAND[st]?1:0)-f.b)*k;f.ch+=((st===4?1:0)-f.ch)*k;f.sl+=((id==='husky'&&rain?1:0)-f.sl)*k;f.rk+=((st===6||st===9?1:0)-f.rk)*k;f.jb+=((st===8?1:0)-f.jb)*k;
+  if(st===11&&f.prev!==11&&state==='run')sfx.play('boing');   // Hirsch springt
   f.jp+=((st===11?1:0)-f.jp)*Math.min(1,dt*12);if(st===11)f.jT=(f.jT||0)+sdt*1.1;else f.jT=0;
   f.ry+=((st===7||st===9?PI:0)-f.ry)*Math.min(1,dt*9);f.root.rotation.y=f.ry;
   f.zo+=((id==='stier'&&st===4?Math.sin(t*2.3)*4:id==='shiba'&&st===15?Math.sin(t*7)*1.6:0)-f.zo)*Math.min(1,dt*4);

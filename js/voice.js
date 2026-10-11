@@ -61,7 +61,9 @@ const voice=(()=>{
     ok:!!(sy||AC),
     get on(){return mode!=='aus'},
     get mode(){return mode},
-    get ready(){return !!buf},             // Aufnahmen geladen
+    get ready(){return !!buf},
+    get busy(){return !!cur},
+    get ctx(){return ac},                  // Audio-Kontext, den auch js/sfx.js mitbenutzt             // spricht gerade (Musik wird dann leiser)             // Aufnahmen geladen
     // Japanisch gewählt, aber weder Aufnahmen noch japanische Stimme auf dem Gerät
     get fallback(){return mode==='ja'&&!buf&&!ja},
     // Browser geben Ton erst nach einem Klick frei; beim Start des Rennens aufrufen
