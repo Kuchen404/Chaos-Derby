@@ -10,7 +10,7 @@ function build(){
   flat(3000,900,new THREE.MeshLambertMaterial({color:'#5d9f5a'}),500,-.02,0);
   const st=canvasTex(2,1,c=>{c.fillStyle='#4aa655';c.fillRect(0,0,1,1);c.fillStyle='#3f9a4b';c.fillRect(1,0,1,1)});
   st.magFilter=THREE.NearestFilter;st.wrapS=THREE.RepeatWrapping;st.repeat.set(24,1);
-  flat(1200,17,new THREE.MeshLambertMaterial({map:st}),500,0,0);
+  trackMat=new THREE.MeshLambertMaterial({map:st});flat(1200,17,trackMat,500,0,0);
   flat(.35,16.4,new THREE.MeshBasicMaterial({color:'#ffffff'}),0,.02,0);
   const ck=canvasTex(2,2,c=>{c.fillStyle='#fff';c.fillRect(0,0,2,2);c.fillStyle='#111';c.fillRect(0,0,1,1);c.fillRect(1,1,1,1)});
   ck.magFilter=THREE.NearestFilter;ck.wrapS=ck.wrapT=THREE.RepeatWrapping;ck.repeat.set(1,14);

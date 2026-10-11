@@ -35,6 +35,10 @@ function setQuotes(q){Q=q;renderBets()}
 // Ab dem Start sind keine Wetten mehr möglich, abgerechnet wird einmal je Rennen
 function closeBets(){if(!betsOpen)return;betsOpen=false;betMsg('');renderBets()}
 function openBets(){betsOpen=true;lastRes=null;renderBets()}
+// Quoten gelten nur für den Boden, auf dem gewettet wurde. Wechselt der Boden, gehen offene Wetten an die Kasse zurück.
+function dropStaleBets(b){
+  let n=0;for(let k=book.slips.length-1;k>=0;k--)if(book.slips[k].bod!==b){cancelBet(book,k);n++}
+  if(n){saveBook();betMsg('Neuer Boden, neue Quoten: '+(n>1?n+' offene Wetten wurden':'eine offene Wette wurde')+' zurückgegeben.');renderBets()}}
 function settleBets(order){if(race.settled)return null;race.settled=true;lastRes=settle(book,order);saveBook();renderBets();return lastRes}
 
 $('addp').onsubmit=e=>{e.preventDefault();const err=addPlayer(book,$('pname').value);betMsg(err);if(!err){$('pname').value='';saveBook();renderBets();$('bp').value=book.players.length-1}};

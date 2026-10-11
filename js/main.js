@@ -57,14 +57,18 @@ function reset(){
   cancelAnimationFrame(raf);voice.stop();t=0;evI=0;cut=null;shotK='';regie.sp=regie.alone=-1;regie.since=0;state='idle';$('slow').hidden=true;
   endCeremony();
   $('log').innerHTML='<li class="empty">Der Kommentar läuft mit, sobald das Rennen startet.</li>';
+  $('cap').textContent='Die Starter stehen an der Linie. Der Boden ist '+BODEN[race.bod].name+'.';
   RUN.forEach((d,i)=>{$('pl'+i).textContent='–'});
   if(!gl)return;
   for(const p of parts){p.life=0;p.s.visible=false}
-  fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.dT=0;f.spin.rotation.z=0});
+  trackMat.color.set(BODEN_COL[race.bod][0]);trackMat.emissive.set(BODEN_COL[race.bod][1]);
+  fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.dT=0;f.spin.rotation.z=0});
   fig[5].rocket.color.set('#c9ced4');fig[5].cone.color.set('#d2232a');frame(1,0);
 }
 function start(){reset();if(!gl)return;closeBets();state='run';$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
-function fresh(){race=simulate((Math.random()*2**31)|0,true)}
+// Jedes Rennen bekommt einen ausgelosten Bahnzustand; die Quoten werden für genau diesen Boden gerechnet
+const BODEN_COL=[['#ffffff','#000000'],['#c8c09a','#14100a'],['#8f7a58','#2e1e0c']];   // Rasenfarbe und Schlammton je Boden
+function fresh(){const b=drawBoden(Math.random());race=simulate((Math.random()*2**31)|0,true,b);race.bod=b;$('bod').textContent=BODEN[b].name;odds()}
 function fit(){if(!gl)return;const w=$('view').clientWidth;renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.setSize(w,Math.round(w*9/16),false)}
 
 $('tb').innerHTML=RUN.map((d,i)=>'<tr><td><span class="nr" style="background:'+d.col+';color:'+d.ink+'">'+d.nr+'</span></td><td><div class="name">'+d.name+'</div><div class="sub">'+d.kind+'. '+d.trait+'.</div></td><td class="n p" id="pc'+i+'">…</td><td class="n q" id="qt'+i+'">…</td><td class="n q2" id="qp'+i+'">…</td><td class="n" id="pl'+i+'">–</td></tr>').join('');
@@ -76,14 +80,30 @@ $('go').onclick=start;
 $('neu').onclick=()=>{fresh();reset();$('go').textContent='Rennen starten';openBets()};
 function voiceLabel(){$('ton').textContent=voice.on?'Ton: an':'Ton: aus';$('ton').setAttribute('aria-pressed',voice.on)}
 if(voice.ok){voiceLabel();$('ton').onclick=()=>{voice.set(!voice.on);voiceLabel()}}else $('ton').hidden=true;
+// Quoten je Bahnzustand: in Häppchen rechnen, damit die Seite bedienbar bleibt, und für jeden Boden einmal merken.
+// Zuerst der Boden des aktuellen Rennens, die übrigen danach im Leerlauf, damit ein neues Rennen nicht warten muss.
+const TL=[];let oddsBusy=false;
+const oddsDone=b=>TL[b]&&TL[b].N>=ODDS_N;
+function showOdds(b){
+  const q=quotes(TL[b]);
+  RUN.forEach((d,i)=>{$('pc'+i).textContent=(q.pWin[i]*100).toFixed(0)+' %';$('qt'+i).textContent=fmtQ(q.win[i]);$('qp'+i).textContent=fmtQ(q.place[i])});
+  $('mc').textContent='Die Quoten stammen aus '+q.N+' unsichtbar vorab gerechneten Rennen mit diesen Startern auf '+BODEN[b].name+'em Boden, abzüglich 15 % für die Bank. Platz heißt: Erster oder Zweiter.';
+  setQuotes(q);
+}
+function oddsLoop(){
+  const cur=race.bod,b=oddsDone(cur)?BODEN.findIndex((d,k)=>!oddsDone(k)):cur;
+  if(b<0){oddsBusy=false;return}
+  if(b!==cur&&state==='run'){setTimeout(oddsLoop,500);return}
+  TL[b]=TL[b]||tally(b);
+  const done=count(TL[b],250);
+  if(b===cur){if(done)showOdds(b);else $('mc').textContent='Quoten werden berechnet … '+Math.round(TL[b].N/ODDS_N*100)+' %'}
+  setTimeout(oddsLoop,b===cur?0:30);
+}
+function odds(){
+  const b=race.bod;dropStaleBets(b);
+  if(oddsDone(b))showOdds(b);
+  else{for(let i=0;i<RUN.length;i++){$('pc'+i).textContent='…';$('qt'+i).textContent='…';$('qp'+i).textContent='…'}setQuotes(null)}
+  if(!oddsBusy){oddsBusy=true;setTimeout(oddsLoop,0)}
+}
 fit();fresh();reset();
 window.addEventListener('resize',()=>{fit();if(gl&&state!=='run'&&state!=='cer')frame(1,0)});
-// Quoten in Häppchen rechnen, damit die Seite bedienbar bleibt
-const tl=tally();
-(function oddsChunk(){
-  if(!count(tl,250)){$('mc').textContent='Quoten werden berechnet … '+Math.round(tl.N/ODDS_N*100)+' %';setTimeout(oddsChunk,0);return}
-  const q=quotes(tl);
-  RUN.forEach((d,i)=>{$('pc'+i).textContent=(q.pWin[i]*100).toFixed(0)+' %';$('qt'+i).textContent=fmtQ(q.win[i]);$('qp'+i).textContent=fmtQ(q.place[i])});
-  $('mc').textContent='Die Quoten stammen aus '+q.N+' unsichtbar vorab gerechneten Rennen mit diesen Startern, abzüglich 15 % für die Bank. Platz heißt: Erster oder Zweiter.';
-  setQuotes(q);
-})();
