@@ -52,11 +52,13 @@ Der wichtigste Grundsatz: **erst simulieren, dann zeigen.** Ein Rennen wird voll
 | `js/director.js` | Kameraregie |
 | `js/ceremony.js` | Zielfoto und Siegerehrung |
 | `js/voice.js` | gesprochener Kommentar über die Sprachausgabe des Browsers |
-| `js/jikkyo.js` | japanische Ansagen mit steigender Aufregung |
+| `js/jikkyo.js` | japanische Ansagen mit steigender Aufregung (Quelle für die Aufnahmen) |
+| `audio/` | die japanischen Ansagen als Aufnahmen, erzeugt mit VOICEVOX |
 | `js/betting.js` | Wettbüro auf der Seite: Mitspieler, Wettschein, Abrechnung |
 | `js/main.js` | Abspielen, Bedienung, Quotentafel |
 | `models/` | die fünf Tiermodelle, auf die benutzten Animationen verkleinert |
 | `vendor/` | Three.js r128 und der glTF-Lader |
+| `tools/jikkyo-render.js` | Aufnahmen des Kommentators neu erzeugen (braucht VOICEVOX und ffmpeg) |
 | `tools/odds.js` | Balance und Quoten prüfen: `node tools/odds.js 3000` |
 | `tools/bets-test.js` | Wettlogik prüfen: `node tools/bets-test.js` |
 | `tools/regie.js` | Kameraregie in Bewegung prüfen: `node tools/regie.js 60` (braucht Playwright) |
@@ -69,6 +71,7 @@ Mehr zu den Entscheidungen und den offenen Punkten steht in [`docs/konzept.md`](
 ## Lizenzen fremder Bestandteile
 
 - **Tiermodelle:** Quaternius, „Ultimate Animated Animals“, CC0. https://quaternius.com/packs/ultimateanimatedanimals.html
+- **Stimme des Kommentators:** VOICEVOX:青山龍星. https://voicevox.hiroshiba.jp/ , Nutzungsbedingungen der Stimme: https://www.virvoxproject.com/voicevoxの利用規約
 - **Three.js** und GLTFLoader: MIT, siehe `vendor/THREE-LICENSE.txt`.
 
 Für den eigenen Code ist noch keine Lizenz festgelegt.

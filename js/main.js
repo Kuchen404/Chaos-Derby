@@ -67,7 +67,7 @@ function reset(){
   fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.dT=0;f.spin.rotation.z=0});
   fig[5].rocket.color.set('#c9ced4');fig[5].cone.color.set('#d2232a');frame(1,0);
 }
-function start(){reset();if(!gl)return;closeBets();state='run';$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
+function start(){voice.unlock();reset();if(!gl)return;closeBets();state='run';$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
 // Jedes Rennen bekommt einen ausgelosten Bahnzustand; die Quoten werden für genau diesen Boden gerechnet
 const BODEN_COL=[['#ffffff','#000000'],['#c8c09a','#14100a'],['#8f7a58','#2e1e0c']];   // Rasenfarbe und Schlammton je Boden
 function fresh(){const b=drawBoden(Math.random());race=simulate((Math.random()*2**31)|0,true,b);race.bod=b;$('bod').textContent=BODEN[b].name;odds()}
@@ -81,7 +81,7 @@ try{
 $('go').onclick=start;
 $('neu').onclick=()=>{fresh();reset();$('go').textContent='Rennen starten';openBets()};
 function voiceLabel(){$('ton').textContent='Ton: '+(voice.mode==='aus'?'aus':voice.mode==='de'?'Deutsch':voice.fallback?'Deutsch (keine japanische Stimme)':'Japanisch');$('ton').setAttribute('aria-pressed',voice.on)}
-if(voice.ok){voiceLabel();speechSynthesis.addEventListener&&speechSynthesis.addEventListener('voiceschanged',voiceLabel);$('ton').onclick=()=>{voice.next();voiceLabel()}}else $('ton').hidden=true;
+if(voice.ok){voiceLabel();speechSynthesis.addEventListener&&speechSynthesis.addEventListener('voiceschanged',voiceLabel);$('ton').onclick=()=>{voice.unlock();voice.next();voiceLabel()}}else $('ton').hidden=true;
 // Quoten je Bahnzustand: in Häppchen rechnen, damit die Seite bedienbar bleibt, und für jeden Boden einmal merken.
 // Zuerst der Boden des aktuellen Rennens, die übrigen danach im Leerlauf, damit ein neues Rennen nicht warten muss.
 const TL=[];let oddsBusy=false;

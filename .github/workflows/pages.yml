@@ -26,7 +26,7 @@ jobs:
       - name: Seite zusammenstellen
         run: |
           mkdir _site
-          cp -r index.html classic css js models vendor _site/
+          cp -r index.html classic css js models vendor audio _site/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
