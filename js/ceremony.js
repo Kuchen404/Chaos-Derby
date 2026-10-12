@@ -28,7 +28,7 @@ function margin(d){return d<.3?'einer Nasenlänge':d<1?'einer Kopflänge':d<2?'e
 function snapPhoto(){
   photoTaken=true;
   const o=race.order,w=race.winT,{A,xs}=posAt(w);
-  xs.forEach((x,i)=>pose(i,x,A.s[i],A.rain,0,0));
+  xs.forEach((x,i)=>pose(i,x,A.s[i],A.rain,0,0,-1,xs));
   renderer.render(scene,photoCam);
   const cv=$('photo'),c=cv.getContext('2d'),W=cv.width,H=cv.height;
   c.filter='sepia(.5) contrast(1.15)';c.drawImage(renderer.domElement,0,0,W,H);c.filter='none';
@@ -43,7 +43,7 @@ function snapPhoto(){
 function startCeremony(){
   state='cer';ct=0;sfx.music('fanfare');sfx.rain(false);podium.visible=true;rainFx.visible=false;frame.w=0;$('strip').hidden=true;
   bgc.copy(SKY);scene.fog.color.copy(bgc);sun.intensity=.7;hemi.intensity=.8;
-  fig.forEach(f=>{f.spin.rotation.z=0;f.spin.rotation.x=0;f.lie=0;f.fT=0;f.spin.position.y=f.c;for(const q in f.fx)f.fx[q].visible=false});
+  fig.forEach(f=>{f.spin.rotation.z=0;f.spin.rotation.x=0;f.lie=0;f.fT=0;f.bel=0;f.sq=0;f.spin.scale.set(1,1,1);if(f.stars)f.stars.visible=false;f.spin.position.y=f.c;for(const q in f.fx)f.fx[q].visible=false});
   fig.forEach(k=>{if(k.flame){k.inner.rotation.z=0;k.inner.position.y=-k.c;k.flame.visible=false}});
   const o=race.order,fin=race.fin,w=fin[o[0]];
   $('podl').innerHTML=o.map((i,k)=>{const d=RUN[i],tm=fin[i]<0?'nicht im Ziel':k?'+'+(fin[i]-w).toFixed(2).replace('.',',')+' s':clock(w);

@@ -89,10 +89,12 @@ const sfx=(()=>{
   };
   // Rennen: Geräusch je Art des Ereignisses (k in sim.js)
   const EV={start:['bell','cheer'],sleep:['snore'],eat:['munch'],charge:['snort','rumble'],slip:['thud'],back:['clip'],rocket:['ignite','rocket'],
-    rocketwrong:['ignite','rocket'],explode:['boom','ooh'],howl:['howl'],howlalong:['howl'],knock:['thud'],stubborn:['heehaw'],unstubborn:['sigh'],
+    rocketwrong:['ignite','rocket'],explode:['boom','ooh'],howl:['howl'],howlalong:['howl'],knock:['thud','whoosh'],stubborn:['heehaw'],unstubborn:['sigh'],
     crash:['thud','ooh'],scare:['squeak'],spook:['squeak'],freeze:['squeak'],hunt:['growl'],sniff:['sniff'],zoom:['bark','whoosh'],
     trip:['thud'],pileup:['thud'],chargefail:['thud','ooh'],rocketram:['thud'],blast:['thud'],landon:['thud'],bullturn:['snort','rumble'],
-    kick:['kick'],zoomhit:['thud'],headon:['thud','ooh'],rearend:['thud'],bump:['thud'],jub:['cheer'],stretch:['slide'],draftout:['whoosh'],
+    kick:['kick','whoosh'],zoomhit:['thud'],headon:['thud','ooh'],rearend:['thud'],bump:['thud'],jub:['cheer'],stretch:['slide'],draftout:['whoosh'],
+    leap:['boing'],leapfail:['boing','thud','ooh'],piggy:['boing','snicker'],piggyoff:['boing'],buckoff:['heehaw','whoosh'],piggyfall:['thud'],
+    barge:['thud'],bargefail:['boing','ooh'],turbo:['whoosh'],turbofail:['skid','thud'],taunt:['snicker'],tauntfail:['thud','ooh'],
     win:['cheer'],close:['ooh']};
 
   /* ---------- Musik ---------- */
