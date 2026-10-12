@@ -82,7 +82,7 @@ Nach jedem Unfall gilt 1,5 s Schonzeit, in der der Starter nicht wieder getroffe
 
 ### Überholversuche
 
-Läuft ein schnellerer Starter bis auf 0,6 bis 2,5 m an einen laufenden Vordermann heran, versucht er es mit 13 % mit einem Gag (jedes Paar höchstens alle 8 s). Im Schnitt passiert das etwa 1,5-mal pro Rennen. Welcher Gag, hängt etwas vom Tier ab (60 % der eigene, sonst zufällig):
+Läuft ein schnellerer Starter bis auf 2,5 m an einen laufenden Vordermann heran, hängt er an ihm fest, bis er es mit einem Gag versucht (siehe „Aufholjagd und Überholen nur mit Gag“). Im Schnitt passiert das etwa 12-mal pro Rennen. Welcher Gag, hängt etwas vom Tier ab (60 % der eigene, sonst zufällig):
 
 | Gag (`k`) | Lieblingsgag von | Was passiert | Geht schief |
 |---|---|---|---|
@@ -92,20 +92,28 @@ Läuft ein schnellerer Starter bis auf 0,6 bis 2,5 m an einen laufenden Vorderma
 | turbo (24) | Shiba, Wolf | 0,9 s mit 1,6-fachem Tempo, Beine wirbeln, Staub | 20 %: übernimmt sich und macht einen Bauchklatscher (`turbofail`) |
 | taunt (25) | Pferd, Pferd auf zwei Beinen | überholt 1,2 s rückwärts laufend und streckt die Zunge raus („Bätsch!“) | 25 %: fällt über die eigenen Beine (`tauntfail`) |
 
-### Aufholjagd
+### Aufholjagd und Überholen nur mit Gag
 
-Ohne Ausgleich zog sich das Feld weit auseinander: Bei 800 m lag der Erste im Median 27 m vorn, in 64 % der Rennen gewann, wer dort führte, und nur 16 % der Zieleinläufe waren enger als 0,2 s. Deshalb gilt jetzt für jeden laufenden Starter: Wer hinter dem Führenden liegt, wird schneller, linear bis +25 % ab 30 m Rückstand (`CATCH` in `js/sim.js`). Der Führende selbst läuft 3 % langsamer (`LEADF`). Ausgenommen sind Rakete, Flug, Bauchklatscher, Bocksprung und Huckepack, weil diese Zustände ihr eigenes Tempo haben, und wer rückwärts läuft. Die Grundtempos wurden danach neu abgestimmt.
+Ohne Ausgleich zog sich das Feld weit auseinander: Bei 800 m lag der Erste im Median 27 m vorn, in 64 % der Rennen gewann, wer dort führte, und nur 16 % der Zieleinläufe waren enger als 0,2 s. Ein erster Versuch mit starkem Aufholtempo (+25 %) hielt das Feld sehr eng zusammen, aber knapp ein Drittel aller Überholungen war schlichtes Vorbeilaufen. Gewünscht ist: etwas mehr Abstand, und überholt wird meistens auf lustige Weise oder es geht lustig schief.
 
-Gemessen über 3000 Rennen mit ausgelostem Feld und Boden (vorher → nachher):
+Deshalb gilt jetzt:
 
-| | vorher | nachher |
-|---|---|---|
-| Führungswechsel je Rennen (ab 1 m Vorsprung) | 3,1 | 5,8 |
-| davon auf den letzten 200 m | 0,5 | 1,2 |
-| Abstand Erster zu Zweitem bei 800 m (Median) | 27 m | 6 m |
-| Sieger lag bei 800 m vorn | 64 % | 33 % |
-| Zieleinlauf enger als 0,2 s | 16 % | 47 % |
-| Zieleinlauf weiter als 2 s | 29 % | 11 % |
+- **Aufholjagd:** Wer hinter dem Führenden liegt, wird schneller, linear bis +12 % ab 30 m Rückstand (`CATCH` in `js/sim.js`). Der Führende läuft 3 % langsamer (`LEADF`). Ausgenommen sind Rakete, Flug, Bauchklatscher, Bocksprung und Huckepack, weil diese Zustände ihr eigenes Tempo haben, und wer rückwärts läuft.
+- **Kein einfaches Vorbeilaufen:** Wer auf einen laufenden Vordermann bis auf 2,5 m aufläuft, hängt an ihm fest (läuft nicht schneller als er), bis er einen Überholgag versucht, im Schnitt nach 1,7 s (`GAGTRY`). Danach hat das Paar 3 s Ruhe (`GAGCD`). Wer steht, liegt oder sonst eine Panne hat, kann weiter ohne Gag überholt werden.
+- Die Grundtempos wurden danach neu abgestimmt.
+
+Gemessen mit ausgelostem Feld und Boden (2000 bis 3000 Rennen). Ein Überholen zählt als „Gag“, wenn einer der beiden in den 2,5 s davor an einem Überholgag beteiligt war, als „Chaos“, wenn einer in den 1,5 s davor nicht normal lief (Panne, Sonderlauf, Regen), sonst als „normal“:
+
+| | ohne Ausgleich | +25 % Aufholen | jetzt |
+|---|---|---|---|
+| Führungswechsel je Rennen (ab 1 m Vorsprung) | 3,1 | 5,8 | 5,1 |
+| davon auf den letzten 200 m | 0,5 | 1,2 | 0,9 |
+| Abstand Erster zu Zweitem bei 800 m (Median) | 27 m | 6 m | 12 m |
+| Sieger lag bei 800 m vorn | 64 % | 33 % | 49 % |
+| Zieleinlauf enger als 0,2 s | 16 % | 47 % | 29 % |
+| Überholgags je Rennen | – | 3,1 | 11,6 |
+| Überholungen durch Gag / Chaos / normal | – | 26 / 44 / 29 % | 70 / 29 / 0 % |
+| Führungswechsel durch Gag / Chaos / normal | – | 29 / 41 / 30 % | 72 / 27 / 1 % |
 
 ### Bahnzustand
 
@@ -113,7 +121,7 @@ Vor jedem Rennen wird der Boden ausgelost: gut (50 %), weich (30 %), schwer (20 
 
 ### Zielgerade
 
-Auf den letzten 200 m sind Fressen, Sturmlauf und Rückwärtslaufen 1,5-mal so häufig, eine noch nicht gezündete Rakete zündet 2,5-mal so oft, und der Führende kann zu früh jubeln. Mit der Aufholjagd gewinnt in zwei Dritteln der Rennen nicht, wer bei 800 m vorn liegt. Ein verfrühter Jubel kommt in etwa einem Viertel der Rennen vor.
+Auf den letzten 200 m sind Fressen, Sturmlauf und Rückwärtslaufen 1,5-mal so häufig, eine noch nicht gezündete Rakete zündet 2,5-mal so oft, und der Führende kann zu früh jubeln. In etwa der Hälfte der Rennen gewinnt nicht, wer bei 800 m vorn liegt. Ein verfrühter Jubel kommt in etwa einem Viertel der Rennen vor.
 
 - Das Alpaka gewinnt im Ziel bis zu 4 m durch den gestreckten Hals.
 
@@ -127,20 +135,20 @@ Aktuelle Siegchancen (`node tools/odds.js`, 6000 Rennen mit ausgelostem Feld und
 
 | Nr | Starter | gesamt | gut | weich | schwer |
 |---|---|---|---|---|---|
-| 1 | Sekundenschlaf (Pferd) | 16 % | 19 % | 13 % | 15 % |
-| 2 | Hals über Kopf (Alpaka) | 16 % | 14 % | 18 % | 20 % |
-| 3 | Dampfwalze (Stier) | 15 % | 14 % | 15 % | 19 % |
-| 4 | Schmuddelwetter (Husky) | 16 % | 15 % | 17 % | 17 % |
-| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 15 % | 18 % | 13 % | 13 % |
-| 6 | Spätzünder (Kuh) | 17 % | 16 % | 19 % | 17 % |
-| 7 | Sturkopf (Esel) | 17 % | 16 % | 17 % | 20 % |
-| 8 | Platzhirsch (Hirsch) | 19 % | 20 % | 19 % | 15 % |
-| 9 | Schreckhaft (Reh) | 17 % | 19 % | 15 % | 13 % |
-| 10 | Schlitzohr (Fuchs) | 19 % | 16 % | 23 % | 20 % |
-| 11 | Hetzjagd (Wolf) | 15 % | 14 % | 15 % | 19 % |
-| 12 | Schnüffelnase (Shiba Inu) | 17 % | 19 % | 16 % | 14 % |
+| 1 | Sekundenschlaf (Pferd) | 17 % | 18 % | 17 % | 14 % |
+| 2 | Hals über Kopf (Alpaka) | 18 % | 17 % | 19 % | 21 % |
+| 3 | Dampfwalze (Stier) | 17 % | 16 % | 17 % | 19 % |
+| 4 | Schmuddelwetter (Husky) | 17 % | 16 % | 17 % | 20 % |
+| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 17 % | 20 % | 13 % | 13 % |
+| 6 | Spätzünder (Kuh) | 16 % | 16 % | 18 % | 14 % |
+| 7 | Sturkopf (Esel) | 16 % | 16 % | 17 % | 17 % |
+| 8 | Platzhirsch (Hirsch) | 16 % | 17 % | 18 % | 11 % |
+| 9 | Schreckhaft (Reh) | 17 % | 20 % | 16 % | 12 % |
+| 10 | Schlitzohr (Fuchs) | 16 % | 15 % | 17 % | 19 % |
+| 11 | Hetzjagd (Wolf) | 17 % | 14 % | 19 % | 25 % |
+| 12 | Schnüffelnase (Shiba Inu) | 15 % | 16 % | 13 % | 15 % |
 
-Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 25 %, Pferd auf zwei Beinen 17 %, Husky 16 %, Kuh 15 %, Alpaka 15 %, Stier 12 %. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
+Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 25 %, Pferd auf zwei Beinen 18 %, Alpaka 18 %, Kuh 15 %, Husky 13 %, Stier 11 %. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
 
 ## Wetten
 
@@ -150,7 +158,7 @@ Gewettet wird mit Spielgeld, entweder am eigenen Handy (siehe unten) oder am Wet
 - **Wettarten:** Sieg (Starter gewinnt), Platz (Starter wird Erster oder Zweiter) und Zweierwette (Erster und Zweiter in genau dieser Reihenfolge).
 - **Feste Quoten:** Alle drei kommen aus denselben Probeläufen mit 15 % Abzug, gerechnet für Boden und Feld des aktuellen Rennens. Das dauert nach „Neues Rennen“ einige Sekunden, das Wettbüro öffnet, sobald die Quoten stehen. Kommt ein neues Rennen („Neues Rennen“ oder Neuladen der Seite), gehen offene Wetten an die Kasse zurück, weil ihre Quoten für ein anderes Feld galten. Angezeigt wird eine Nachkommastelle, und genau diese Quote wird ausgezahlt. Sie gilt ab Abgabe der Wette. Obergrenze 99 für Sieg und Platz, 250 für die Zweierwette, Untergrenze 1,1.
 - **Ablauf:** Der Einsatz geht sofort von der Kasse ab, bis zum Start lässt sich eine Wette zurücknehmen. Mit dem Start schließt das Wettbüro. Nach dem Zieleinlauf wird einmal abgerechnet, eine Wiederholung zahlt nicht noch einmal aus. „Neues Rennen“ startet nicht mehr sofort, sondern öffnet zuerst das Wettbüro.
-- **Gegenprobe:** `node tools/odds.js` lost 40 Felder mit Boden aus, rechnet für jedes die Quoten und setzt dann in je 75 neuen Rennen auf jede Möglichkeit einen Taler. Ergebnis zuletzt: Sieg zahlt 0,86 je Taler aus, Platz 0,88, Zweierwette 0,84. Platz kann durch das Runden kleiner Quoten (Pferd auf gutem Boden 1,3) etwas unter 0,85 liegen, die Zweierwette durch seltene Einläufe und die Obergrenze. Für ein Partyspiel reicht das.
+- **Gegenprobe:** `node tools/odds.js` lost 40 Felder mit Boden aus, rechnet für jedes die Quoten und setzt dann in je 75 neuen Rennen auf jede Möglichkeit einen Taler. Ergebnis zuletzt: Sieg zahlt 0,86 je Taler aus, Platz 0,88, Zweierwette 0,83. Platz kann durch das Runden kleiner Quoten (Pferd auf gutem Boden 1,3) etwas unter 0,85 liegen, die Zweierwette durch seltene Einläufe und die Obergrenze. Für ein Partyspiel reicht das.
 
 ### Wetten am Handy
 
