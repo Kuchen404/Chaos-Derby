@@ -65,6 +65,7 @@ Der wichtigste Grundsatz: **erst simulieren, dann zeigen.** Ein Rennen wird voll
 | `js/jikkyo.js` | japanische Ansagen mit steigender Aufregung (Quelle für die Aufnahmen) |
 | `audio/` | die japanischen Ansagen als Aufnahmen, erzeugt mit VOICEVOX |
 | `js/betting.js` | Wettbüro auf der Seite: Mitspieler, Wettschein, Abrechnung |
+| `js/racebar.js` | Rennansicht: großes Sendebild ab dem Start, Wettleiste mit allen Wetten, hebt hervor, wer nach dem aktuellen Stand gewinnen würde |
 | `js/remote.js`, `js/link.js` | Wetten am Handy, Seite des Fernsehers: QR-Code, Verbindung, Kasse für die Handys |
 | `handy.html`, `js/handy.js` | Wettschein am Handy (ohne Rennen) |
 | `js/main.js` | Abspielen, Bedienung, Quotentafel |
