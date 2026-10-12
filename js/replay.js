@@ -1,7 +1,7 @@
 // Chaos-Derby – Wiederholung nach dem Zieleinlauf: der größte Crash und der Zieleinlauf noch einmal in Zeitlupe, mit eigener Kamera.
 // Reine Darstellung: Das Rennen liegt fertig in race.frames, hier wird nur ein Ausschnitt davon erneut abgespielt.
 const RFALL={2:1,17:1,18:1,19:1,20:1,26:1};   // Zustände, in denen ein Starter stürzt, fliegt (auch Höhenflug), platt oder benommen ist
-const rep={segs:[],k:0,u:0,done:null,cx:0,cz:0,sp:0,hold:-1};
+const rep={segs:[],k:0,u:0,done:null,cx:0,cz:0,sp:0,hold:-1,held:false};
 // Größter Crash: Stürze, die höchstens 1,5 s und 15 m auseinanderliegen, gehören zu einem Unfall. Gewertet wird die Zahl der Gestürzten;
 // ein Flug durch die Luft oder eine explodierte Rakete zählt etwas mehr. Stürze nach dem Sieg zählen nicht.
 // Im Bild sind die Gestürzten und wer den Sturz ausgelöst hat (etwa der Stier); als Bauchbinde dient die Meldung aus dem Kommentar.
@@ -40,7 +40,7 @@ function nextSeg(){
   if(kuh>=0)for(let q=1;q<=Math.floor(s.t0*30);q++){const p=race.frames[q-1].s[kuh];if((p===6||p===9)&&race.frames[q].s[kuh]===2){fig[kuh].rocket.color.set('#3a3a3a');fig[kuh].cone.color.set('#222222');break}}
   for(t=Math.max(0,s.t0-1.2);t<s.t0;t+=1/30){const {A,xs}=posAt(t);xs.forEach((x,i)=>pose(i,x,A.s[i],A.rain,1/30,1/30,A.o?A.o[i]:-1,xs))}
   for(const p of parts){p.life=0;p.s.visible=false}
-  t=s.t0;rep.u=-1;rep.hold=-1;rep.hy=null;
+  t=s.t0;rep.u=-1;rep.hold=-1;rep.held=false;rep.hy=null;
   $('rptag').textContent=s.k==='ziel'?'Wiederholung · Zieleinlauf':'Wiederholung';
   $('rpcap').textContent=s.cap;$('cap').textContent='Wiederholung. '+s.cap;
   const o=$('replay');o.hidden=false;o.classList.remove('flash');void o.offsetWidth;o.classList.add('flash');
@@ -51,7 +51,7 @@ function repTick(now){
   if(t>=s.t1){nextSeg();if(state!=='rep')return}
   else{
     // Beim Zieleinlauf steht das Bild im Moment des Siegs kurz still
-    if(s.k==='ziel'&&rep.hold<0&&t>=race.winT){rep.hold=1.1;t=race.winT}
+    if(s.k==='ziel'&&!rep.held&&t>=race.winT){rep.held=true;rep.hold=1.1;t=race.winT}
     let sdt=dt*s.sp;if(rep.hold>0){rep.hold-=dt;sdt=0}
     t+=sdt;frame(dt,sdt)}
   raf=requestAnimationFrame(repTick);
