@@ -12,7 +12,7 @@ function frame(dt,sdt){
     for(let q=1;q<ar.length;q+=6)if(ar[q]<0){ar[q]+=22;ar[q+3]+=22}pa.needsUpdate=true}
   const w=A.rain?1:0;frame.w=(frame.w||0)+(w-(frame.w||0))*Math.min(1,dt*2);
   bgc.copy(SKY).lerp(GREY,frame.w);scene.fog.color.copy(bgc);sun.intensity=.7-.35*frame.w;hemi.intensity=.8-.15*frame.w;
-  direct(xs,dt);renderer.render(scene,camera);
+  direct(xs,dt);juiceView(dt);renderer.render(scene,camera);
   const lead=Math.max(...xs),rest=Math.max(0,Math.round(L-lead));
   $('rest').textContent=rest>0?'noch '+rest+' m':'im Ziel';
   xs.forEach((x,i)=>{dots[i].style.left=(clamp(x/L,0,1)*100)+'%'});

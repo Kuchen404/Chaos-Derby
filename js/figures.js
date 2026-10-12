@@ -90,7 +90,7 @@ function mkModel(k){
     m.traverse(o=>{if(o.isMesh){o.castShadow=true;o.frustumCulled=false;o.material=Array.isArray(o.material)?o.material.map(conv):conv(o.material)}});
     f.inner.add(m);f.model=m;f.mixer=new THREE.AnimationMixer(m);f.act={};
     g.animations.forEach(a=>{const ac=f.mixer.clipAction(a);ac.play();ac.setEffectiveWeight(0);f.act[a.name]=ac});
-    f.bone={};['Back','Torso','Torso2','Neck1','Neck2','Head','Tail1','Tail2','Tail3',...FL,...FIK].forEach(n=>{f.bone[n]=m.getObjectByName(n)});
+    f.bone={};['Back','Torso','Torso2','Neck1','Neck2','Head',...FL,...FIK,...JU.bones].forEach(n=>{f.bone[n]=m.getObjectByName(n)});
     if(cfg.up){let sk;m.traverse(o=>{if(o.isSkinnedMesh)sk=o.skeleton});f.ikRel=[0,1].map(k=>ikRel(sk,f.bone[FL[2*k+1]],f.bone[FIK[k]]))}
     if(figAll.length===ROSTER.length&&figAll.every(f=>f&&f.model))warmUp();
     loading.set('f'+k,1);
@@ -117,7 +117,7 @@ function poseModel(f,x,st,sdt){
   if(A.Gallop_Jump)A.Gallop_Jump.time=cyc(f.jT||0,A.Gallop_Jump);
   for(const n in A)A[n].setEffectiveWeight(W[n]||0);
   // Eigene Zusatzdrehungen vom letzten Bild zurücknehmen, weil der Mixer unveränderte Werte nicht neu schreibt
-  boneReset(f);f.mixer.update(0);boneSave(f,id==='aufrecht'?['Torso','Neck1',...FL,...FIK]:['Torso','Neck1']);
+  boneReset(f);f.mixer.update(0);boneSave(f,[...(id==='aufrecht'?['Torso','Neck1',...FL,...FIK]:['Torso','Neck1']),...JU.bones]);
   if(!idle){
     if(id==='aufrecht'){B.Torso.rotateX(UPA);B.Neck1.rotateX(UPN);
       // Vorderbeine angewinkelt und im Wechsel rudernd, statt steif nach unten zu hängen
@@ -210,5 +210,6 @@ function pose(i,x,st,rain,dt,sdt,o,xs){
     if((f.prev===6||f.prev===9)&&st===2){f.rocket.color.set('#3a3a3a');f.cone.color.set('#222222');
       for(let q=0;q<26;q++)emit(wx+1,3,wz,Math.random()*10-5,Math.random()*8,Math.random()*10-5,1.1,1.8,q%3?'#444444':'#ff8a1e')}
   }
+  juice(f,i,st,dt,sdt);   // Überzeichnung, js/juice.js
   f.prev=st;
 }

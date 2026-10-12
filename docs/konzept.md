@@ -166,6 +166,15 @@ Aktuelle Siegchancen (`node tools/odds.js`, 6000 Rennen mit ausgelostem Feld und
 
 Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 23 %, Alpaka 19 %, Pferd auf zwei Beinen 18 %, Kuh 16 %, Stier 13 %, Husky 12 %. Stand mit den Absurditäten; die Grundtempos sind dafür nicht verändert, alle Starter liegen zwischen 15 und 18 %. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
 
+## Überzeichnete Bewegung
+
+Die Quaternius-Modelle haben nur wenige Clips. Mehr Ausdruck entsteht per Code in `js/juice.js`, reine Darstellung ohne Einfluss auf die Simulation:
+
+- **Ausholen:** Weil das Rennen vorab feststeht, sieht die Darstellung 0,32 s voraus. Steht ein Gag bevor (Sturmlauf, Rakete, Sprung, Jagd, Zoomies, alle Überholgags), duckt sich die Figur, lehnt sich zurück und nimmt Anlauf.
+- **Stauchen und Strecken:** eine nachfedernde Feder auf dem Körper. Beim Start eines Gags schnellt die Figur gestreckt los, bei jeder Landung staucht sie, in schnellem Steigen oder Fallen ist sie lang gezogen. Die Füße bleiben dabei am Boden.
+- **Ohren und Schwanz** schlackern über die Knochen (`Ear1L` bis `Ear4R`, `Tail1` bis `Tail8`) im Laufrhythmus, bei Unfällen und Tempo-Gags deutlich stärker. Der Gesamtausschlag ist unabhängig davon, wie viele Glieder ein Schwanz hat.
+- **Treffer:** Bei jedem Unfall im Bild wackelt die Kamera (je nach Art unterschiedlich stark, die explodierende Rakete am stärksten), und Konzentrationslinien wie im Manga zielen für eine halbe Sekunde auf den Getroffenen. Harte Landungen wackeln leicht nach.
+
 ## Wetten
 
 Gewettet wird mit Spielgeld, entweder am eigenen Handy (siehe unten) oder am Wettbüro unter dem Sendebild, wo einer für die Runde die Tipps einträgt. Die Logik steht in `js/bets.js` (ohne Grafik, läuft auch in Node), die Bedienung in `js/betting.js`.
