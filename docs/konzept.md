@@ -47,26 +47,50 @@ Das Rennen wird im Hintergrund komplett berechnet (`simulate(seed, true)` in `js
 
 ### Fehlschläge mit Kettenreaktion
 
-Manche Eigenheiten gehen schief und reißen andere mit. Bedingung ist immer, dass der andere Starter nah genug dran ist; wer schon liegt, fliegt oder im Ziel ist, wird nicht noch einmal getroffen, und jeder Starter wird pro Ereignis höchstens einmal geprüft. Wer umfällt, purzelt (steht etwa 2 s); dicht dahinter (bis 2,5 m) fällt mit 35 % noch einer drüber, aber nur einmal pro Kette. Im Schnitt passiert so etwas gut einmal pro Rennen.
+Manche Eigenheiten gehen schief und reißen andere mit. Bedingung ist immer, dass der andere Starter nah genug dran ist; wer schon liegt, fliegt oder im Ziel ist, wird nicht noch einmal getroffen, und jeder Starter wird pro Ereignis höchstens einmal geprüft. Wie der Getroffene reagiert, hängt von der Ursache ab (Spalte „Reaktion“, siehe unten). Wer purzelt oder auf dem Bauch rutscht, über den fällt dicht dahinter (bis 2,5 m) mit 35 % noch einer, aber nur einmal pro Kette. Im Schnitt passiert so etwas gut einmal pro Rennen.
 
-| Art (`k`) | Was passiert | Bedingung |
+| Art (`k`) | Was passiert | Bedingung | Reaktion |
+|---|---|---|---|
+| chargefail | Stier stolpert im Sturmlauf selbst, wer dahinter läuft, fällt drüber | jeder achte Sturmlauf, Hintermann bis 7 m | Hintermann: Bauchklatscher |
+| rocketram | Rakete verkehrt herum mäht Starter um | bis 2 m, 60 % | fliegt mit der Rakete nach hinten |
+| blast | Druckwelle der explodierenden Rakete | bis 7 m, 50 % | fliegt vom Knall weg |
+| kick | bockender Esel tritt aus | bis 2 m, 15 %; jagt der Wolf den Esel, kassiert er mit 60 % einen Tritt | fliegt nach vorn; der Wolf fliegt rückwärts |
+| headon | Pferd auf zwei Beinen läuft rückwärts in einen Starter | bis 1,2 m, 10 % | beide benommen |
+| zoomhit | Shiba rennt im Zickzack jemanden um | bis 2,5 m, 20 % | purzelt |
+| pileup | Starter stolpert über das schlafende Pferd | bis 1 m, 25 % | Bauchklatscher |
+| landon | Hirsch springt zu kurz und landet auf einem Starter | gescheiterter Sprung, Starter bis 6 m voraus | platt |
+| bullturn | Wolf jagt den Stier, der dreht um und stürmt los | Wolf wählt den Stier | – |
+| freeze | Wolf jagt das Reh, das erstarrt, der Wolf weiß nicht weiter | Wolf wählt das Reh | – |
+| howlalong | Wolf heult mit, wenn der Husky heult | Wolf im Feld und läuft | – |
+| rearend | Fuchs im Windschatten fährt auf, wenn der Vordermann stehen bleibt | bis 2,5 m | benommen |
+| bump | Starter rennt in das erstarrte Reh | von hinten, bis 1,5 m, 15 % | benommen |
+| trip | zweiter Starter fällt über den ersten | Folgeglied jeder Kette | purzelt oder Bauchklatscher |
+
+Auch der Stier im Sturmlauf (`knock`) wirft Getroffene jetzt in die Luft. Jeder Unfall ist laut und kann das Reh erschrecken.
+
+Reaktionen (Zustände in `sim.js`, Darstellung in `figures.js`). Keine dreht das Tier mehr als einmal, damit nichts auf der Stelle wirbelt:
+
+| Zustand | Wirkung in der Simulation | Bild |
 |---|---|---|
-| chargefail | Stier stolpert im Sturmlauf selbst, wer dahinter läuft, fällt drüber | jeder achte Sturmlauf, Hintermann bis 7 m |
-| rocketram | Rakete verkehrt herum mäht Starter um | bis 2 m, 60 % |
-| blast | Druckwelle der explodierenden Rakete | bis 7 m, 50 % |
-| kick | bockender Esel tritt aus | bis 2 m, 15 %; jagt der Wolf den Esel, kassiert er mit 60 % einen Tritt |
-| headon | Pferd auf zwei Beinen läuft rückwärts in einen Starter, beide liegen | bis 1,2 m, 10 % |
-| zoomhit | Shiba rennt im Zickzack jemanden um | bis 2,5 m, 20 % |
-| pileup | Starter stolpert über das schlafende Pferd | bis 1 m, 25 % |
-| landon | Hirsch springt zu kurz und landet auf einem Starter | gescheiterter Sprung, Starter bis 6 m voraus |
-| bullturn | Wolf jagt den Stier, der dreht um und stürmt los | Wolf wählt den Stier |
-| freeze | Wolf jagt das Reh, das erstarrt, der Wolf weiß nicht weiter | Wolf wählt das Reh |
-| howlalong | Wolf heult mit, wenn der Husky heult | Wolf im Feld und läuft |
-| rearend | Fuchs im Windschatten fährt auf, wenn der Vordermann stehen bleibt | bis 2,5 m |
-| bump | Starter rennt in das erstarrte Reh | von hinten, bis 1,5 m, 15 % |
-| trip | zweiter Starter fällt über den ersten | Folgeglied jeder Kette |
+| purzelt (2) | steht 2,2 s | ein Überschlag nach vorn, dann auf der Seite liegen |
+| fliegt (17) | 1,1 s in der Luft mit eigenem Tempo (nach vorn oder hinten), dann 1 s liegen | hoher Bogen mit einer Drehung in Flugrichtung, Beine strampeln, „Huiii!“ |
+| platt (18) | steht 2,2 s | flach gedrückt wie ein Pfannkuchen, ploppt danach zurück |
+| benommen (19) | steht 1,8 s | wankt, drei Sterne kreisen über dem Kopf |
+| Bauchklatscher (20) | rutscht 1,3 s mit abnehmendem Tempo weiter | flach auf dem Bauch, Staub, „Platsch!“ |
 
-Jeder Sturz in einer Kette ist laut und kann das Reh erschrecken.
+Nach jedem Unfall gilt 1,5 s Schonzeit, in der der Starter nicht wieder getroffen wird und keine eigene Panne hat.
+
+### Überholversuche
+
+Läuft ein schnellerer Starter bis auf 0,6 bis 2,5 m an einen laufenden Vordermann heran, versucht er es mit 13 % mit einem Gag (jedes Paar höchstens alle 8 s). Im Schnitt passiert das etwa 1,5-mal pro Rennen. Welcher Gag, hängt etwas vom Tier ab (60 % der eigene, sonst zufällig):
+
+| Gag (`k`) | Lieblingsgag von | Was passiert | Geht schief |
+|---|---|---|---|
+| leap (21) | Hirsch, Reh | Bocksprung im Bogen über den Vordermann, landet 3 m vor ihm | 25 %: landet auf ihm (`leapfail`): der Vordermann ist platt, der Springer benommen |
+| piggy (22) | Fuchs | springt dem Vordermann auf den Rücken, lässt sich 1,6 s tragen, springt dann nach vorn ab (`piggyoff`) | Esel und Stier werfen ihn ab (`buckoff`, er fliegt); stürzt der Träger, fällt er mit (`piggyfall`). Kleine Tiere (Husky, Fuchs, Wolf, Shiba) tragen niemanden, dann wird gesprungen |
+| barge (23) | Stier, Esel | drängelt den Vordermann zur Seite: der wird 1,2 s langsamer und schwankt aus der Bahn („Hey!“), der Drängler bekommt Rückenwind | gegen Stier, Esel oder Wolf prallt er mit 50 % ab und ist benommen (`bargefail`) |
+| turbo (24) | Shiba, Wolf | 0,9 s mit 1,6-fachem Tempo, Beine wirbeln, Staub | 20 %: übernimmt sich und macht einen Bauchklatscher (`turbofail`) |
+| taunt (25) | Pferd, Pferd auf zwei Beinen | überholt 1,2 s rückwärts laufend und streckt die Zunge raus („Bätsch!“) | 25 %: fällt über die eigenen Beine (`tauntfail`) |
 
 ### Bahnzustand
 
@@ -176,5 +200,5 @@ Ein kostenpflichtiges Paket mit Giraffe, Elefant und Robbe in einheitlichem Stil
 ## Offen
 
 - **Wetten am Handy:** Wetten am eigenen Handy per QR-Code. Braucht einen kleinen Server; die Wettlogik in `js/bets.js` lässt sich dafür übernehmen. Ebenfalls offen: Totalisator statt fester Quoten, bei dem die Quote aus den Einsätzen der Runde entsteht.
-- **Mehr Abwechslung:** Bahnzustand, Zielgeraden-Ereignisse, zwölf Starter und wechselnde Felder sind umgesetzt (siehe oben). Fehlschläge, die andere Starter mitreißen, sind ebenfalls drin. Noch offen: Wettbewerbe mit anderer Distanz (800 oder 1200 m), die eine Bahn bräuchten, deren Länge nicht fest in `scene.js` steht.
+- **Mehr Abwechslung:** Bahnzustand, Zielgeraden-Ereignisse, zwölf Starter und wechselnde Felder sind umgesetzt (siehe oben). Fehlschläge, die andere Starter mitreißen, Reaktionen je nach Ursache und Gags beim Überholen sind ebenfalls drin. Noch offen: Wettbewerbe mit anderer Distanz (800 oder 1200 m), die eine Bahn bräuchten, deren Länge nicht fest in `scene.js` steht.
 - **Bekannte Schwächen:** Bei Schnitten auf einen Starter in einer hinteren Bahn läuft manchmal ein anderer Starter groß durchs Bild. Die Startnummer sehr großer Figuren wird in nahen Einstellungen oben angeschnitten.

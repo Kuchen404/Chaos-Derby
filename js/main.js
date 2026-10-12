@@ -5,7 +5,7 @@ function posAt(tt){
 }
 function frame(dt,sdt){
   const {A,xs}=posAt(t);
-  xs.forEach((x,i)=>pose(i,x,A.s[i],A.rain,dt,sdt));
+  xs.forEach((x,i)=>pose(i,x,A.s[i],A.rain,dt,sdt,A.o?A.o[i]:-1,xs));
   stepParts(sdt);
   rainFx.visible=A.rain;if(state==='run')sfx.rain(A.rain);
   if(A.rain){const pa=rainFx.geometry.attributes.position,ar=pa.array;for(let q=1;q<ar.length;q+=3){ar[q]-=sdt*26;}
@@ -65,7 +65,7 @@ function reset(){
   if(!gl)return;
   for(const p of parts){p.life=0;p.s.visible=false}
   trackMat.color.set(BODEN_COL[race.bod][0]);trackMat.emissive.set(BODEN_COL[race.bod][1]);
-  fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.jp=0;f.dT=0;f.fT=0;f.lie=0;f.spin.rotation.z=0;f.spin.rotation.x=0;if(f.rocket){f.rocket.color.set('#c9ced4');f.cone.color.set('#d2232a')}});frame(1,0);
+  fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.jp=0;f.dT=0;f.fT=0;f.lie=0;f.bel=0;f.sq=0;f.lx=0;f.gp=0;f.wp=0;f.tb=1;f.spin.scale.set(1,1,1);f.spin.rotation.z=0;f.spin.rotation.x=0;if(f.rocket){f.rocket.color.set('#c9ced4');f.cone.color.set('#d2232a')}});frame(1,0);
 }
 function start(){voice.unlock();reset();if(!gl)return;closeBets();state='run';raceBar.view(true);sfx.music('race');$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
 // Jedes Rennen bekommt einen ausgelosten Bahnzustand; die Quoten werden für genau diesen Boden gerechnet

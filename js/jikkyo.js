@@ -57,7 +57,20 @@ const jikkyo=(()=>{
     headon:()=>N[4]+'、逆走して正面衝突！',
     rearend:()=>N[9]+'、前の馬に追突しました！',
     bump:()=>N[8]+'が急に止まって、後ろが追突！',
-    howlalong:()=>N[10]+'もつられて遠吠えです。'
+    howlalong:()=>N[10]+'もつられて遠吠えです。',
+    // Überholgags
+    leap:()=>'馬跳びで抜いていきます！',
+    leapfail:()=>'馬跳び失敗！上に乗っかってしまいました！',
+    piggy:()=>'なんと、おんぶで運んでもらっています！',
+    piggyoff:()=>'背中から飛び降りて、前に出ました！',
+    buckoff:()=>'振り落とされた！空高く飛んでいきます！',
+    piggyfall:()=>'背中から落ちてしまいました。',
+    barge:()=>'体当たりで押しのけました！',
+    bargefail:()=>'押しのけようとして、跳ね返されました！',
+    turbo:()=>'ターボ全開！一気に抜き去ります！',
+    turbofail:()=>'勢いが止まらず、腹から着地！',
+    taunt:()=>'後ろ向きで抜いて、あっかんべー！',
+    tauntfail:()=>'よそ見をして転んでしまいました！'
   };
   // Welche Starter ein Satz betreffen kann (-1: keiner)
   const WHO={start:[0,1,2],jub:[0,4],knock:ALL.filter(i=>i!==2),lead1:ALL,lead:ALL,stand:ALL};
