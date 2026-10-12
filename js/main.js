@@ -12,7 +12,7 @@ function frame(dt,sdt){
     for(let q=1;q<ar.length;q+=6)if(ar[q]<0){ar[q]+=22;ar[q+3]+=22}pa.needsUpdate=true}
   const w=A.rain?1:0;frame.w=(frame.w||0)+(w-(frame.w||0))*Math.min(1,dt*2);
   bgc.copy(SKY).lerp(GREY,frame.w);scene.fog.color.copy(bgc);sun.intensity=.7-.35*frame.w;hemi.intensity=.8-.15*frame.w;
-  direct(xs,dt);juiceView(dt);renderer.render(scene,camera);
+  if(state==='rep')replayCam(xs,dt);else direct(xs,dt);juiceView(dt);renderer.render(scene,camera);
   const lead=Math.max(...xs),rest=Math.max(0,Math.round(L-lead));
   $('rest').textContent=rest>0?'noch '+rest+' m':'im Ziel';
   xs.forEach((x,i)=>{dots[i].style.left=(clamp(x/L,0,1)*100)+'%'});
@@ -53,20 +53,23 @@ function finish(){
   state='done';$('go').textContent='Wiederholung ansehen';$('slow').hidden=true;
   const o=race.order;o.forEach((i,k)=>{$('pl'+i).textContent=(k+1)+'.'});
   voice.say({s:'Der Einlauf: Erster '+RUN[o[0]].name+', Zweiter '+RUN[o[1]].name+', Dritter '+RUN[o[2]].name+'.',p:3,k:'einlauf',o},1);
-  startCeremony();
-  const res=settleBets(o);raceBar.done(o);if(res&&res.length){const won=res.filter(r=>r.win).length;$('cap').textContent+=' · '+(won?won+(won>1?' Wetten':' Wette')+' gewonnen':'keine Wette gewonnen')}
+  const res=settleBets(o);raceBar.done(o);let won='';if(res&&res.length){const n=res.filter(r=>r.win).length;won=' · '+(n?n+(n>1?' Wetten':' Wette')+' gewonnen':'keine Wette gewonnen')}
+  // Erst die Wiederholung (größter Crash, Zieleinlauf in Zeitlupe, js/replay.js), dann die Siegerehrung
+  startReplay(()=>{startCeremony();$('cap').textContent+=won});
 }
 function reset(){
   cancelAnimationFrame(raf);paradeStop();voice.stop();sfx.music(null);sfx.rain(false);t=0;evI=0;cut=null;shotK='';regie.sp=regie.alone=-1;regie.since=0;state='idle';$('slow').hidden=true;
-  endCeremony();raceBar.view(false);
+  endCeremony();hideReplay();raceBar.view(false);
   $('log').innerHTML='<li class="empty">Der Kommentar läuft mit, sobald das Rennen startet.</li>';
   $('cap').textContent='Die Starter stehen an der Linie. Der Boden ist '+BODEN[race.bod].name+'.';
   RUN.forEach((d,i)=>{$('pl'+i).textContent='–'});
   if(!gl)return;
   for(const p of parts){p.life=0;p.s.visible=false}
   trackMat.color.set(BODEN_COL[race.bod][0]);trackMat.emissive.set(BODEN_COL[race.bod][1]);
-  fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.jp=0;f.dT=0;f.fT=0;f.lie=0;f.bel=0;f.sq=0;f.lx=0;f.gp=0;f.wp=0;f.tb=1;f.spin.scale.set(1,1,1);f.spin.rotation.z=0;f.spin.rotation.x=0;if(f.rocket){f.rocket.color.set('#c9ced4');f.cone.color.set('#d2232a')}});propsReset();frame(1,0);
+  resetFigs();propsReset();camera.fov=32;camera.updateProjectionMatrix();frame(1,0);
 }
+// Darstellungszustand aller Figuren auf den Start zurücksetzen (auch vor jedem Ausschnitt der Wiederholung)
+function resetFigs(){fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.jp=0;f.dT=0;f.fT=0;f.lie=0;f.bel=0;f.sq=0;f.lx=0;f.gp=0;f.wp=0;f.tb=1;f.spin.scale.set(1,1,1);f.spin.rotation.z=0;f.spin.rotation.x=0;if(f.rocket){f.rocket.color.set('#c9ced4');f.cone.color.set('#d2232a')}})}
 function start(){voice.unlock();reset();if(!gl)return;closeBets();state='run';raceBar.view(true);sfx.music('race');$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
 // Jedes Rennen bekommt einen ausgelosten Bahnzustand; die Quoten werden für genau diesen Boden gerechnet
 const BODEN_COL=[['#ffffff','#000000'],['#c8c09a','#14100a'],['#8f7a58','#2e1e0c']];   // Rasenfarbe und Schlammton je Boden
@@ -147,7 +150,7 @@ if(gl)ROSTER.forEach((d,k)=>figFor(k));
 fresh();reset();loading.seal();
 // Erst nach dem Klick auf dem Ladebildschirm: Vorstellung der Starter, mit Ton
 loading.onStart(()=>{voice.unlock();if(voice.ok)voiceLabel();tonHint();if(gl&&state==='idle')paradeStart()});
-window.addEventListener('resize',()=>{fit();if(gl&&state!=='run'&&state!=='cer'&&!paraOn)frame(1,0)});
+window.addEventListener('resize',()=>{fit();if(gl&&state!=='run'&&state!=='cer'&&state!=='rep'&&!paraOn)frame(1,0)});
 // Browser geben Ton erst nach einer Bedienung frei; danach kann der Sprecher schon die Starter vorstellen (Musik und Geräusche: js/sfx.js)
 // Bis dahin zeigt ein Hinweis im Sendebild, dass ein Klick (oder eine Taste) den Ton einschaltet.
 let tonFrei=false;

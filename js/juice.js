@@ -2,8 +2,8 @@
 // Reine Darstellung. Das Rennen steht vorab fest, deshalb kann die Figur schon ausholen, bevor der Gag in der Simulation beginnt.
 const JU={
   gags:{4:1,6:1,9:1,11:1,13:1,15:1,21:1,22:1,23:1,24:1,25:1},   // Zustände, vor denen ausgeholt wird (Sturmlauf, Rakete, Sprung, Jagd, Zoomies, Überholgags)
-  hits:{2:.45,17:.7,18:.9,19:.35,20:.6},                         // Treffer: Stärke des Kamerawackelns je Unfallzustand
-  wild:{2:1,4:1,13:1,15:1,17:1,18:1,19:1,20:1,24:1},             // hier schlackern Ohren und Schwanz besonders
+  hits:{2:.45,17:.7,18:.9,19:.35,20:.6,26:.8},                  // Treffer: Stärke des Kamerawackelns je Unfallzustand
+  wild:{2:1,4:1,13:1,15:1,17:1,18:1,19:1,20:1,24:1,26:1},        // hier schlackern Ohren und Schwanz besonders
   ahead:.32,   // so lange vor dem Gag wird ausgeholt (s)
   bones:[...['L','R'].flatMap(s=>[1,2,3,4].map(n=>'Ear'+n+s)),...[1,2,3,4,5,6,7,8].map(n=>'Tail'+n)],   // GLTFLoader entfernt die Punkte aus den Knochennamen
   shake:0,burst:null,cv:null
@@ -27,7 +27,7 @@ function juice(f,i,st,dt,sdt){
     if(j.vy<-3&&vy>j.vy*.4&&h<.6){j.v+=Math.min(9,-j.vy*.8);j.a+=.25;if(j.vy<-7&&juSeen(f))JU.shake=Math.min(1,JU.shake+.18)}   // Landung: stauchen
     if(st!==f.prev){
       if(JU.gags[st]){j.v-=5.5;j.a+=.2}                            // Gag beginnt: aus dem Ausholen heraus strecken
-      if(JU.hits[st]&&!(st===2&&f.prev===17)){j.v+=4;j.a+=.4;
+      if(JU.hits[st]&&!(st===2&&(f.prev===17||f.prev===26))){j.v+=4;j.a+=.4;
         if(juSeen(f)){JU.shake=Math.min(1,JU.shake+JU.hits[st]);JU.burst={f,life:.5,max:.5}}}
       if((f.prev===6||f.prev===9)&&st===2&&juSeen(f))JU.shake=1}   // Rakete explodiert
     // Feder: Stauchen ist positiv, Strecken negativ; schwach gedämpft, damit es nachfedert
@@ -44,7 +44,7 @@ function juice(f,i,st,dt,sdt){
   sp.scale.set(sp.scale.x*sx,sy0*sy,sp.scale.z*sx);sp.position.y-=f.c*sy0*(1-sy);
   sp.rotation.z+=.28*an;sp.position.x=-.35*an;   // zurücklehnen und Anlauf nehmen
   if(!f.model)return;
-  const B=f.bone,a=Math.min(.7,j.a),fly=st===17?1:0;
+  const B=f.bone,a=Math.min(.7,j.a),fly=st===17||st===26?1:0;
   const nt=f.ju.nt||(f.ju.nt=[1,2,3,4,5,6,7,8].filter(k=>B['Tail'+k]).length||1);   // gleicher Gesamtausschlag, egal wie viele Glieder der Schwanz hat
   for(let k=1;k<=nt;k++){const b=B['Tail'+k],w=a*(1+k/nt)*3/nt;
     b.rotateZ(w*Math.sin(j.ph-k*.7));b.rotateX(w*.6*Math.sin(j.ph*.5-k*.9)+fly*.25)}
