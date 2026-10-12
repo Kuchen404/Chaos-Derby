@@ -16,6 +16,7 @@ function frame(dt,sdt){
   const lead=Math.max(...xs),rest=Math.max(0,Math.round(L-lead));
   $('rest').textContent=rest>0?'noch '+rest+' m':'im Ziel';
   xs.forEach((x,i)=>{dots[i].style.left=(clamp(x/L,0,1)*100)+'%'});
+  if(state==='run')raceBar.live(xs);
 }
 
 /* ---------- Ablauf ---------- */
@@ -53,11 +54,11 @@ function finish(){
   const o=race.order;o.forEach((i,k)=>{$('pl'+i).textContent=(k+1)+'.'});
   voice.say({s:'Der Einlauf: Erster '+RUN[o[0]].name+', Zweiter '+RUN[o[1]].name+', Dritter '+RUN[o[2]].name+'.',p:3,k:'einlauf',o},1);
   startCeremony();
-  const res=settleBets(o);if(res&&res.length){const won=res.filter(r=>r.win).length;$('cap').textContent+=' · '+(won?won+(won>1?' Wetten':' Wette')+' gewonnen':'keine Wette gewonnen')}
+  const res=settleBets(o);raceBar.done(o);if(res&&res.length){const won=res.filter(r=>r.win).length;$('cap').textContent+=' · '+(won?won+(won>1?' Wetten':' Wette')+' gewonnen':'keine Wette gewonnen')}
 }
 function reset(){
   cancelAnimationFrame(raf);paradeStop();voice.stop();sfx.music(null);sfx.rain(false);t=0;evI=0;cut=null;shotK='';regie.sp=regie.alone=-1;regie.since=0;state='idle';$('slow').hidden=true;
-  endCeremony();
+  endCeremony();raceBar.view(false);
   $('log').innerHTML='<li class="empty">Der Kommentar läuft mit, sobald das Rennen startet.</li>';
   $('cap').textContent='Die Starter stehen an der Linie. Der Boden ist '+BODEN[race.bod].name+'.';
   RUN.forEach((d,i)=>{$('pl'+i).textContent='–'});
@@ -66,7 +67,7 @@ function reset(){
   trackMat.color.set(BODEN_COL[race.bod][0]);trackMat.emissive.set(BODEN_COL[race.bod][1]);
   fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.jp=0;f.dT=0;f.fT=0;f.lie=0;f.spin.rotation.z=0;f.spin.rotation.x=0;if(f.rocket){f.rocket.color.set('#c9ced4');f.cone.color.set('#d2232a')}});frame(1,0);
 }
-function start(){voice.unlock();reset();if(!gl)return;closeBets();state='run';sfx.music('race');$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
+function start(){voice.unlock();reset();if(!gl)return;closeBets();state='run';raceBar.view(true);sfx.music('race');$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
 // Jedes Rennen bekommt einen ausgelosten Bahnzustand; die Quoten werden für genau diesen Boden gerechnet
 const BODEN_COL=[['#ffffff','#000000'],['#c8c09a','#14100a'],['#8f7a58','#2e1e0c']];   // Rasenfarbe und Schlammton je Boden
 // Jedes Rennen bekommt außerdem ein ausgelostes Feld von 6 aus allen Startern

@@ -188,3 +188,34 @@ td.q2{color:var(--board-text)}
 .tvqr{position:absolute;right:2.5%;bottom:6%;width:clamp(84px,13%,160px);padding:7px 7px 5px;border-radius:6px;background:rgba(16,25,15,.86);text-align:center;line-height:0}
 .tvqr span{display:block;margin-top:5px;line-height:1.2;font:500 clamp(9px,1.1vw,12px) var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--board-fg)}
 @media (max-width:520px){.tvqr{display:none}}
+/* Rennansicht (js/racebar.js): Ab dem Start zählt nur das Rennen. Einleitung, Quotentafel, Kommentarverlauf und Wettbüro treten zurück,
+   das Sendebild wird so groß, wie das Fenster es zulässt, darunter steht die Wettleiste. */
+body.rennen .lede,body.rennen .odds,body.rennen .slipsbox,body.rennen .logbox,body.rennen .bets,body.rennen .eyebrow{display:none}
+body.rennen .wrap{max-width:none;padding-block:12px 16px;gap:12px}
+body.rennen header{align-items:center}
+body.rennen h1{font-size:clamp(22px,3vw,30px);margin:0}
+body.rennen .arena{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;grid-template-areas:"screen"}
+body.rennen .screen{width:100%;margin-inline:auto}
+body.rennen .caption{min-height:calc(3em + 24px);box-sizing:border-box}   /* Platz für zwei Zeilen, damit das Bild nicht springt */
+@media (min-width:900px) and (min-aspect-ratio:4/3){
+  body.rennen .screen{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"stage bar" "caption bar";align-items:start}
+  body.rennen .stage{grid-area:stage}body.rennen .caption{grid-area:caption}
+  body.rennen .wbar{grid-area:bar;flex-direction:column;flex-wrap:nowrap;width:clamp(240px,17vw,340px);box-sizing:border-box;padding:12px;overflow-y:auto;border-left:1px solid var(--board-line)}
+  body.rennen .wbar li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px}
+  body.rennen .wbar .what{grid-column:1/-1;grid-row:2}
+  body.rennen .wbar .n{grid-column:2;grid-row:1;text-align:right}
+}
+.wbar{list-style:none;margin:0;padding:0 12px 12px;flex:none;display:flex;flex-wrap:wrap;gap:8px;color:var(--board-text)}
+.wbar li{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:4px;background:rgba(255,255,255,.06);border:1px solid var(--board-line);font-size:clamp(14px,1.3vw,18px);transition:background .3s,border-color .3s}
+.wbar .who{font-weight:700;max-width:9em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wbar .what{display:flex;align-items:center;flex-wrap:wrap;gap:5px;color:var(--board-dim)}
+.wbar .then{color:var(--board-dim)}
+.wbar .n{font:500 1em var(--mono);font-variant-numeric:tabular-nums;color:var(--board-dim);white-space:nowrap}
+/* würde nach dem aktuellen Stand gewinnen */
+.wbar li.hot{background:rgba(255,194,51,.16);border-color:var(--board-fg)}
+.wbar li.hot .n{color:var(--board-fg)}
+.wbar li.hot .who::before{content:"▲ ";color:var(--board-fg)}
+.wbar li.won{background:rgba(111,210,124,.18);border-color:#6fd27c}
+.wbar li.won .n{color:#6fd27c}
+.wbar li.lost{opacity:.5}
+@media (prefers-reduced-motion:reduce){.wbar li{transition:none}}
