@@ -112,20 +112,20 @@ Aktuelle Siegchancen (`node tools/odds.js`, 6000 Rennen mit ausgelostem Feld und
 
 | Nr | Starter | gesamt | gut | weich | schwer |
 |---|---|---|---|---|---|
-| 1 | Sekundenschlaf (Pferd) | 16 % | 20 % | 12 % | 10 % |
-| 2 | Hals über Kopf (Alpaka) | 17 % | 15 % | 20 % | 19 % |
-| 3 | Dampfwalze (Stier) | 17 % | 13 % | 18 % | 24 % |
-| 4 | Schmuddelwetter (Husky) | 17 % | 12 % | 17 % | 30 % |
-| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 18 % | 20 % | 17 % | 13 % |
-| 6 | Spätzünder (Kuh) | 15 % | 15 % | 15 % | 14 % |
-| 7 | Sturkopf (Esel) | 15 % | 13 % | 16 % | 20 % |
-| 8 | Platzhirsch (Hirsch) | 17 % | 20 % | 17 % | 9 % |
-| 9 | Schreckhaft (Reh) | 17 % | 24 % | 13 % | 6 % |
-| 10 | Schlitzohr (Fuchs) | 17 % | 16 % | 18 % | 17 % |
-| 11 | Hetzjagd (Wolf) | 19 % | 13 % | 23 % | 26 % |
-| 12 | Schnüffelnase (Shiba Inu) | 16 % | 19 % | 15 % | 11 % |
+| 1 | Sekundenschlaf (Pferd) | 14 % | 17 % | 11 % | 11 % |
+| 2 | Hals über Kopf (Alpaka) | 18 % | 18 % | 18 % | 21 % |
+| 3 | Dampfwalze (Stier) | 17 % | 14 % | 19 % | 22 % |
+| 4 | Schmuddelwetter (Husky) | 16 % | 11 % | 17 % | 28 % |
+| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 18 % | 21 % | 16 % | 13 % |
+| 6 | Spätzünder (Kuh) | 17 % | 16 % | 18 % | 17 % |
+| 7 | Sturkopf (Esel) | 16 % | 14 % | 19 % | 18 % |
+| 8 | Platzhirsch (Hirsch) | 16 % | 19 % | 15 % | 9 % |
+| 9 | Schreckhaft (Reh) | 18 % | 24 % | 14 % | 8 % |
+| 10 | Schlitzohr (Fuchs) | 16 % | 15 % | 18 % | 17 % |
+| 11 | Hetzjagd (Wolf) | 17 % | 12 % | 20 % | 25 % |
+| 12 | Schnüffelnase (Shiba Inu) | 17 % | 20 % | 16 % | 12 % |
 
-Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 28 %, Pferd auf zwei Beinen 19 %, Kuh 15 %, Alpaka 15 %, Stier 12 %, Husky 11 %. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
+Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 26 %, Pferd auf zwei Beinen 19 %, Kuh 16 %, Alpaka 16 %, Stier 13 %, Husky 11 %. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
 
 ## Wetten
 
@@ -135,7 +135,7 @@ Gewettet wird mit Spielgeld, entweder am eigenen Handy (siehe unten) oder am Wet
 - **Wettarten:** Sieg (Starter gewinnt), Platz (Starter wird Erster oder Zweiter) und Zweierwette (Erster und Zweiter in genau dieser Reihenfolge).
 - **Feste Quoten:** Alle drei kommen aus denselben Probeläufen mit 15 % Abzug, gerechnet für Boden und Feld des aktuellen Rennens. Das dauert nach „Neues Rennen“ einige Sekunden, das Wettbüro öffnet, sobald die Quoten stehen. Kommt ein neues Rennen („Neues Rennen“ oder Neuladen der Seite), gehen offene Wetten an die Kasse zurück, weil ihre Quoten für ein anderes Feld galten. Angezeigt wird eine Nachkommastelle, und genau diese Quote wird ausgezahlt. Sie gilt ab Abgabe der Wette. Obergrenze 99 für Sieg und Platz, 250 für die Zweierwette, Untergrenze 1,1.
 - **Ablauf:** Der Einsatz geht sofort von der Kasse ab, bis zum Start lässt sich eine Wette zurücknehmen. Mit dem Start schließt das Wettbüro. Nach dem Zieleinlauf wird einmal abgerechnet, eine Wiederholung zahlt nicht noch einmal aus. „Neues Rennen“ startet nicht mehr sofort, sondern öffnet zuerst das Wettbüro.
-- **Gegenprobe:** `node tools/odds.js` lost 40 Felder mit Boden aus, rechnet für jedes die Quoten und setzt dann in je 75 neuen Rennen auf jede Möglichkeit einen Taler. Ergebnis zuletzt: Sieg zahlt 0,87 je Taler aus, Platz 0,86, Zweierwette 0,83. Platz kann durch das Runden kleiner Quoten (Pferd auf gutem Boden 1,3) etwas unter 0,85 liegen, die Zweierwette durch seltene Einläufe und die Obergrenze. Für ein Partyspiel reicht das.
+- **Gegenprobe:** `node tools/odds.js` lost 40 Felder mit Boden aus, rechnet für jedes die Quoten und setzt dann in je 75 neuen Rennen auf jede Möglichkeit einen Taler. Ergebnis zuletzt: Sieg zahlt 0,86 je Taler aus, Platz 0,88, Zweierwette 0,84. Platz kann durch das Runden kleiner Quoten (Pferd auf gutem Boden 1,3) etwas unter 0,85 liegen, die Zweierwette durch seltene Einläufe und die Obergrenze. Für ein Partyspiel reicht das.
 
 ### Wetten am Handy
 
