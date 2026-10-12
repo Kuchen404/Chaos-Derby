@@ -94,7 +94,7 @@ function mkModel(k){
     if(cfg.up){let sk;m.traverse(o=>{if(o.isSkinnedMesh)sk=o.skeleton});f.ikRel=[0,1].map(k=>ikRel(sk,f.bone[FL[2*k+1]],f.bone[FIK[k]]))}
     if(figAll.length===ROSTER.length&&figAll.every(f=>f&&f.model))warmUp();
     loading.set('f'+k,1);
-    if(gl&&race&&state!=='run'&&state!=='cer'&&!paraOn)frame(1,0);
+    if(gl&&race&&state!=='run'&&state!=='cer'&&state!=='rep'&&!paraOn)frame(1,0);
   },modelError)).catch(modelError);
   label(f);
   return f}
