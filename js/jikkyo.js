@@ -70,7 +70,27 @@ const jikkyo=(()=>{
     turbo:()=>'ターボ全開！一気に抜き去ります！',
     turbofail:()=>'勢いが止まらず、腹から着地！',
     taunt:()=>'後ろ向きで抜いて、あっかんべー！',
-    tauntfail:()=>'よそ見をして転んでしまいました！'
+    tauntfail:()=>'よそ見をして転んでしまいました！',
+    // Absurditäten: Dinge auf der Bahn, Zuschauer, Höhenflüge (noch ohne VOICEVOX-Aufnahme, siehe docs/konzept.md)
+    tramp:()=>'トランポリンで、空の彼方へ消えていきました！',
+    fallback:()=>'あっ、上から戻ってきました！',
+    dropon:()=>'ほかの馬の上に落ちてきた！ぺちゃんこです！',
+    knockhigh:()=>N[2]+'、相手を空高く打ち上げました！',
+    kickhigh:()=>N[6]+'の後ろ蹴りで、スタンドの向こうまで飛んでいきます！',
+    blasthigh:()=>'爆風で、雲の上まで飛ばされました！',
+    buckhigh:()=>'振り落とされて、画面の外へ消えました！',
+    bananathrow:()=>'スタンドからバナナの皮が投げ込まれました。',
+    banana:()=>'バナナの皮で滑った！',
+    bananaeat:()=>'バナナの皮を食べてしまいました。',
+    snack:()=>'観客がおやつを差し出しています。我慢できません！',
+    ducks:()=>'カモの親子がコースを横断しています。',
+    duckwait:()=>'立ち止まって、カモを先に通します。どうぞどうぞ。',
+    duckscatter:()=>N[2]+'、カモの列に突っ込んだ！羽が舞っています！',
+    streak:()=>'観客がコースに乱入しました！',
+    streakride:()=>'乱入者が飛び乗った！一緒に走っています！',
+    streakcrash:()=>'乱入者と衝突！両者転倒！',
+    streakknock:()=>N[2]+'、乱入者をはね飛ばしました！',
+    streakoff:()=>'乱入者、落ちました。警備員が駆けつけます。'
   };
   // Welche Starter ein Satz betreffen kann (-1: keiner)
   const WHO={start:[0,1,2],jub:[0,4],knock:ALL.filter(i=>i!==2),lead1:ALL,lead:ALL,stand:ALL};

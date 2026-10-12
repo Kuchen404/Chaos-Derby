@@ -68,6 +68,9 @@ const sfx=(()=>{
     thud(t){tone(t,'sine',[140,40],.35,.7);noise(t,.2,.35,'lowpass',500)},
     bell(t){[0,.12].forEach(d=>{tone(t+d,'sine',1320,.8,.25,0,{r:.7});tone(t+d,'sine',2640,.5,.08,0,{r:.4})})},
     cheer(t,d){d=d||2.5;noise(t,d,.35,'bandpass',1200,0,{a:.3,r:1,q:.6});noise(t,d,.15,'bandpass',2600,0,{a:.4,r:1,q:.8})},
+    quack(t){for(let k=0;k<4;k++){const s=t+k*.22+(k%2)*.05;tone(s,'sawtooth',[620,480],.13,.14,0,{lp:1400,q:6});noise(s,.1,.12,'bandpass',900,0,{q:4})}},
+    fall(t){tone(t,'sine',[2400,500],1.1,.22,0,{a:.05,r:.15})},
+    whistle(t){[0,.35].forEach(d=>tone(t+d,'sine',2900,d?.6:.22,.2,0,{vib:38,vd:120,r:.05}))},
     ooh(t){tone(t,'sine',[300,220],1,.08,0,{a:.2,r:.4,vib:5,vd:6});noise(t,1,.12,'bandpass',[700,400],0,{a:.2,r:.5,q:1.5})}
   };
   function play(n,delay,a){if(!live()||!S[n])return;S[n](ac.currentTime+(delay||0)+.02,a)}
@@ -95,6 +98,10 @@ const sfx=(()=>{
     kick:['kick','whoosh'],zoomhit:['thud'],headon:['thud','ooh'],rearend:['thud'],bump:['thud'],jub:['cheer'],stretch:['slide'],draftout:['whoosh'],
     leap:['boing'],leapfail:['boing','thud','ooh'],piggy:['boing','snicker'],piggyoff:['boing'],buckoff:['heehaw','whoosh'],piggyfall:['thud'],
     barge:['thud'],bargefail:['boing','ooh'],turbo:['whoosh'],turbofail:['skid','thud'],taunt:['snicker'],tauntfail:['thud','ooh'],
+    tramp:['boing','whoosh'],fallback:['fall'],dropon:['thud','ooh'],knockhigh:['thud','whoosh'],kickhigh:['kick','whoosh'],blasthigh:['thud','whoosh'],
+    buckhigh:['heehaw','whoosh'],bananathrow:['whoosh'],banana:['skid','thud'],bananaeat:['munch'],snack:['munch'],
+    ducks:['quack'],duckwait:['quack'],duckscatter:['quack','whoosh'],streak:['whistle','ooh'],streakride:['boing','cheer'],
+    streakcrash:['thud','ooh'],streakknock:['thud','whoosh'],streakoff:['thud','whistle'],
     win:['cheer'],close:['ooh']};
 
   /* ---------- Musik ---------- */

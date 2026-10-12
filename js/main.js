@@ -6,7 +6,7 @@ function posAt(tt){
 function frame(dt,sdt){
   const {A,xs}=posAt(t);
   xs.forEach((x,i)=>pose(i,x,A.s[i],A.rain,dt,sdt,A.o?A.o[i]:-1,xs));
-  stepParts(sdt);
+  propsFrame();stepParts(sdt);
   rainFx.visible=A.rain;if(state==='run')sfx.rain(A.rain);
   if(A.rain){const pa=rainFx.geometry.attributes.position,ar=pa.array;for(let q=1;q<ar.length;q+=3){ar[q]-=sdt*26;}
     for(let q=1;q<ar.length;q+=6)if(ar[q]<0){ar[q]+=22;ar[q+3]+=22}pa.needsUpdate=true}
@@ -27,7 +27,7 @@ function logLine(e){
   const li=document.createElement('li'),tm=document.createElement('time'),sp=document.createElement('span');
   voice.say(e.k==='start'?Object.assign({b:race.bod},e):e,clamp(e.t/race.winT,0,1));sfx.event(e.k);
   tm.textContent=stamp(e.t);sp.textContent=e.s;li.append(tm,sp);ol.prepend(li);while(ol.children.length>9)ol.lastChild.remove();
-  if(e.cut&&(!cut||t>cut.until+1.2))cut={i:e.i,until:t+e.cut}}
+  if(e.cut&&(!cut||t>cut.until+1.2||e.k==='fallback'))cut={i:e.i,until:t+e.cut}}   // wer von oben zurückfällt, bekommt immer seinen Schnitt
 function step(dt){
   const slow=t>race.winT-.5&&t<race.winT+.45,sdt=dt*(slow?.28:1);
   $('slow').hidden=!slow;t+=sdt;
@@ -65,7 +65,7 @@ function reset(){
   if(!gl)return;
   for(const p of parts){p.life=0;p.s.visible=false}
   trackMat.color.set(BODEN_COL[race.bod][0]);trackMat.emissive.set(BODEN_COL[race.bod][1]);
-  fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.jp=0;f.dT=0;f.fT=0;f.lie=0;f.bel=0;f.sq=0;f.lx=0;f.gp=0;f.wp=0;f.tb=1;f.spin.scale.set(1,1,1);f.spin.rotation.z=0;f.spin.rotation.x=0;if(f.rocket){f.rocket.color.set('#c9ced4');f.cone.color.set('#d2232a')}});frame(1,0);
+  fig.forEach(f=>{f.ry=0;f.b=0;f.zo=0;f.prev=0;f.ch=0;f.sl=0;f.rk=0;f.jb=0;f.jp=0;f.dT=0;f.fT=0;f.lie=0;f.bel=0;f.sq=0;f.lx=0;f.gp=0;f.wp=0;f.tb=1;f.spin.scale.set(1,1,1);f.spin.rotation.z=0;f.spin.rotation.x=0;if(f.rocket){f.rocket.color.set('#c9ced4');f.cone.color.set('#d2232a')}});propsReset();frame(1,0);
 }
 function start(){voice.unlock();reset();if(!gl)return;closeBets();state='run';raceBar.view(true);sfx.music('race');$('go').textContent='Von vorn';last=performance.now();raf=requestAnimationFrame(tick)}
 // Jedes Rennen bekommt einen ausgelosten Bahnzustand; die Quoten werden für genau diesen Boden gerechnet

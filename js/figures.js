@@ -102,10 +102,10 @@ function poseModel(f,x,st,sdt){
   if(!f.model)return;
   const A=f.act,B=f.bone,V=f.V,id=f.id,idle=(state!=='run'&&t===0)||state==='cer',W={},cyc=(v,a)=>(((v%1)+1)%1)*a.getClip().duration;
   const run=V.run||'Gallop';
-  if(id==='pferd'){if(st===1)f.dT=Math.min(f.dT+sdt,A.Death.getClip().duration-.03);else if(f.b<.02)f.dT=0;A.Death.time=f.dT}
+  if(id==='pferd'&&(st===1||f.dz)){f.dz=st===1||f.b>.02;if(st===1)f.dT=Math.min(f.dT+sdt,A.Death.getClip().duration-.03);else if(f.b<.02)f.dT=0;A.Death.time=f.dT}
   else if(f.b>.02||st===3||st===14){f.dT+=sdt;const a=A[f.sa];if(a&&f.sa!=='Idle')a.time=f.dT%a.getClip().duration}else f.dT=0;
   if(idle)W.Idle=1;
-  else if(id==='pferd'){W.Gallop=1-f.b;W.Death=f.b}
+  else if(id==='pferd'&&f.dz){W.Gallop=1-f.b;W.Death=f.b}
   else if(id==='stier')W.Gallop=1;
   else if(id==='husky'){W.Walk=1-f.sl;W.Gallop=f.sl}
   else if(id==='aufrecht')W.Walk=1;
@@ -144,7 +144,7 @@ function label(f){
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:canvasTex(128,128,(c)=>{c.fillStyle=d.col;c.beginPath();c.arc(64,64,54,0,7);c.fill();c.lineWidth=9;c.strokeStyle='#fff';c.stroke();
     c.fillStyle=d.ink;c.font='70px "Dela Gothic One","Arial Black",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(d.nr,64,70)}),depthTest:false}));
   s.scale.set(.85,.85,1);s.position.set(0,top,0);s.renderOrder=5;f.root.add(s);f.lbl=s;
-  f.fx={};[[1,'Zzz'],[3,'mampf'],[7,'?!'],[2,'✶ ✶'],[8,'Jubel!'],[10,'Nö!'],[12,'!!'],[13,'Jagd!'],[14,'schnüff'],[15,'Zoomies!'],[16,'Auuu!'],[17,'Huiii!'],[18,'platt'],[20,'Platsch!'],[21,'Hopp!'],[22,'Hüa!'],[23,'Hey!'],[24,'Turbo!'],[25,'Bätsch!']].forEach(q=>{
+  f.fx={};[[1,'Zzz'],[3,'mampf'],[7,'?!'],[2,'✶ ✶'],[8,'Jubel!'],[10,'Nö!'],[12,'!!'],[13,'Jagd!'],[14,'schnüff'],[15,'Zoomies!'],[16,'Auuu!'],[17,'Huiii!'],[18,'platt'],[20,'Platsch!'],[21,'Hopp!'],[22,'Hüa!'],[23,'Hey!'],[24,'Turbo!'],[25,'Bätsch!'],[26,'Aaaah!'],[27,'Bitte!'],[28,'Mampf!']].forEach(q=>{
     const e=new THREE.Sprite(new THREE.SpriteMaterial({map:canvasTex(256,96,(c)=>{c.font='56px "Dela Gothic One","Arial Black",sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=10;c.strokeStyle='#17231a';c.strokeText(q[1],128,50);c.fillStyle='#fff';c.fillText(q[1],128,50)}),depthTest:false}));
     e.scale.set(1.9,.7,1);e.position.set(1.3,top+.05,0);e.renderOrder=5;e.visible=false;f.root.add(e);f.fx[q[0]]=e});
   // benommen: drei Sterne kreisen über dem Kopf
@@ -154,27 +154,30 @@ function label(f){
 const V0=f=>f.V.front*.7;   // Kopf liegt etwas vor der Mitte
 
 /* ---------- Animation je Bild ---------- */
-const STAND={1:1,3:1,10:1,12:1,14:1,16:1,18:1,19:1,22:1};   // Zustände, in denen das Tier steht
+const STAND={1:1,3:1,10:1,12:1,14:1,16:1,18:1,19:1,22:1,27:1,28:1};   // Zustände, in denen das Tier steht
 function pose(i,x,st,rain,dt,sdt,o,xs){
   const f=fig[i],id=f.id,k=Math.min(1,dt*8);
-  if(STAND[st])f.sa=st===3||st===14?(f.act&&f.act.Eating?'Eating':'Idle'):'Idle';else if(!f.sa)f.sa='Idle';
+  if(STAND[st])f.sa=st===3||st===14||st===28?(f.act&&f.act.Eating?'Eating':'Idle'):'Idle';else if(!f.sa)f.sa='Idle';
   f.b+=((STAND[st]?1:0)-f.b)*k;f.ch+=((st===4?1:0)-f.ch)*k;f.sl+=((id==='husky'&&rain?1:0)-f.sl)*k;f.rk+=((st===6||st===9?1:0)-f.rk)*k;f.jb+=((st===8?1:0)-f.jb)*k;
   if(st===11&&f.prev!==11&&state==='run')sfx.play('boing');   // Hirsch springt
   f.jp+=((st===11?1:0)-f.jp)*Math.min(1,dt*12);if(st===11)f.jT=(f.jT||0)+sdt*1.1;else f.jT=0;
-  if(st!==f.prev){f.fT=0;if(st===2&&f.prev===17)f.fT=.65}   // nach dem Flug kein Überschlag mehr, gleich liegen
+  if(st!==f.prev){f.fT=0;if(st===2&&(f.prev===17||f.prev===26))f.fT=.65}   // nach dem Flug kein Überschlag mehr, gleich liegen
   else f.fT+=sdt;
   const dx=x-f.lx;f.lx=x;if(Math.abs(dx)<5){f.tb+=((st===24?2.6:1)-f.tb)*Math.min(1,dt*10);f.gp+=dx/f.V.gs*f.tb;f.wp+=dx/f.V.ws*f.tb}   // Beine: Turbo wirbelt
   if(st===17)f.gp+=sdt*3;   // in der Luft strampeln
-  f.ry+=((st===7||st===9||st===25?PI:0)-f.ry)*Math.min(1,dt*9);f.root.rotation.y=f.ry;
+  f.ry+=((st===7||st===9||st===25?PI:st===28?1.2:0)-f.ry)*Math.min(1,dt*9);f.root.rotation.y=f.ry;
   // seitlicher Versatz: Stier im Sturmlauf, Zoomies, abgedrängt, Bocksprung über die Nachbarbahn
   const oz=o>=0?laneZ(o)-laneZ(i):0,u7=Math.min(1,f.fT/.7);
-  const zt=id==='stier'&&st===4?Math.sin(t*2.3)*4:id==='shiba'&&st===15?Math.sin(t*7)*1.6:st===23?-Math.sign(oz||1)*1.5*Math.sin(PI*Math.min(1,f.fT/1.2)):0;
-  f.zo+=(zt-f.zo)*Math.min(1,dt*(st===23?9:4));
+  const zt=id==='stier'&&st===4?Math.sin(t*2.3)*4:id==='shiba'&&st===15?Math.sin(t*7)*1.6:st===23?-Math.sign(oz||1)*1.5*Math.sin(PI*Math.min(1,f.fT/1.2)):st===28?-7.3-laneZ(i):0;   // 28: zum Zuschauer an die Bande
+  f.zo+=(zt-f.zo)*Math.min(1,dt*(st===23||st===28?9:4));
   let wx=x+(id==='alpaka'?2:0)-f.V.front*S,wz=laneZ(i)+f.zo,wy=0;
   if(st!==f.prev)f.pg=st===21&&f.prev===22?f.wy:-1;   // Absprung vom Rücken des Trägers
   if(st===21&&f.pg>=0){const u=Math.min(1,f.fT/.45);wz+=oz*(1-u);wy=f.pg*(1-u)+1.6*Math.sin(PI*u)}
   else if(st===21){wz+=oz*Math.sin(PI*u7);wy=3.4*Math.sin(PI*u7)}   // Bocksprung: im Bogen über den Nachbarn
   if(st===22&&o>=0){wz=laneZ(o)+.1;wy=Math.max(0,fig[o].c*1.5-f.c*.6)*S}     // Huckepack auf dem Rücken des anderen
+  // Höhenflug: in 0,6 s nach oben aus dem Bild, ab 1,5 s fällt er von oben wieder herein (passend zu DUR in sim.js), notfalls auf einen anderen
+  if(st===26){const a=f.fT,u=clamp((a-1.5)/1.1,0,1);wy=a<.6?60*Math.pow(a/.6,.6):a<1.5?60:11*Math.pow(1-u,1.4);wz+=oz*u}
+  if(f.prev===26&&st!==26)for(let q=0;q<14;q++)emit(wx,.3,wz,Math.random()*8-4,Math.random()*3,Math.random()*8-4,.9,1.4,'#d6c8a0');   // Einschlag
   f.root.position.set(wx,wy,wz);f.wy=wy;
   // Unfälle. Nie mehr als ein Überschlag, damit nichts auf der Stelle wirbelt
   const u2=Math.min(1,f.fT/.65),e2=u2*u2*(3-2*u2),u17=Math.min(1,f.fT/1.1);
@@ -184,6 +187,7 @@ function pose(i,x,st,rain,dt,sdt,o,xs){
   let rz=0,y=f.c*(1-.45*f.lie-.4*f.bel);
   if(st===2&&f.fT<.65){rz=-2*PI*e2;y+=Math.sin(PI*u2)*1.4}                                 // ein Überschlag nach vorn
   else if(st===17){const sg=dx<0?-1:1;rz=-sg*2*PI*u17;y+=2.4*Math.sin(PI*u17)}               // hoher Bogen, eine Drehung in Flugrichtung
+  else if(st===26)rz=-f.fT*9;                                                              // wirbelt durch die Luft
   else if(st===20)rz=-.25*f.bel;                                                          // Bauchklatscher: Nase voran über den Rasen
   else if(st===21)rz=.35*Math.cos(PI*u7);
   else if(st===24)rz=-.18;

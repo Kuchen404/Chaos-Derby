@@ -77,6 +77,7 @@ Reaktionen (Zustände in `sim.js`, Darstellung in `figures.js`). Keine dreht das
 | platt (18) | steht 2,2 s | flach gedrückt wie ein Pfannkuchen, ploppt danach zurück |
 | benommen (19) | steht 1,8 s | wankt, drei Sterne kreisen über dem Kopf |
 | Bauchklatscher (20) | rutscht 1,3 s mit abnehmendem Tempo weiter | flach auf dem Bauch, Staub, „Platsch!“ |
+| Höhenflug (26) | 2,6 s in der Luft mit eigenem Tempo, dann 1 s liegen; 1,1 s vor der Landung sucht er sich mit 60 % jemanden in der Nähe aus und landet auf ihm (`dropon`, der ist platt) | schießt in 0,6 s nach oben aus dem Bild, fällt von oben wieder herein, „Aaaah!“, Pfeifton, Staubwolke beim Einschlag; die Regie schneidet immer auf den Rückkehrer |
 
 Nach jedem Unfall gilt 1,5 s Schonzeit, in der der Starter nicht wieder getroffen wird und keine eigene Panne hat.
 
@@ -115,6 +116,21 @@ Gemessen mit ausgelostem Feld und Boden (2000 bis 3000 Rennen). Ein Überholen z
 | Überholungen durch Gag / Chaos / normal | – | 26 / 44 / 29 % | 70 / 29 / 0 % |
 | Führungswechsel durch Gag / Chaos / normal | – | 29 / 41 / 30 % | 72 / 27 / 1 % |
 
+### Absurditäten: Dinge auf der Bahn und Zuschauer
+
+Damit nicht nur die Starter selbst für Chaos sorgen, passieren auch um sie herum Dinge. Jeder Gag ist klein (einer verliert oder gewinnt ein paar Meter), dafür kommt in fast jedem Rennen etwas davon vor, im Schnitt knapp zwei pro Rennen (3000 Rennen gezählt). Alles steht in der Simulation (`absurd` und `onTrack` in `js/sim.js`) und landet als `props` im Ergebnis; `js/props.js` zeigt es nur nach der Rennzeit.
+
+| Gag (`k`) | Wann | Was passiert | je Rennen |
+|---|---|---|---|
+| Trampolin (`tramp`) | in 30 % der Rennen steht eins von Anfang an auf einer Bahn, bei 250 bis 750 m | wer drüberläuft, macht einen Höhenflug (26) und fällt weiter vorn wieder herein | 0,29 |
+| Bananenschale (`bananathrow`, `banana`, `bananaeat`) | ein Zuschauer wirft sie 14 bis 28 m vor einen Starter (höchstens zwei pro Rennen) | Bauchklatscher; Pflanzenfresser essen sie mit 35 % einfach auf (1,2 s Pause) | 0,42 Würfe |
+| Möhre oder Wurst (`snack`) | ein Zuschauer hält sie über die hintere Bande (höchstens zwei pro Rennen) | der Starter biegt ab, holt sie sich und kaut 1,6 bis 2,4 s; Pflanzenfresser bekommen eine Möhre, Hunde und Fuchs eine Wurst | 0,30 |
+| Entenfamilie (`ducks`, `duckwait`, `duckscatter`) | in 25 % der Rennen, wenn die Spitze 55 m davor ist; sie braucht 4,5 s über die Bahn | wer ankommt, wartet höflich („Bitte!“), bis sie drüben sind; der Stier im Sturmlauf prescht durch, die Enten flattern davon | 0,25 |
+| Flitzer (`streak` …) | in 25 % der Rennen, 30 m vor der Spitze, rennt mit 7 m/s und im Zickzack mit | wer ihn einholt: mit 70 % springt er auf und reitet 2,5 bis 3,5 s mit (Träger 10 % langsamer, `streakride`), sonst überschlagen sich beide (`streakcrash`); kleine Tiere, Esel und Stier tragen keinen, der Stier im Sturmlauf nimmt ihn auf die Hörner | 0,25 |
+| Höhenflug statt Flug | Stier im Sturmlauf (25 %), Tritt des Esels (30 %), Abwurf vom Esel oder Stier (35 %), Druckwelle der Rakete (20 %) | wie oben, Höhenflug (26) statt normalem Flug | 0,43 |
+
+Wer fliegt, springt oder huckepack sitzt, kommt über Trampolin, Bananenschale und Enten einfach hinweg. Die neuen Sätze für den japanischen Sprecher stehen in `js/jikkyo.js`, haben aber noch keine VOICEVOX-Aufnahme; bis `node tools/jikkyo-render.js` neu läuft, spricht sie die Browserstimme.
+
 ### Bahnzustand
 
 Vor jedem Rennen wird der Boden ausgelost: gut (50 %), weich (30 %), schwer (20 %). Er steht über dem Bild und in der Ansage, und die Quoten werden für genau diesen Boden gerechnet. So hat jedes Rennen eine eigene Ausgangslage, ohne dass dafür neue Starter nötig sind. Auf schwerem Boden werden die beiden Pferde langsamer, Husky und Stier kaum, und das Pferd auf zwei Beinen rutscht gelegentlich aus.
@@ -135,20 +151,20 @@ Aktuelle Siegchancen (`node tools/odds.js`, 6000 Rennen mit ausgelostem Feld und
 
 | Nr | Starter | gesamt | gut | weich | schwer |
 |---|---|---|---|---|---|
-| 1 | Sekundenschlaf (Pferd) | 17 % | 18 % | 17 % | 14 % |
-| 2 | Hals über Kopf (Alpaka) | 18 % | 17 % | 19 % | 21 % |
-| 3 | Dampfwalze (Stier) | 17 % | 16 % | 17 % | 19 % |
-| 4 | Schmuddelwetter (Husky) | 17 % | 16 % | 17 % | 20 % |
-| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 17 % | 20 % | 13 % | 13 % |
-| 6 | Spätzünder (Kuh) | 16 % | 16 % | 18 % | 14 % |
-| 7 | Sturkopf (Esel) | 16 % | 16 % | 17 % | 17 % |
-| 8 | Platzhirsch (Hirsch) | 16 % | 17 % | 18 % | 11 % |
-| 9 | Schreckhaft (Reh) | 17 % | 20 % | 16 % | 12 % |
-| 10 | Schlitzohr (Fuchs) | 16 % | 15 % | 17 % | 19 % |
-| 11 | Hetzjagd (Wolf) | 17 % | 14 % | 19 % | 25 % |
-| 12 | Schnüffelnase (Shiba Inu) | 15 % | 16 % | 13 % | 15 % |
+| 1 | Sekundenschlaf (Pferd) | 17 % | 19 % | 16 % | 14 % |
+| 2 | Hals über Kopf (Alpaka) | 18 % | 16 % | 19 % | 21 % |
+| 3 | Dampfwalze (Stier) | 17 % | 13 % | 19 % | 23 % |
+| 4 | Schmuddelwetter (Husky) | 16 % | 15 % | 16 % | 17 % |
+| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 18 % | 20 % | 17 % | 13 % |
+| 6 | Spätzünder (Kuh) | 16 % | 16 % | 17 % | 15 % |
+| 7 | Sturkopf (Esel) | 18 % | 18 % | 17 % | 20 % |
+| 8 | Platzhirsch (Hirsch) | 17 % | 18 % | 17 % | 16 % |
+| 9 | Schreckhaft (Reh) | 16 % | 18 % | 14 % | 12 % |
+| 10 | Schlitzohr (Fuchs) | 17 % | 17 % | 18 % | 18 % |
+| 11 | Hetzjagd (Wolf) | 17 % | 14 % | 18 % | 22 % |
+| 12 | Schnüffelnase (Shiba Inu) | 15 % | 17 % | 14 % | 10 % |
 
-Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 25 %, Pferd auf zwei Beinen 18 %, Alpaka 18 %, Kuh 15 %, Husky 13 %, Stier 11 %. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
+Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 23 %, Alpaka 19 %, Pferd auf zwei Beinen 18 %, Kuh 16 %, Stier 13 %, Husky 12 %. Stand mit den Absurditäten; die Grundtempos sind dafür nicht verändert, alle Starter liegen zwischen 15 und 18 %. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
 
 ## Wetten
 
@@ -223,5 +239,5 @@ Ein kostenpflichtiges Paket mit Giraffe, Elefant und Robbe in einheitlichem Stil
 ## Offen
 
 - **Wetten am Handy:** Wetten am eigenen Handy per QR-Code. Braucht einen kleinen Server; die Wettlogik in `js/bets.js` lässt sich dafür übernehmen. Ebenfalls offen: Totalisator statt fester Quoten, bei dem die Quote aus den Einsätzen der Runde entsteht.
-- **Mehr Abwechslung:** Bahnzustand, Zielgeraden-Ereignisse, zwölf Starter und wechselnde Felder sind umgesetzt (siehe oben). Fehlschläge, die andere Starter mitreißen, Reaktionen je nach Ursache und Gags beim Überholen sind ebenfalls drin. Noch offen: Wettbewerbe mit anderer Distanz (800 oder 1200 m), die eine Bahn bräuchten, deren Länge nicht fest in `scene.js` steht.
+- **Mehr Abwechslung:** Bahnzustand, Zielgeraden-Ereignisse, zwölf Starter und wechselnde Felder sind umgesetzt (siehe oben). Fehlschläge, die andere Starter mitreißen, Reaktionen je nach Ursache und Gags beim Überholen sind ebenfalls drin, dazu Dinge auf der Bahn und eingreifende Zuschauer. Noch offen: Wettbewerbe mit anderer Distanz (800 oder 1200 m), die eine Bahn bräuchten, deren Länge nicht fest in `scene.js` steht.
 - **Bekannte Schwächen:** Bei Schnitten auf einen Starter in einer hinteren Bahn läuft manchmal ein anderer Starter groß durchs Bild. Die Startnummer sehr großer Figuren wird in nahen Einstellungen oben angeschnitten.
