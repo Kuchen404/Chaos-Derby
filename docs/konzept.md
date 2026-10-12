@@ -92,13 +92,28 @@ Läuft ein schnellerer Starter bis auf 0,6 bis 2,5 m an einen laufenden Vorderma
 | turbo (24) | Shiba, Wolf | 0,9 s mit 1,6-fachem Tempo, Beine wirbeln, Staub | 20 %: übernimmt sich und macht einen Bauchklatscher (`turbofail`) |
 | taunt (25) | Pferd, Pferd auf zwei Beinen | überholt 1,2 s rückwärts laufend und streckt die Zunge raus („Bätsch!“) | 25 %: fällt über die eigenen Beine (`tauntfail`) |
 
+### Aufholjagd
+
+Ohne Ausgleich zog sich das Feld weit auseinander: Bei 800 m lag der Erste im Median 27 m vorn, in 64 % der Rennen gewann, wer dort führte, und nur 16 % der Zieleinläufe waren enger als 0,2 s. Deshalb gilt jetzt für jeden laufenden Starter: Wer hinter dem Führenden liegt, wird schneller, linear bis +25 % ab 30 m Rückstand (`CATCH` in `js/sim.js`). Der Führende selbst läuft 3 % langsamer (`LEADF`). Ausgenommen sind Rakete, Flug, Bauchklatscher, Bocksprung und Huckepack, weil diese Zustände ihr eigenes Tempo haben, und wer rückwärts läuft. Die Grundtempos wurden danach neu abgestimmt.
+
+Gemessen über 3000 Rennen mit ausgelostem Feld und Boden (vorher → nachher):
+
+| | vorher | nachher |
+|---|---|---|
+| Führungswechsel je Rennen (ab 1 m Vorsprung) | 3,1 | 5,8 |
+| davon auf den letzten 200 m | 0,5 | 1,2 |
+| Abstand Erster zu Zweitem bei 800 m (Median) | 27 m | 6 m |
+| Sieger lag bei 800 m vorn | 64 % | 33 % |
+| Zieleinlauf enger als 0,2 s | 16 % | 47 % |
+| Zieleinlauf weiter als 2 s | 29 % | 11 % |
+
 ### Bahnzustand
 
 Vor jedem Rennen wird der Boden ausgelost: gut (50 %), weich (30 %), schwer (20 %). Er steht über dem Bild und in der Ansage, und die Quoten werden für genau diesen Boden gerechnet. So hat jedes Rennen eine eigene Ausgangslage, ohne dass dafür neue Starter nötig sind. Auf schwerem Boden werden die beiden Pferde langsamer, Husky und Stier kaum, und das Pferd auf zwei Beinen rutscht gelegentlich aus.
 
 ### Zielgerade
 
-Auf den letzten 200 m sind Fressen, Sturmlauf und Rückwärtslaufen 1,5-mal so häufig, eine noch nicht gezündete Rakete zündet 2,5-mal so oft, und der Führende kann zu früh jubeln. In etwa 47 % der Rennen gewinnt nicht, wer bei 800 m vorn liegt (vorher 44 %). Ein verfrühter Jubel kommt in etwa einem Viertel der Rennen vor.
+Auf den letzten 200 m sind Fressen, Sturmlauf und Rückwärtslaufen 1,5-mal so häufig, eine noch nicht gezündete Rakete zündet 2,5-mal so oft, und der Führende kann zu früh jubeln. Mit der Aufholjagd gewinnt in zwei Dritteln der Rennen nicht, wer bei 800 m vorn liegt. Ein verfrühter Jubel kommt in etwa einem Viertel der Rennen vor.
 
 - Das Alpaka gewinnt im Ziel bis zu 4 m durch den gestreckten Hals.
 
@@ -112,20 +127,20 @@ Aktuelle Siegchancen (`node tools/odds.js`, 6000 Rennen mit ausgelostem Feld und
 
 | Nr | Starter | gesamt | gut | weich | schwer |
 |---|---|---|---|---|---|
-| 1 | Sekundenschlaf (Pferd) | 14 % | 17 % | 11 % | 11 % |
-| 2 | Hals über Kopf (Alpaka) | 18 % | 18 % | 18 % | 21 % |
-| 3 | Dampfwalze (Stier) | 17 % | 14 % | 19 % | 22 % |
-| 4 | Schmuddelwetter (Husky) | 16 % | 11 % | 17 % | 28 % |
-| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 18 % | 21 % | 16 % | 13 % |
-| 6 | Spätzünder (Kuh) | 17 % | 16 % | 18 % | 17 % |
-| 7 | Sturkopf (Esel) | 16 % | 14 % | 19 % | 18 % |
-| 8 | Platzhirsch (Hirsch) | 16 % | 19 % | 15 % | 9 % |
-| 9 | Schreckhaft (Reh) | 18 % | 24 % | 14 % | 8 % |
-| 10 | Schlitzohr (Fuchs) | 16 % | 15 % | 18 % | 17 % |
-| 11 | Hetzjagd (Wolf) | 17 % | 12 % | 20 % | 25 % |
-| 12 | Schnüffelnase (Shiba Inu) | 17 % | 20 % | 16 % | 12 % |
+| 1 | Sekundenschlaf (Pferd) | 16 % | 19 % | 13 % | 15 % |
+| 2 | Hals über Kopf (Alpaka) | 16 % | 14 % | 18 % | 20 % |
+| 3 | Dampfwalze (Stier) | 15 % | 14 % | 15 % | 19 % |
+| 4 | Schmuddelwetter (Husky) | 16 % | 15 % | 17 % | 17 % |
+| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 15 % | 18 % | 13 % | 13 % |
+| 6 | Spätzünder (Kuh) | 17 % | 16 % | 19 % | 17 % |
+| 7 | Sturkopf (Esel) | 17 % | 16 % | 17 % | 20 % |
+| 8 | Platzhirsch (Hirsch) | 19 % | 20 % | 19 % | 15 % |
+| 9 | Schreckhaft (Reh) | 17 % | 19 % | 15 % | 13 % |
+| 10 | Schlitzohr (Fuchs) | 19 % | 16 % | 23 % | 20 % |
+| 11 | Hetzjagd (Wolf) | 15 % | 14 % | 15 % | 19 % |
+| 12 | Schnüffelnase (Shiba Inu) | 17 % | 19 % | 16 % | 14 % |
 
-Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 26 %, Pferd auf zwei Beinen 19 %, Kuh 16 %, Alpaka 16 %, Stier 13 %, Husky 11 %. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
+Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 25 %, Pferd auf zwei Beinen 17 %, Husky 16 %, Kuh 15 %, Alpaka 15 %, Stier 12 %. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
 
 ## Wetten
 
