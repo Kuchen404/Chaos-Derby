@@ -16,7 +16,8 @@ const VOICE={
   1:{sp:13,speed:1.15,pitch:.02,into:1.45,vol:1.1},
   2:{sp:81,speed:1.22,pitch:.04,into:1.55,vol:1.2},
   3:{sp:81,speed:1.35,pitch:.08,into:1.85,vol:1.3},
-  win:{sp:81,speed:1.25,pitch:.1,into:2,vol:1.4},
+  4:{sp:81,speed:1.45,pitch:.13,into:2,vol:1.5},
+  win:{sp:81,speed:1.35,pitch:.15,into:2,vol:1.6},
   calm:{sp:13,speed:1,pitch:-.01,into:1,vol:1}
 };
 async function synth(text,v){
@@ -41,7 +42,7 @@ function pcm(wav){let o=12;while(o<wav.length){const id=wav.toString('ascii',o,o
   }
   parts.push(gap);
   const raw=path.join(CACHE,'all.raw');fs.writeFileSync(raw,Buffer.concat(parts));
-  execFileSync('ffmpeg',['-y','-loglevel','error','-f','s16le','-ar',String(RATE),'-ac','1','-i',raw,'-codec:a','libmp3lame','-b:a','48k',path.join(OUT,'jikkyo.mp3')]);
+  execFileSync('ffmpeg',['-y','-loglevel','error','-f','s16le','-ar',String(RATE),'-ac','1','-i',raw,'-codec:a','libmp3lame','-b:a','32k',path.join(OUT,'jikkyo.mp3')]);
   fs.writeFileSync(path.join(OUT,'jikkyo.json'),JSON.stringify(map));
   console.log(list.length+' Aufnahmen, '+(pos/RATE).toFixed(0)+' s, '+(fs.statSync(path.join(OUT,'jikkyo.mp3')).size/1e6).toFixed(1)+' MB');
 })().catch(e=>{console.error(e.message);process.exit(1)});

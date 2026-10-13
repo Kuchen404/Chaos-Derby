@@ -30,11 +30,13 @@ function logLine(e){
   if(e.cut&&(!cut||t>cut.until+1.2||e.k==='fallback'))cut={i:e.i,until:t+e.cut}}   // wer von oben zurückfällt, bekommt immer seinen Schnitt
 function step(dt){
   const slow=t>race.winT-.5&&t<race.winT+.45,sdt=dt*(slow?.28:1);
-  $('slow').hidden=!slow;t+=sdt;
+  $('slow').hidden=!slow;const t0=t;t+=sdt;
   while(evI<race.ev.length&&race.ev[evI].t<=t)logLine(race.ev[evI++]);
   if(!photoTaken&&race.winT>=0&&t>=race.winT)snapPhoto();
   frame(dt,sdt);
-  if(voice.update(dt)>(voice.mode==='ja'?[7,6,4,3][voice.level]:8)&&t>3&&t<race.winT-6)filler();
+  // kurz vor dem Ziel heizt der japanische Sprecher von sich aus an; nur gesprochen
+  if(t0<race.winT-3.5&&t>=race.winT-3.5)voice.say({k:'hype',p:2},clamp(t/race.winT,0,1));
+  if(voice.update(dt)>(voice.mode==='ja'?[7,6,4,3,3][voice.level]:8)&&t>3&&t<race.winT-6)filler();
   return t>=Math.min(race.dur,race.winT+7);
 }
 // Füllt längere Pausen im gesprochenen Kommentar mit dem Stand an der Spitze. Nur gesprochen, nicht im Verlauf.
