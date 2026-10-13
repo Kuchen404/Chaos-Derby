@@ -76,7 +76,8 @@ const voice=(()=>{
       if(mode==='aus')return;
       const p=l.p||1;prog=prog||0;
       if(p>=2&&!final)chaos=Math.min(.45,chaos+.05);   // jedes Chaos-Ereignis bringt den Sprecher weiter aus der Fassung
-      if(!final)m=Math.max(m,Math.min(1,prog*.75+chaos));
+      // auf den letzten Metern (ab 88 % der Siegerzeit) ist er fassungslos (Stufe 4)
+      if(!final)m=Math.max(m,Math.min(.99,prog*.75+chaos),prog>=.88?1:0);
       if(final&&p<3)return;               // nach dem Sieg nur noch Zieleinlauf und Ergebnis
       const mm=p>=3&&l.k!=='einlauf'?1:m;
       let s=l.s,useJa=false,clips=null;
