@@ -64,6 +64,9 @@ const sfx=(()=>{
     growl(t){const g=noise(t,1,.4,'lowpass',260,0,{a:.1,r:.3,q:4});const l=ac.createOscillator(),lg=ac.createGain();l.frequency.value=28;lg.gain.value=.3;l.connect(lg);lg.connect(g.gain);l.start(t);l.stop(t+1.1);tone(t,'sawtooth',[95,80],1,.12,0,{lp:300})},
     sniff(t){for(let k=0;k<4;k++)noise(t+k*.16,.08,.3,'highpass',2500)},
     bark(t){for(let k=0;k<3;k++){tone(t+k*.2,'square',[520,780,420],.12,.14,0,{lp:1800});noise(t+k*.2,.08,.2,'bandpass',1500)}},
+    // Gummiband: knarzendes Dehnen mit steigendem Ton, dann das Schnalzen
+    stretch(t){tone(t,'sawtooth',[110,330],.7,.12,0,{a:.05,r:.1,lp:900,vib:30,vd:12})},
+    twang(t){tone(t,'triangle',[900,140],.25,.3,0,{vib:45,vd:60});noise(t,.06,.3,'highpass',3000)},
     skid(t){noise(t,.5,.25,'bandpass',[2500,1200],0,{q:4})},
     thud(t){tone(t,'sine',[140,40],.35,.7);noise(t,.2,.35,'lowpass',500)},
     bell(t){[0,.12].forEach(d=>{tone(t+d,'sine',1320,.8,.25,0,{r:.7});tone(t+d,'sine',2640,.5,.08,0,{r:.4})})},
@@ -102,6 +105,8 @@ const sfx=(()=>{
     buckhigh:['heehaw','whoosh'],bananathrow:['whoosh'],banana:['skid','thud'],bananaeat:['munch'],snack:['munch'],
     ducks:['quack'],duckwait:['quack'],duckscatter:['quack','whoosh'],streak:['whistle','ooh'],streakride:['boing','cheer'],
     streakcrash:['thud','ooh'],streakknock:['thud','whoosh'],streakoff:['thud','whistle'],
+    under:['whoosh','snicker'],underfail:['thud','ooh'],trick:['snicker'],trickfail:['boing','ooh'],vault:['thud','boing','whoosh'],vaultfail:['thud','ooh'],
+    sling:['growl','stretch'],slingoff:['twang','whoosh'],slingfail:['twang','thud','ooh'],dive:['whoosh','ooh'],divefail:['skid','ooh'],
     win:['cheer'],close:['ooh']};
 
   /* ---------- Musik ---------- */

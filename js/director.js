@@ -6,7 +6,7 @@ const HOLD=1.5,NEAR=L-70;   // Mindestdauer einer Einstellung in s; ab hier kein
 // Was in der Nähe als Folge passiert (Getroffene, Gestürzte, der Partner eines Überholgags), kommt mit ins Bild statt eines neuen Schnitts.
 const PRE=.7,MINSHOT=2.6,NEARX=20,SEEN=1.5;   // SEEN: so lange nach seinem Ereignis darf ein laufender Moment für einen neuen unterbrochen werden
 // Die stärksten Momente eines Rennens bekommen live eine kurze Zeitlupe (Gewicht je Art; höchstens SLOWN je Rennen)
-const BIG={knockhigh:5,blasthigh:5,kickhigh:5,buckhigh:5,tramp:4,explode:4,landon:4,dropon:4,leapfail:3,chargefail:3,streakcrash:3,streakknock:3,duckscatter:3,knock:2,rocketwrong:2},SLOWN=2,SLOWF=.35;
+const BIG={knockhigh:5,blasthigh:5,kickhigh:5,buckhigh:5,tramp:4,explode:4,landon:4,dropon:4,leapfail:3,chargefail:3,streakcrash:3,streakknock:3,duckscatter:3,knock:2,rocketwrong:2,underfail:3,vaultfail:3,slingfail:3,slingoff:3,trickfail:2,vault:2,under:2,trick:2},SLOWN=2,SLOWF=.35;
 function planShots(){
   const fr=race.frames,n=fr.length,F=tt=>fr[clamp(Math.round(tt*30),0,n-1)],X=(i,tt)=>F(tt).x[i];
   // Neue Momente nur bis NEAR; danach steht die Seitenkamera mindestens HOLD, bevor die Zielkamera übernimmt
