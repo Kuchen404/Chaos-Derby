@@ -3,18 +3,18 @@ const L=1000, DT=1/30, FIELD=6;
 // Alle Starter. Pro Rennen laufen FIELD davon (siehe drawField); die Startnummer bleibt fest.
 // v: Grundtempo m/s, late: Faktor für die zweite Rennhälfte, rain: Faktor bei Regen, bod: Faktor je Bahnzustand [gut, weich, schwer]
 const ROSTER=[
- {id:'pferd',nr:1,name:'Sekundenschlaf',kind:'Pferd',trait:'Schnell, schläft in Führung aber gern ein',col:'#d2232a',ink:'#fff',v:23.77,late:-.04,rain:.85,bod:[1,.97,.95]},
- {id:'alpaka',nr:2,name:'Hals über Kopf',kind:'Alpaka',trait:'Streckt im Ziel den Hals, frisst unterwegs',col:'#f2b600',ink:'#111',v:22.08,late:.02,rain:.85,bod:[1,.99,.97]},
- {id:'stier',nr:3,name:'Dampfwalze',kind:'Stier',trait:'Langsam, räumt beim Sturmlauf alles ab',col:'#2f6fb8',ink:'#fff',v:18.77,late:.03,rain:.95,bod:[1,1,.99]},
- {id:'husky',nr:4,name:'Schmuddelwetter',kind:'Husky',trait:'Trottet lustlos, außer es regnet',col:'#12a08f',ink:'#fff',v:18,late:0,rain:2.33,bod:[1,1,1]},
+ {id:'pferd',nr:1,name:'Sekundenschlaf',kind:'Pferd',trait:'Schnell, schläft in Führung aber gern ein',col:'#d2232a',ink:'#fff',v:23.65,late:-.04,rain:.85,bod:[1,.97,.95]},
+ {id:'alpaka',nr:2,name:'Hals über Kopf',kind:'Alpaka',trait:'Streckt im Ziel den Hals, frisst unterwegs',col:'#f2b600',ink:'#111',v:22.25,late:.02,rain:.85,bod:[1,.99,.97]},
+ {id:'stier',nr:3,name:'Dampfwalze',kind:'Stier',trait:'Langsam, räumt beim Sturmlauf alles ab',col:'#2f6fb8',ink:'#fff',v:18.85,late:.03,rain:.95,bod:[1,1,.99]},
+ {id:'husky',nr:4,name:'Schmuddelwetter',kind:'Husky',trait:'Trottet lustlos, außer es regnet',col:'#12a08f',ink:'#fff',v:18.4,late:0,rain:2.33,bod:[1,1,1]},
  {id:'aufrecht',nr:5,name:'Aufrechter Gang',kind:'Pferd auf zwei Beinen',trait:'Der Schnellste, läuft manchmal zurück',col:'#8e44ad',ink:'#fff',v:25.76,late:0,rain:.8,bod:[1,.97,.95]},
- {id:'kuh',nr:6,name:'Spätzünder',kind:'Kuh mit Rakete',trait:'Trottet, bis die Rakete zündet',col:'#e0559b',ink:'#fff',v:12.73,late:0,rain:1,bod:[1,.98,.96]},
- {id:'esel',nr:7,name:'Sturkopf',kind:'Esel',trait:'Bleibt stur stehen, bis ihn einer überholt',col:'#ef7d1a',ink:'#111',v:22.11,late:.02,rain:.95,bod:[1,.99,.97]},
+ {id:'kuh',nr:6,name:'Spätzünder',kind:'Kuh mit Rakete',trait:'Trottet, bis die Rakete zündet',col:'#e0559b',ink:'#fff',v:12.6,late:0,rain:1,bod:[1,.98,.96]},
+ {id:'esel',nr:7,name:'Sturkopf',kind:'Esel',trait:'Bleibt stur stehen, bis ihn einer überholt',col:'#ef7d1a',ink:'#111',v:22.18,late:.02,rain:.95,bod:[1,.99,.97]},
  {id:'hirsch',nr:8,name:'Platzhirsch',kind:'Hirsch',trait:'Springt in großen Sätzen, landet nicht immer',col:'#7a4b2a',ink:'#fff',v:21.64,late:0,rain:.9,bod:[1,.98,.95]},
- {id:'reh',nr:9,name:'Schreckhaft',kind:'Reh',trait:'Sehr schnell, erstarrt aber bei jedem Krach',col:'#f4f4f4',ink:'#111',v:23.73,late:0,rain:.85,bod:[1,.97,.94]},
- {id:'fuchs',nr:10,name:'Schlitzohr',kind:'Fuchs',trait:'Hängt sich hinter andere und zieht spät vorbei',col:'#8bc34a',ink:'#111',v:21.67,late:0,rain:.9,bod:[1,.99,.97]},
- {id:'wolf',nr:11,name:'Hetzjagd',kind:'Wolf',trait:'Jagt den Vordermann, der rennt dann um sein Leben',col:'#3a3f47',ink:'#fff',v:21.13,late:0,rain:1,bod:[1,1,.99]},
- {id:'shiba',nr:12,name:'Schnüffelnase',kind:'Shiba Inu',trait:'Schnüffelt herum, bekommt dann seine fünf Minuten',col:'#1c2f6b',ink:'#fff',v:22.09,late:0,rain:.8,bod:[1,.97,.94]}
+ {id:'reh',nr:9,name:'Schreckhaft',kind:'Reh',trait:'Sehr schnell, erstarrt aber bei jedem Krach',col:'#f4f4f4',ink:'#111',v:23.6,late:0,rain:.85,bod:[1,.97,.94]},
+ {id:'fuchs',nr:10,name:'Schlitzohr',kind:'Fuchs',trait:'Hängt sich hinter andere und zieht spät vorbei',col:'#8bc34a',ink:'#111',v:21.4,late:0,rain:.9,bod:[1,.99,.97]},
+ {id:'wolf',nr:11,name:'Hetzjagd',kind:'Wolf',trait:'Jagt den Vordermann, der rennt dann um sein Leben',col:'#3a3f47',ink:'#fff',v:21.2,late:0,rain:1,bod:[1,1,.99]},
+ {id:'shiba',nr:12,name:'Schnüffelnase',kind:'Shiba Inu',trait:'Schnüffelt herum, bekommt dann seine fünf Minuten',col:'#1c2f6b',ink:'#fff',v:22.13,late:0,rain:.8,bod:[1,.97,.94]}
 ];
 const CLASSIC=[0,1,2,3,4,5];   // das ursprüngliche Feld
 // Das Feld des aktuellen Rennens, Index = Bahn. Im Browser lesen Darstellung und Wetten daraus; setField tauscht den Inhalt aus.
@@ -28,16 +28,20 @@ function drawBoden(u){let a=0;for(let k=0;k<BODEN.length;k++){a+=BODEN[k].p;if(u
 function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 // Wie weit die Nase vor der Position liegt: das Alpaka streckt im Ziel den Hals
-const nose=(d,x)=>d.id==='alpaka'?2+4*clamp((x-(L-90))/60,0,1):0;
+// und beim Hechtsprung ins Ziel (Zustand 29) ist das Tier lang ausgestreckt
+const nose=(d,x,st)=>(d.id==='alpaka'?2+4*clamp((x-(L-90))/60,0,1):0)+(st===29?1.2:0);
 // Zustände: 0 läuft, 1 schläft, 2 purzelt, 3 frisst, 4 Sturmlauf, 6 Rakete, 7 läuft zurück, 8 jubelt zu früh, 9 Rakete verkehrt herum,
 // 10 bockt, 11 springt, 12 erstarrt, 13 jagt, 14 schnüffelt, 15 Zoomies, 16 heult mit,
 // Reaktionen auf Unfälle: 17 fliegt durch die Luft, 18 platt, 19 benommen, 20 Bauchklatscher,
 // Überholgags: 21 Bocksprung, 22 Huckepack, 23 abgedrängt, 24 Turbo, 25 überholt rückwärts,
-// Absurditäten: 26 Höhenflug (fliegt aus dem Bild und fällt von oben wieder herein), 27 wartet auf die Enten, 28 schnappt sich einen Snack vom Zuschauer
-const STOP=[1,2,3,8,10,12,14,16,18,19,27,28];
+// Absurditäten: 26 Höhenflug (fliegt aus dem Bild und fällt von oben wieder herein), 27 wartet auf die Enten, 28 schnappt sich einen Snack vom Zuschauer,
+// mehr Überholmanöver: 29 Hechtsprung ins Ziel, 30 läuft unter dem Vordermann durch, 31 schaut zwischen den eigenen Beinen nach,
+// 32 schaut dem Hasen nach (abgelenkt), 33 Stabhochsprung mit dem Hals, 34 Kopfstand (Hals steckt fest), 35 hängt am Schwanz des Vordermanns,
+// 36 hüpft vor Schmerz, 37 jagt einem echten Hasen hinterher, 38 zeigt aufs Innenfeld (läuft dabei normal weiter)
+const STOP=[1,2,3,8,10,12,14,16,18,19,27,28,34,37];
 const FALL=[2,17,18,19,20];   // Unfallzustände; danach 1,5 s Schonzeit
 const ISFALL=[];FALL.forEach(q=>ISFALL[q]=1);
-const CATCH=.12,LEADF=.03,GAGTRY=.6,GAGCD=3,NOCATCH=[];[6,9,17,20,21,22,26].forEach(q=>NOCATCH[q]=1);   // Aufholjagd und Überholen, siehe unten
+const CATCH=.12,LEADF=.03,GAGTRY=.6,GAGCD=3,NOCATCH=[];[6,9,17,20,21,22,26,29,30,33,35].forEach(q=>NOCATCH[q]=1);   // Aufholjagd und Überholen, siehe unten
 // bod: Index in BODEN (Standard 0 = gut), field: ROSTER-Indizes der Starter (Standard CLASSIC)
 function simulate(seed,rec,bod,field){
   const F=(field||CLASSIC).map(k=>ROSTER[k]),n=F.length,R=rng(seed);
@@ -57,7 +61,7 @@ function simulate(seed,rec,bod,field){
   // Fehlschläge reißen andere mit. hit: Starter j stürzt, ausgelöst von src. Wer direkt dahinter läuft, kann über ihn fallen
   // (eine Stufe Kettenreaktion, nicht mehr, sonst läge bei engem Feld jedes Mal alles am Boden).
   // fT: zuletzt verunglückt; wer gerade aufsteht, fällt nicht gleich wieder. Wer fliegt, springt oder huckepack sitzt, ist nicht zu treffen
-  const DN=[];for(const q of [2,6,9,17,18,19,20,21,22,26])DN[q]=1;
+  const DN=[];for(const q of [2,6,9,17,18,19,20,21,22,26,29,30,33,34,35])DN[q]=1;
   const down=q=>q.fin>=0||DN[q.st]===1||t-q.fT<1.5;
   // Reaktion je Ursache (how): 2 Überschlag, 17 fliegt (vl: Tempo in der Luft, negativ = nach hinten), 18 platt, 19 benommen, 20 Bauchklatscher,
   // 26 Höhenflug: so hoch, dass er aus dem Bild verschwindet; 1,1 s vor der Landung fällt er von oben wieder herein
@@ -76,17 +80,23 @@ function simulate(seed,rec,bod,field){
   // Überholversuche: Wer schneller ist und bis auf 2,5 m an einen laufenden Vordermann aufläuft, hängt an ihm fest und versucht
   // es nach im Schnitt 1,7 s (GAGTRY je s) mit einem Gag. Danach hat das Paar 3 s Ruhe (GAGCD). Welcher Gag, hängt etwas vom Tier ab;
   // jeder kann schiefgehen.
-  const GAG={hirsch:'leap',reh:'leap',fuchs:'piggy',shiba:'turbo',wolf:'turbo',pferd:'taunt',aufrecht:'taunt',stier:'barge',esel:'barge'};
-  const GAGS=['leap','piggy','barge','turbo','taunt'];
+  const GAG={hirsch:['leap'],reh:['leap'],fuchs:['piggy','trick'],shiba:['turbo','sling'],wolf:['turbo','trick'],husky:['sling'],alpaka:['vault'],
+    pferd:['taunt'],aufrecht:['taunt'],stier:['barge'],esel:['barge']};
+  const GAGS=['leap','piggy','barge','turbo','taunt','trick'];
   const SMALL=['husky','fuchs','wolf','shiba'];   // wer so klein ist, trägt niemanden; dann wird gesprungen
+  const BIG=['pferd','aufrecht','alpaka','stier','kuh','esel','hirsch'];   // so groß, dass ein Kleiner zwischen den Beinen durchpasst
+  const NOTAIL=['hirsch','reh'];   // Stummelschwanz: daran kann sich keiner ziehen lassen
   function overtake(i,v){const r=rs[i],d=F[i],x=r.x;let j=-1,g0=2.5;
     for(let q=0;q<n;q++){const o=rs[q],g=o.x-x;if(g>.2&&g<g0&&o.st===0&&o.fin<0){g0=g;j=q}}
     if(j<0||v<=rs[j].lv)return v;if(t-r.ov[j]<GAGCD)return v;
     // Einfach vorbeilaufen geht nicht: Wer aufläuft, hängt am Vordermann fest, bis er es mit einem Gag versucht
     if(!p(GAGTRY))return Math.min(v,rs[j].lv);
     r.ov[j]=t;
-    const q=rs[j],e=F[j];let a=GAG[d.id]&&R()<.6?GAG[d.id]:GAGS[Math.floor(R()*5)];r.hs=[];
+    const q=rs[j],e=F[j],fav=GAG[d.id];let a=fav&&R()<.6?fav[Math.floor(R()*fav.length)]:GAGS[Math.floor(R()*GAGS.length)];r.hs=[];
+    if(SMALL.includes(d.id)&&BIG.includes(e.id)&&R()<.6)a='under';
     if(a==='piggy'&&SMALL.includes(e.id))a='leap';
+    if(a==='sling'&&NOTAIL.includes(e.id))a='turbo';
+    if(a==='trick'&&e.id==='esel')a='barge';   // der Esel ist zu stur, um überhaupt hinzuschauen
     if(a==='leap'){
       if(R()<.25){fall(q,18);fall(r,19);say(d.name+' will über '+e.name+' springen und landet genau drauf.',i,2.2,0,'leapfail',j);scare(i)}
       else{r.st=21;r.T=.7;r.o=j;r.vl=q.lv+(g0+3)/.7;say(d.name+' macht einen Bocksprung über '+e.name+'!',i,2,0,'leap',j)}}
@@ -95,13 +105,42 @@ function simulate(seed,rec,bod,field){
       if(['stier','esel','wolf'].includes(e.id)&&R()<.5){fall(r,19);say(d.name+' will '+e.name+' wegdrängen und prallt ab.',i,1.8,0,'bargefail',j)}
       else{q.st=23;q.T=1.2;q.o=i;r.fl=Math.max(r.fl,1);say(d.name+' drängelt '+e.name+' einfach zur Seite.',j,1.8,0,'barge',i)}}
     else if(a==='turbo'){r.st=24;r.T=.9;r.tf=R()<.2;say(d.name+' schaltet den Turbo ein und rauscht an '+e.name+' vorbei!',i,1.6,0,'turbo',j)}
+    // Untendurch: Der Kleine flitzt zwischen den Beinen des Großen durch, der schaut verdutzt zwischen den eigenen Beinen nach.
+    // Geht schief: Der Große erschrickt und setzt sich hin, mitten auf den Kleinen.
+    else if(a==='under'){
+      if(R()<.2){fall(r,18);fall(q,19);q.o=i;say(d.name+' will unter '+e.name+' durch, aber '+e.name+' setzt sich vor Schreck hin. Mitten drauf!',i,2.4,0,'underfail',j);scare(i)}
+      else{r.st=30;r.T=.8;r.o=j;r.vl=q.lv+(g0+2.5)/.8;q.st=31;q.T=1.1;q.o=i;
+        say(d.name+' schlüpft einfach unter '+e.name+' durch!',i,2.4,0,'under',j)}}
+    // „Da, ein Hase!“: zeigt aufs Innenfeld, der Vordermann schaut hin und kommt vom Weg ab.
+    // Geht schief: Da ist wirklich ein Hase, und der Trickser rennt ihm selbst hinterher.
+    else if(a==='trick'){
+      if(R()<.25){r.st=37;r.T=1.8;props.push({k:'hare',x:x+4,b:i,t0:t,t1:t+r.T+1.5});say(d.name+' zeigt aufs Innenfeld. Da ist wirklich ein Hase! Und jetzt jagt er ihn selbst.',i,2.6,0,'trickfail',j)}
+      else{q.st=32;q.T=1.4;q.o=i;r.st=38;r.T=.8;r.o=j;r.fl=Math.max(r.fl,1);say(d.name+' zeigt aufs Innenfeld. Und '+e.name+' fällt drauf rein!',i,2.6,0,'trick',j)}}
+    // Stabhochsprung: Das Alpaka rammt den Kopf in den Rasen und schwingt über den eigenen Hals nach vorn.
+    // Geht schief: Der Kopf steckt fest, und es steht im Kopfstand auf der Bahn.
+    else if(a==='vault'){
+      if(R()<.25){r.st=34;r.T=1.6;say(d.name+' rammt den Kopf in den Rasen. Und da steckt er jetzt fest. Kopfstand!',i,2.4,0,'vaultfail',j)}
+      else{r.st=33;r.T=.9;r.o=j;r.vl=q.lv+(g0+4)/.9;say(d.name+' nimmt den eigenen Hals als Stab. Stabhochsprung über '+e.name+'!',i,2.4,0,'vault',j)}}
+    // Schwanz-Schleuder: beißt dem Vordermann in den Schwanz, lässt sich ziehen, bis der vor Schmerz hochhüpft, und schnalzt dann vorbei.
+    // Geht schief (tf): Der Schwanz schnalzt zurück, mitten ins Gesicht.
+    else if(a==='sling'){r.st=35;r.T=1.1;r.o=j;r.sl=0;r.tf=R()<.25;say(d.name+' beißt '+e.name+' in den Schwanz und lässt sich ziehen.',i,2.8,0,'sling',j)}
     else{r.st=25;r.T=1.2;r.tf=R()<.25;say(d.name+' überholt '+e.name+' rückwärts und streckt die Zunge raus. Bätsch!',i,1.8,0,'taunt',j)}
     return v}
+  // Hechtsprung ins Ziel: Wer auf den letzten Metern dicht hinter einem anderen liegt, wirft sich waagerecht über die Linie (0,5 s, Nase 1,2 m
+  // weiter vorn) und holt dabei den Rückstand auf: Das gibt ein Zielfoto, keinen klaren Sieg. Jeder versucht es höchstens einmal.
+  // Geht schief: zu früh gesprungen, rutscht auf dem Bauch und bleibt vor der Linie liegen.
+  function dive(i,v){const r=rs[i],d=F[i];let j=-1;
+    let g0=3;for(let q=0;q<n;q++){const g=rs[q].x-r.x;if(q!==i&&rs[q].fin<0&&g>.1&&g<g0&&!STOP.includes(rs[q].st)){g0=g;j=q}}
+    if(j<0||!p(5))return v;
+    r.dv=1;
+    if(R()<.25){fall(r,20,Math.max(2,L-r.x-.5)/.65);say(d.name+' springt viel zu früh und bleibt vor der Linie liegen!',i,0,2,'divefail',j)}
+    else{r.st=29;r.T=.5;r.vl=Math.max(v,rs[j].lv)+g0/.5;say('Hechtsprung! '+d.name+' wirft sich ins Ziel!',i,0,2,'dive',j)}
+    return r.vl}
   /* ---------- Absurditäten: Dinge auf der Bahn und Zuschauer, die eingreifen ----------
      Jeder Gag ist klein (einer verliert oder gewinnt ein paar Meter), dafür passiert in fast jedem Rennen etwas davon.
      props: {k, x, b: Bahn (-1: alle), t0: erscheint, t1: vorbei, tu: benutzt}, dazu je Art eigene Felder für die Darstellung */
-  const AIR=[];for(const q of [6,9,11,17,21,22,26])AIR[q]=1;      // fliegt, springt oder sitzt huckepack: geht über alles hinweg
-  const RUNS=[];for(const q of [0,4,13,15,23,24,25])RUNS[q]=1;    // läuft aus eigener Kraft
+  const AIR=[];for(const q of [6,9,11,17,21,22,26,29,33])AIR[q]=1;      // fliegt, springt oder sitzt huckepack: geht über alles hinweg
+  const RUNS=[];for(const q of [0,4,13,15,23,24,25,31,32,35,36,38])RUNS[q]=1;    // läuft aus eigener Kraft
   const HERB=['pferd','alpaka','stier','aufrecht','kuh','esel','hirsch','reh'];   // fressen Möhren, die anderen lieber Wurst
   function land(i){const r=rs[i],q=r.o;r.st=2;r.T=1;r.o=-1;
     if(q>=0&&!down(rs[q]))hit(q,i,F[i].name+' landet genau auf '+F[q].name+'.','dropon',1,18)}
@@ -162,6 +201,7 @@ function simulate(seed,rec,bod,field){
       if(r.T>0){r.T-=DT;if(r.T<=0){
         if(r.st===17){r.st=2;r.T=1}   // gelandet, bleibt kurz liegen
         else if(r.st===26)land(i)
+        else if(r.st===34){r.st=2;r.T=1}   // Kopfstand: kippt um
         else if(r.st===22){const c=rs[r.o],q=r.o;
           if(F[q].id==='esel'||F[q].id==='stier'){const hi=R()<.35;fall(r,hi?26:17,13);say(hi?F[q].name+' hat genug und katapultiert '+d.name+' aus dem Bild!':F[q].name+' hat genug und wirft '+d.name+' ab. Im hohen Bogen!',i,1.8,0,hi?'buckhigh':'buckoff',q)}
           else{r.st=21;r.T=.45;r.vl=c.lv+6;say(d.name+' springt ab und ist vorbei.',i,0,1,'piggyoff',q)}}
@@ -228,8 +268,17 @@ function simulate(seed,rec,bod,field){
         else if(r.st===1)passBy(i,1,.25,j=>hit(j,i,F[j].name+' stolpert über den schlafenden '+d.name+' und rutscht auf dem Bauch weiter.','pileup',0,20,10))
         // bockender Esel: tritt nach dem, der dicht vorbeiläuft; wird er überholt, trottet er weiter
         else if(r.st===10){passBy(i,2,.15,j=>R()<.3?hit(j,i,d.name+' tritt aus. '+F[j].name+' fliegt über die Tribüne hinaus!','kickhigh',0,26,16):hit(j,i,d.name+' tritt aus und schießt '+F[j].name+' nach vorn durch die Luft.','kick',0,17,16));const a=rs.filter(q=>q.x>r.x).length;if(a>r.ahead){const by=rs.findIndex((q,j)=>j!==i&&q.x>r.x&&q.x-r.x<3);r.st=0;r.T=0;say(by>=0?F[by].name+' zieht vorbei. Jetzt trottet '+d.name+' beleidigt hinterher.':d.name+' setzt sich wieder in Bewegung.',i,0,1,'unstubborn',by)}}
+        // Schwanz-Schleuder: Lässt der Vordermann los (Sturz, Stillstand, Ziel), lässt auch der Hund los. Nach 0,7 s hüpft der Vordermann
+        // vor Schmerz hoch, und der Hund schnalzt in 0,4 s 3 m an ihm vorbei, oder der Schwanz schnalzt zurück ins Gesicht
+        if(r.st===35){const c=r.o,q=rs[c];
+          if(r.T>.4&&(DN[q.st]||STOP.includes(q.st)||q.fin>=0)){r.st=0;r.T=0;r.o=-1}
+          else if(r.T<=.4&&!r.sl){r.sl=1;
+            if(q.st===0&&q.fin<0){q.st=36;q.T=.6;q.o=i}
+            if(r.tf){r.tf=0;fall(r,19);say('Der Schwanz schnalzt zurück. Mitten ins Gesicht von '+d.name+'!',i,1.8,0,'slingfail',c)}
+            else{r.vl=q.lv+(q.x-r.x+3)/.4;say(F[c].name+' hüpft vor Schmerz hoch, und '+d.name+' schnalzt vorbei wie aus der Steinschleuder!',i,0,1,'slingoff',c)}}}
         if(STOP.includes(r.st))v=0;
-        else if(r.st===17||r.st===21||r.st===26)v=r.vl;else if(r.st===20)v=r.vl*r.T/DUR[20];else if(r.st===22)v=0;
+        else if(r.st===17||r.st===21||r.st===26||r.st===29||r.st===30||r.st===33)v=r.vl;
+        else if(r.st===35)v=r.T>.4?rs[r.o].lv:r.vl;else if(r.st===31)v*=.6;else if(r.st===32)v*=.7;else if(r.st===36)v*=.5;else if(r.st===20)v=r.vl*r.T/DUR[20];else if(r.st===22)v=0;
         else if(r.st===23)v*=.7;else if(r.st===24)v*=1.6;else if(r.st===25)v*=1.05;
         else if(r.st===4)v*=1.7;else if(r.st===7)v*=-.6;else if(r.st===6)v=70;else if(r.st===9)v=-35;
         else if(r.st===11)v*=1.8;else if(r.st===13)v*=1.45;else if(r.st===15)v*=1.9;
@@ -240,10 +289,11 @@ function simulate(seed,rec,bod,field){
           if(dr>=0){const late=r.x>L-150;v*=late?1.3:1.12;
             if(r.dr<0&&t>6&&(late||dr===li)&&t-foxT>12){foxT=t;say(late?d.name+' kommt aus dem Windschatten von '+F[dr].name+'!':d.name+' hängt sich in den Windschatten von '+F[dr].name+'.',i,late?1.6:0,0,late?'draftout':'draft',dr)}}
           r.dr=dr}
-        if(rain&&r.st!==6&&r.st!==9&&r.st!==17&&r.st!==21&&r.st!==26)v*=d.rain;
+        if(rain&&r.st!==6&&r.st!==9&&r.st!==17&&r.st!==21&&r.st!==26&&r.st!==29&&r.st!==30&&r.st!==33&&r.st!==35)v*=d.rain;
         // Aufholjagd: Wer zurückliegt, legt zu (bis +12 % ab 30 m Rückstand), der Führende lässt etwas nach. So bleibt das Feld beisammen
         // und es gibt mehr Führungswechsel. Nicht in der Luft, auf der Rakete, beim Rutschen oder rückwärts.
         if(v>0&&!NOCATCH[r.st])v*=1+CATCH*clamp((lx-r.x)/30,0,1)-(i===li?LEADF:0);
+        if(r.st===0&&t-r.fT>1.5&&r.x>L-9&&r.x<L-1.5&&!r.dv)v=dive(i,v);
         if(r.st===0&&t>4&&t-r.fT>1.5)v=overtake(i,v);
         if(r.st===24&&r.T<=DT&&r.tf){r.tf=0;fall(r,20,v*.5);say(d.name+' hat sich übernommen und landet auf dem Bauch.',i,1.6,0,'turbofail')}
         if(r.st===25&&r.T<=DT&&r.tf){r.tf=0;fall(r,2);say(d.name+' hat nicht nach hinten geschaut und fällt über die eigenen Beine.',i,1.6,0,'tauntfail')}
@@ -254,7 +304,7 @@ function simulate(seed,rec,bod,field){
       const x0=r.x;r.x+=v*DT;
       if(r.fin<0)onTrack(i,x0);
       // Zieldurchgang auf den Bruchteil des Zeitschritts genau, damit Zielfoto und Einlauf übereinstimmen
-      if(r.fin<0&&r.x+nose(d,r.x)>=L){const a0=x0+nose(d,x0),a1=r.x+nose(d,r.x);r.fin=t-DT+DT*clamp((L-a0)/(a1-a0),0,1);r.st=0;r.T=0;cross.push(i)}
+      if(r.fin<0&&r.x+nose(d,r.x,r.st)>=L){const a0=x0+nose(d,x0,r.st),a1=r.x+nose(d,r.x,r.st);r.fin=t-DT+DT*clamp((L-a0)/(a1-a0),0,1);if(r.st!==29){r.st=0;r.T=0};cross.push(i)}
     }
     for(let i=0;i<n;i++){const r=rs[i];if(r.st!==22)continue;const c=rs[r.o];
       if(c.fin>=0){r.st=0;r.T=0;r.o=-1}

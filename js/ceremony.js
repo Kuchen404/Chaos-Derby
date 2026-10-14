@@ -35,7 +35,7 @@ function snapPhoto(){
   c.fillStyle='rgba(255,255,255,.9)';c.fillRect(W/2-1,0,2,H);
   c.font='500 20px "DM Mono",ui-monospace,monospace';c.textBaseline='top';
   const lbl=clock(w);c.fillStyle='rgba(16,25,15,.8)';c.fillRect(10,10,c.measureText(lbl).width+20,32);c.fillStyle='#ffc233';c.fillText(lbl,20,16);
-  const d=L-(xs[o[1]]+nose(RUN[o[1]],xs[o[1]]));
+  const d=L-(xs[o[1]]+nose(RUN[o[1]],xs[o[1]],A.s[o[1]]));
   $('photocap').textContent=RUN[o[0]].name+' gewinnt mit '+margin(d)+' vor '+RUN[o[1]].name+'.';
 }
 

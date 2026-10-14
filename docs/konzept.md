@@ -83,7 +83,7 @@ Nach jedem Unfall gilt 1,5 s Schonzeit, in der der Starter nicht wieder getroffe
 
 ### Überholversuche
 
-Läuft ein schnellerer Starter bis auf 2,5 m an einen laufenden Vordermann heran, hängt er an ihm fest, bis er es mit einem Gag versucht (siehe „Aufholjagd und Überholen nur mit Gag“). Im Schnitt passiert das etwa 12-mal pro Rennen. Welcher Gag, hängt etwas vom Tier ab (60 % der eigene, sonst zufällig):
+Läuft ein schnellerer Starter bis auf 2,5 m an einen laufenden Vordermann heran, hängt er an ihm fest, bis er es mit einem Gag versucht (siehe „Aufholjagd und Überholen nur mit Gag“). Im Schnitt passiert das etwa 12-mal pro Rennen. Welcher Gag, hängt etwas vom Tier ab (60 % einer der eigenen Lieblingsgags, sonst zufällig aus Bocksprung, Huckepack, Drängeln, Turbo, Rückwärts und „Da, ein Hase!“). Läuft ein kleines Tier (Husky, Fuchs, Wolf, Shiba) hinter einem großen, schlüpft es mit 60 % unten durch:
 
 | Gag (`k`) | Lieblingsgag von | Was passiert | Geht schief |
 |---|---|---|---|
@@ -92,6 +92,16 @@ Läuft ein schnellerer Starter bis auf 2,5 m an einen laufenden Vordermann heran
 | barge (23) | Stier, Esel | drängelt den Vordermann zur Seite: der wird 1,2 s langsamer und schwankt aus der Bahn („Hey!“), der Drängler bekommt Rückenwind | gegen Stier, Esel oder Wolf prallt er mit 50 % ab und ist benommen (`bargefail`) |
 | turbo (24) | Shiba, Wolf | 0,9 s mit 1,6-fachem Tempo, Beine wirbeln, Staub | 20 %: übernimmt sich und macht einen Bauchklatscher (`turbofail`) |
 | taunt (25) | Pferd, Pferd auf zwei Beinen | überholt 1,2 s rückwärts laufend und streckt die Zunge raus („Bätsch!“) | 25 %: fällt über die eigenen Beine (`tauntfail`) |
+| under (30, 31) | kleines Tier hinter Pferd, Pferd auf zwei Beinen, Alpaka, Stier, Kuh, Esel oder Hirsch | flitzt flach zwischen den Beinen des Großen durch und landet 2,5 m vor ihm; der Große hüpft vor Schreck, schaut 1,1 s zwischen den eigenen Vorderbeinen nach hinten und läuft dabei mit 60 % (das Pferd auf zwei Beinen dreht sich stattdessen einmal um sich selbst) | 20 %: der Große setzt sich vor Schreck hin, mitten auf den Kleinen (`underfail`: der Kleine ist platt, der Große sitzt benommen) |
+| trick (38, 32) | Fuchs, Wolf (je zur Hälfte mit ihrem anderen Gag) | hebt eine Pfote und zeigt aufs Innenfeld („Da!“); der Vordermann schaut 1,4 s zur Seite, kommt dabei vom Weg ab und läuft mit 70 % („Hase?!“), der Trickser bekommt Rückenwind. Der Esel schaut gar nicht erst hin, dann wird gedrängelt | 25 %: da ist wirklich ein Hase (`trickfail`); der Trickser rennt ihm 1,8 s lang an die Innenbande hinterher (37) |
+| vault (33) | Alpaka | rammt den Kopf vor sich in den Rasen, schwingt über den eigenen Hals wie über einen Stab, überschlägt sich und landet 4 m vor dem Vordermann | 25 %: der Kopf steckt fest, Kopfstand mit strampelnden Beinen für 1,6 s, dann kippt es um (`vaultfail`, 34) |
+| sling (35, 36) | Husky, Shiba (der Shiba je zur Hälfte mit Turbo) | beißt dem Vordermann in den Schwanz und lässt sich 0,7 s ziehen, der Schwanz wird dabei lang wie ein Gummiband; dann hüpft der Vordermann vor Schmerz hoch („Au!“) und der Hund schnalzt in 0,4 s 3 m an ihm vorbei (`slingoff`). Hirsch und Reh haben nur Stummelschwänze, dann gibt es Turbo | 25 %: der Schwanz schnalzt zurück ins Gesicht, benommen (`slingfail`) |
+
+Dazu kommt der **Hechtsprung ins Ziel** (`dive`, 29), der nicht am Festhängen hängt: Wer auf den letzten 9 m bis zu 3 m hinter einem anderen liegt, wirft sich waagerecht wie ein Torwart über die Linie, Vorderbeine nach vorn, Hinterbeine nach hinten. Der Sprung dauert 0,5 s, holt genau den Rückstand auf und streckt die Nase 1,2 m nach vorn (`nose` in `sim.js` kennt dafür den Zustand). Das gibt ein Zielfoto, keinen klaren Sieg; das Zielfoto zeigt das Tier im Flug, weil der Zustand nach dem Zieldurchgang noch bis zur Landung bleibt. Jeder versucht es höchstens einmal. 25 % gehen schief (`divefail`): zu früh gesprungen, er rutscht auf dem Bauch und bleibt einen halben Meter vor der Linie liegen.
+
+Gemessen (3000 Rennen mit ausgelostem Feld und Boden), Gags je Rennen: Bocksprung 2,2 (davon 0,55 auf dem Vordermann), Rückwärts 2,0, Drängeln 1,5, Untendurch 1,3 (0,27 schief), Turbo 1,0, Hase 0,9 (0,24 schief), Stabhochsprung 0,6 (0,14 Kopfstand), Huckepack 0,5, Hechtsprung 0,5 (0,13 zu früh), Schwanz-Schleuder 0,3 (0,07 schief). Die Zahl der Überholversuche ist gleich geblieben, sie verteilen sich jetzt nur auf mehr verschiedene Gags, damit sich weniger wiederholt. Zieleinläufe enger als 0,2 s: vorher 29 %, jetzt 24 %, vor allem weil manche Hechtsprünge schiefgehen und der Zweite dann zurückfällt.
+
+Jedes neue Manöver hat eine Ansage vor der Pointe (Pfote hoch, Kopf in den Rasen, Biss in den Schwanz, flach ducken), damit man im Bild sieht, was gleich passiert. Die Darstellung steht in `pose` und `moveBones` in `js/figures.js`: Für den Hechtsprung werden auch die Hinterbeine über ihre IK-Knochen mitgeführt (`followBone`, `ikB`), beim Stabhochsprung dreht sich die Figur um einen festen Punkt am Boden vor ihr und holt die Simulation erst bei der Landung wieder ein, bei der Schwanz-Schleuder zielt der erste Schwanzknochen des Vordermanns auf das Maul des Hundes und wird bis zu zehnfach gestreckt (`pullTail`). Der Hase ist eine Grundform in `js/props.js` (`hare`). Die japanischen Sätze für die neuen Manöver stehen in `js/jikkyo.js`, haben aber noch keine VOICEVOX-Aufnahmen; bis `node tools/jikkyo-render.js` gelaufen ist, spricht sie die Sprachausgabe des Browsers.
 
 ### Aufholjagd und Überholen nur mit Gag
 
@@ -151,20 +161,20 @@ Aktuelle Siegchancen (`node tools/odds.js`, 6000 Rennen mit ausgelostem Feld und
 
 | Nr | Starter | gesamt | gut | weich | schwer |
 |---|---|---|---|---|---|
-| 1 | Sekundenschlaf (Pferd) | 17 % | 19 % | 16 % | 14 % |
-| 2 | Hals über Kopf (Alpaka) | 18 % | 16 % | 19 % | 21 % |
-| 3 | Dampfwalze (Stier) | 17 % | 13 % | 19 % | 23 % |
-| 4 | Schmuddelwetter (Husky) | 16 % | 15 % | 16 % | 17 % |
-| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 18 % | 20 % | 17 % | 13 % |
-| 6 | Spätzünder (Kuh) | 16 % | 16 % | 17 % | 15 % |
-| 7 | Sturkopf (Esel) | 18 % | 18 % | 17 % | 20 % |
-| 8 | Platzhirsch (Hirsch) | 17 % | 18 % | 17 % | 16 % |
-| 9 | Schreckhaft (Reh) | 16 % | 18 % | 14 % | 12 % |
-| 10 | Schlitzohr (Fuchs) | 17 % | 17 % | 18 % | 18 % |
-| 11 | Hetzjagd (Wolf) | 17 % | 14 % | 18 % | 22 % |
-| 12 | Schnüffelnase (Shiba Inu) | 15 % | 17 % | 14 % | 10 % |
+| 1 | Sekundenschlaf (Pferd) | 16 % | 18 % | 14 % | 14 % |
+| 2 | Hals über Kopf (Alpaka) | 18 % | 17 % | 19 % | 17 % |
+| 3 | Dampfwalze (Stier) | 17 % | 15 % | 18 % | 19 % |
+| 4 | Schmuddelwetter (Husky) | 15 % | 14 % | 16 % | 19 % |
+| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 19 % | 20 % | 20 % | 14 % |
+| 6 | Spätzünder (Kuh) | 17 % | 16 % | 17 % | 19 % |
+| 7 | Sturkopf (Esel) | 16 % | 15 % | 17 % | 15 % |
+| 8 | Platzhirsch (Hirsch) | 16 % | 16 % | 15 % | 14 % |
+| 9 | Schreckhaft (Reh) | 16 % | 18 % | 14 % | 13 % |
+| 10 | Schlitzohr (Fuchs) | 16 % | 17 % | 15 % | 18 % |
+| 11 | Hetzjagd (Wolf) | 18 % | 15 % | 18 % | 25 % |
+| 12 | Schnüffelnase (Shiba Inu) | 18 % | 20 % | 17 % | 13 % |
 
-Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 23 %, Alpaka 19 %, Pferd auf zwei Beinen 18 %, Kuh 16 %, Stier 13 %, Husky 12 %. Stand mit den Absurditäten; die Grundtempos sind dafür nicht verändert, alle Starter liegen zwischen 15 und 18 %. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
+Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 22 %, Alpaka 20 %, Pferd auf zwei Beinen 20 %, Kuh 16 %, Stier 12 %, Husky 11 %. Stand mit den neuen Überholmanövern (Untendurch, Hase, Stabhochsprung, Schwanz-Schleuder, Hechtsprung). Dafür wurden die Grundtempos nachgestellt (Pferd 23,77 → 23,65, Alpaka 22,08 → 22,25, Stier 18,77 → 18,85, Husky 18 → 18,4, Kuh 12,73 → 12,6, Esel 22,11 → 22,18, Reh 23,73 → 23,6, Fuchs 21,67 → 21,4, Wolf 21,13 → 21,2, Shiba 22,09 → 22,13); alle Starter liegen zwischen 15 und 19 %. Gegenprobe: Sieg zahlt 0,86 je Taler aus, Platz 0,87, Zweierwette 0,84. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
 
 ## Überzeichnete Bewegung
 

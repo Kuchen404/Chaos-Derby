@@ -41,6 +41,8 @@ let UPA=1.1,UPN=-.55,NRA=-.8,NST=1.5,HDA=-.6;   // Zusatzdrehungen über das Ske
 // Vorderbeine des aufrechten Pferds: Winkel unter der Waagerechten nach vorn (Bogenmaß), Grundhaltung und Ausschlag im Schrittzyklus
 const ARM={up:.35,upS:.45,lo:1.75,loS:.35};
 const FL=['FrontUpperLegL','FrontLowerLegL','FrontUpperLegR','FrontLowerLegR'],FIK=['IKFrontLegL','IKFrontLegR'];   // GLTFLoader entfernt die Punkte aus den Knochennamen
+const BL=['BackLegL','BackUpperLegL','BackLowerLegL','BackLegR','BackUpperLegR','BackLowerLegR'],BIK=['IKBackLegL','IKBackLegR'];   // Hinterbeine: Oberschenkel, Unterschenkel, Fuß
+const XB=['Neck2','Neck3','Head',...BL,...BIK];   // weitere Knochen für die Überholmanöver (Hechtsprung, Untendurch, Stabhochsprung)
 const tmpQ=new THREE.Quaternion(),tmpQ2=new THREE.Quaternion(),tmpD=new THREE.Vector3(),tmpD2=new THREE.Vector3();
 // Dreht einen Knochen so, dass er (lokale y-Achse) in Richtung a unter der Waagerechten zeigt, gemessen in Laufrichtung der Figur
 function aimBone(b,f,a){
@@ -90,8 +92,8 @@ function mkModel(k){
     m.traverse(o=>{if(o.isMesh){o.castShadow=true;o.frustumCulled=false;o.material=Array.isArray(o.material)?o.material.map(conv):conv(o.material)}});
     f.inner.add(m);f.model=m;f.mixer=new THREE.AnimationMixer(m);f.act={};
     g.animations.forEach(a=>{const ac=f.mixer.clipAction(a);ac.play();ac.setEffectiveWeight(0);f.act[a.name]=ac});
-    f.bone={};['Back','Torso','Torso2','Neck1','Neck2','Head',...FL,...FIK,...JU.bones].forEach(n=>{f.bone[n]=m.getObjectByName(n)});
-    if(cfg.up){let sk;m.traverse(o=>{if(o.isSkinnedMesh)sk=o.skeleton});f.ikRel=[0,1].map(k=>ikRel(sk,f.bone[FL[2*k+1]],f.bone[FIK[k]]))}
+    f.bone={};['Back','Torso','Torso2','Neck1',...XB,...FL,...FIK,...JU.bones].forEach(n=>{f.bone[n]=m.getObjectByName(n)});
+    {let sk;m.traverse(o=>{if(o.isSkinnedMesh)sk=o.skeleton});f.ikRel=[0,1].map(k=>ikRel(sk,f.bone[FL[2*k+1]],f.bone[FIK[k]]));f.ikB=[0,1].map(k=>ikRel(sk,f.bone[BL[3*k+2]],f.bone[BIK[k]]))}
     if(figAll.length===ROSTER.length&&figAll.every(f=>f&&f.model))warmUp();
     loading.set('f'+k,1);
     if(gl&&race&&state!=='run'&&state!=='cer'&&state!=='rep'&&!paraOn)frame(1,0);
@@ -117,7 +119,7 @@ function poseModel(f,x,st,sdt){
   if(A.Gallop_Jump)A.Gallop_Jump.time=cyc(f.jT||0,A.Gallop_Jump);
   for(const n in A)A[n].setEffectiveWeight(W[n]||0);
   // Eigene Zusatzdrehungen vom letzten Bild zurücknehmen, weil der Mixer unveränderte Werte nicht neu schreibt
-  boneReset(f);f.mixer.update(0);boneSave(f,[...(id==='aufrecht'?['Torso','Neck1',...FL,...FIK]:['Torso','Neck1']),...JU.bones]);
+  boneReset(f);f.mixer.update(0);boneSave(f,['Torso','Neck1',...XB,...FL,...FIK,...JU.bones]);
   if(!idle){
     if(id==='aufrecht'){B.Torso.rotateX(UPA);B.Neck1.rotateX(UPN);
       // Vorderbeine angewinkelt und im Wechsel rudernd, statt steif nach unten zu hängen
@@ -125,6 +127,7 @@ function poseModel(f,x,st,sdt){
       for(let k=0;k<2;k++){const sw=Math.sin(ph+k*PI);aimBone(B[FL[2*k]],f,ARM.up+ARM.upS*sw);aimBone(B[FL[2*k+1]],f,ARM.lo+ARM.loS*sw);followBone(B[FIK[k]],B[FL[2*k+1]],f.ikRel[k])}}
     if(id==='alpaka'){const kk=clamp((x-(L-90))/60,0,1)*(1-f.b);if(kk>0){B.Neck1.rotateX(NRA*kk);B.Neck1.scale.y=1+NST*kk}}
     if(id==='stier'&&f.ch>.01)B.Neck1.rotateX(HDA*f.ch);
+    moveBones(f,st);   // Überholmanöver, siehe unten
   }
   seatJockey(f,f.cfg.up&&!idle);
 }
@@ -144,7 +147,7 @@ function label(f){
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:canvasTex(128,128,(c)=>{c.fillStyle=d.col;c.beginPath();c.arc(64,64,54,0,7);c.fill();c.lineWidth=9;c.strokeStyle='#fff';c.stroke();
     c.fillStyle=d.ink;c.font='70px "Dela Gothic One","Arial Black",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(d.nr,64,70)}),depthTest:false}));
   s.scale.set(.85,.85,1);s.position.set(0,top,0);s.renderOrder=5;f.root.add(s);f.lbl=s;
-  f.fx={};[[1,'Zzz'],[3,'mampf'],[7,'?!'],[2,'✶ ✶'],[8,'Jubel!'],[10,'Nö!'],[12,'!!'],[13,'Jagd!'],[14,'schnüff'],[15,'Zoomies!'],[16,'Auuu!'],[17,'Huiii!'],[18,'platt'],[20,'Platsch!'],[21,'Hopp!'],[22,'Hüa!'],[23,'Hey!'],[24,'Turbo!'],[25,'Bätsch!'],[26,'Aaaah!'],[27,'Bitte!'],[28,'Mampf!']].forEach(q=>{
+  f.fx={};[[1,'Zzz'],[3,'mampf'],[7,'?!'],[2,'✶ ✶'],[8,'Jubel!'],[10,'Nö!'],[12,'!!'],[13,'Jagd!'],[14,'schnüff'],[15,'Zoomies!'],[16,'Auuu!'],[17,'Huiii!'],[18,'platt'],[20,'Platsch!'],[21,'Hopp!'],[22,'Hüa!'],[23,'Hey!'],[24,'Turbo!'],[25,'Bätsch!'],[26,'Aaaah!'],[27,'Bitte!'],[28,'Mampf!'],[29,'Hecht!'],[30,'Wusch!'],[31,'Hä?'],[32,'Hase?!'],[33,'Hoch!'],[34,'Steckt!'],[35,'Grrr!'],[36,'Au!'],[37,'Hase!'],[38,'Da!']].forEach(q=>{
     const e=new THREE.Sprite(new THREE.SpriteMaterial({map:canvasTex(256,96,(c)=>{c.font='56px "Dela Gothic One","Arial Black",sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=10;c.strokeStyle='#17231a';c.strokeText(q[1],128,50);c.fillStyle='#fff';c.fillText(q[1],128,50)}),depthTest:false}));
     e.scale.set(1.9,.7,1);e.position.set(1.3,top+.05,0);e.renderOrder=5;e.visible=false;f.root.add(e);f.fx[q[0]]=e});
   // benommen: drei Sterne kreisen über dem Kopf
@@ -164,12 +167,15 @@ function pose(i,x,st,rain,dt,sdt,o,xs){
   if(st!==f.prev){f.fT=0;if(st===2&&(f.prev===17||f.prev===26))f.fT=.65}   // nach dem Flug kein Überschlag mehr, gleich liegen
   else f.fT+=sdt;
   const dx=x-f.lx;f.lx=x;if(Math.abs(dx)<5){f.tb+=((st===24?2.6:1)-f.tb)*Math.min(1,dt*10);f.gp+=dx/f.V.gs*f.tb;f.wp+=dx/f.V.ws*f.tb}   // Beine: Turbo wirbelt
-  if(st===17)f.gp+=sdt*3;   // in der Luft strampeln
-  f.ry+=((st===7||st===9||st===25?PI:st===28?1.2:0)-f.ry)*Math.min(1,dt*9);f.root.rotation.y=f.ry;
+  if(st===17||st===34)f.gp+=sdt*3;   // in der Luft oder im Kopfstand strampeln
+  if(st===37)f.gp+=sdt*1.6;          // rennt dem Hasen hinterher, quer zur Bahn
+  f.ry+=((st===7||st===9||st===25?PI:st===28?1.2:st===37?-1.2:0)-f.ry)*Math.min(1,dt*9);
+  f.root.rotation.y=f.ry+(st===31&&id==='aufrecht'?2*PI*ez(clamp((f.fT-.2)/.8,0,1)):0);   // das Pferd auf zwei Beinen dreht sich verdutzt einmal um sich selbst
   // seitlicher Versatz: Stier im Sturmlauf, Zoomies, abgedrängt, Bocksprung über die Nachbarbahn
   const oz=o>=0?laneZ(o)-laneZ(i):0,u7=Math.min(1,f.fT/.7);
-  const zt=id==='stier'&&st===4?Math.sin(t*2.3)*4:id==='shiba'&&st===15?Math.sin(t*7)*1.6:st===23?-Math.sign(oz||1)*1.5*Math.sin(PI*Math.min(1,f.fT/1.2)):st===28?-7.3-laneZ(i):0;   // 28: zum Zuschauer an die Bande
-  f.zo+=(zt-f.zo)*Math.min(1,dt*(st===23||st===28?9:4));
+  const zt=id==='stier'&&st===4?Math.sin(t*2.3)*4:id==='shiba'&&st===15?Math.sin(t*7)*1.6:st===23?-Math.sign(oz||1)*1.5*Math.sin(PI*Math.min(1,f.fT/1.2)):st===28?-7.3-laneZ(i):
+    st===32?1.6*Math.sin(PI*Math.min(1,f.fT/1.4)):st===37?7.3-laneZ(i):0;   // 28: zum Zuschauer an die Bande, 32: schaut dem Hasen nach und kommt ab, 37: dem Hasen hinterher an die Innenbande
+  f.zo+=(zt-f.zo)*Math.min(1,dt*(st===23||st===28||st===37?9:4));
   let wx=x+(id==='alpaka'?2:0)-f.V.front*S,wz=laneZ(i)+f.zo,wy=0;
   if(st!==f.prev)f.pg=st===21&&f.prev===22?f.wy:-1;   // Absprung vom Rücken des Trägers
   if(st===21&&f.pg>=0){const u=Math.min(1,f.fT/.45);wz+=oz*(1-u);wy=f.pg*(1-u)+1.6*Math.sin(PI*u)}
@@ -178,6 +184,34 @@ function pose(i,x,st,rain,dt,sdt,o,xs){
   // Höhenflug: in 0,6 s nach oben aus dem Bild, ab 1,5 s fällt er von oben wieder herein (passend zu DUR in sim.js), notfalls auf einen anderen
   if(st===26){const a=f.fT,u=clamp((a-1.5)/1.1,0,1);wy=a<.6?60*Math.pow(a/.6,.6):a<1.5?60:11*Math.pow(1-u,1.4);wz+=oz*u}
   if(f.prev===26&&st!==26)for(let q=0;q<14;q++)emit(wx,.3,wz,Math.random()*8-4,Math.random()*3,Math.random()*8-4,.9,1.4,'#d6c8a0');   // Einschlag
+  // Überholmanöver 29 bis 38 (siehe sim.js)
+  if(st!==f.prev){f.v0=wx;f.off0=null;f.pl=0;f.k34=st===2&&f.prev===34}   // v0: Ort zu Beginn (Stabhochsprung, Kopfstand)
+  const FS=f.V.front*S,CS=f.c*S;let mv=null;f.kN=0;
+  if(st===29){wx+=1.2*ez(Math.min(1,f.fT/.25));wy=.8*Math.sin(PI*Math.min(1,f.fT/.5))}   // Hechtsprung: lang gestreckt flach nach vorn
+  else if(st===30){const u=Math.min(1,f.fT/.8);wz+=oz*Math.min(1,u/.25,(1-u)/.25)}       // untendurch: auf die Bahn des Großen und wieder zurück
+  else if(st===31)wy=.55*Math.sin(PI*Math.min(1,f.fT/.4));                                 // der Große hüpft vor Schreck hoch
+  else if(st===36)wy=.9*Math.sin(PI*Math.min(1,f.fT/.6));                                  // hüpft vor Schmerz mit steifen Beinen
+  else if(st===19&&o>=0)wz+=oz*ez(Math.min(1,f.fT/.3));                                     // setzt sich vor Schreck auf den Kleinen (untendurch geht schief)
+  else if(st===35&&o>=0){const g=fig[o],u=f.fT;
+    // Schwanz-Schleuder: hängt 0,7 s am Schwanz des Vordermanns (der Schwanz wird immer länger), dann schnalzt er nach vorn
+    if(u<.7){let bx=g.root.position.x-.7*g.V.front*S;if(g.bone&&g.bone.Tail1){g.bone.Tail1.getWorldPosition(tmpV);bx=tmpV.x}
+      const nx=bx-.6-3.6*ez(u/.7);f.off=Math.min(0,nx-x);wx+=f.off;wz+=oz*Math.min(1,u/.2);
+      f.mouth=(f.mouth||new THREE.Vector3()).set(nx,f.V.top*S*.45,laneZ(o));
+      if(Math.random()<sdt*30)emit(wx,.2,wz+Math.random()-.5,3,1,0,.6,.8,'#d6c8a0')}
+    else{const w=Math.min(1,(u-.7)/.25);if(f.off0==null){f.off0=f.off||0;if(f.ju)f.ju.v-=6}wx+=f.off0*(1-ez(w));wz+=oz*Math.max(0,1-w/.5)}}
+  else if(st===33||st===34||f.k34&&st===2&&f.fT<.65){
+    // Stabhochsprung: Kopf vor sich in den Rasen, dann schwingt der Körper um diesen Punkt über den Hals nach vorn, überschlägt sich und landet.
+    // Der Drehpunkt bleibt fest, deshalb hängt die Figur erst zurück und holt die Simulation am Ende ein. Kopfstand: bleibt oben stehen.
+    const Px=f.v0+FS+.4,vx=-(FS+.4),l0=Math.hypot(vx,CS),a0=Math.atan2(CS,vx),D=PI-2*a0;let cx,cy,r2;
+    if(st===33){const u=f.fT/.9;f.kN=1;
+      if(u<.15){cx=f.v0;cy=CS;r2=0;f.kN=ez(u/.15)}
+      else if(u<.6){const w=(u-.15)/.45,a=a0+D*ez(w),l=l0*(1+.6*Math.sin(PI*w));cx=Px+Math.cos(a)*l;cy=Math.sin(a)*l;r2=D*ez(w);
+        if(!f.pl){f.pl=1;for(let q=0;q<10;q++)emit(Px,.2,wz,Math.random()*4-2,Math.random()*3,Math.random()*4-2,.7,1,'#d6c8a0')}}
+      else{const w=Math.min(1,(u-.6)/.4),bx=Px+Math.cos(a0+D)*l0,by=Math.sin(a0+D)*l0;cx=bx+(wx-bx)*ez(w);cy=by+(CS-by)*w+1.6*Math.sin(PI*w);r2=D+(-2*PI-D)*ez(w);f.kN=(1-w)*(1+.5*Math.sin(w*25))}
+      wz+=oz*Math.sin(PI*Math.min(1,u))}
+    else if(st===34){const w=ez(Math.min(1,f.fT/.3)),a=a0+D*w;cx=Px+Math.cos(a)*l0;cy=Math.sin(a)*l0;r2=D*w;f.kN=1;f.c34=[cx,cy,r2]}
+    else{const w=ez(f.fT/.65),c=f.c34||[wx,CS,0];cx=c[0]+(wx-c[0])*w;cy=c[1]+(CS-c[1])*w+.8*Math.sin(PI*w);r2=c[2]+(-2*PI-c[2])*w;f.kN=1-w}
+    mv=r2;wx=cx;wy=cy-CS}
   f.root.position.set(wx,wy,wz);f.wy=wy;
   // Unfälle. Nie mehr als ein Überschlag, damit nichts auf der Stelle wirbelt
   const u2=Math.min(1,f.fT/.65),e2=u2*u2*(3-2*u2),u17=Math.min(1,f.fT/1.1);
@@ -191,16 +225,22 @@ function pose(i,x,st,rain,dt,sdt,o,xs){
   else if(st===20)rz=-.25*f.bel;                                                          // Bauchklatscher: Nase voran über den Rasen
   else if(st===21)rz=.35*Math.cos(PI*u7);
   else if(st===24)rz=-.18;
+  else if(st===29){rz=-.1;y-=f.c*.35*clamp((f.fT-.35)/.15,0,1)}                          // Hechtsprung: landet auf dem Bauch
+  else if(st===31&&id!=='aufrecht')rz=-.25*lookK(f.fT);                                    // schaut zwischen den Beinen nach hinten
+  else if(st===19&&o>=0){const k=ez(Math.min(1,f.fT/.3));rz=.6*k;y-=f.c*.3*k}              // sitzt auf dem Hinterteil
   else y+=f.jb*Math.abs(Math.sin(t*9))*.35;
+  if(mv!==null){rz=mv;y=f.c}
   f.spin.rotation.z=rz;f.spin.position.y=y;
   f.spin.rotation.x=f.lie*1.35+(st===19?.12*Math.sin(t*6):0)+(st===23?-.35*Math.sign(oz||1)*Math.sin(PI*Math.min(1,f.fT/1.2)):0);
   f.spin.scale.set(1+.35*f.sq,1-.72*f.sq,1+.35*f.sq);   // platt wie ein Pfannkuchen
+  if(st===29)f.spin.scale.x*=1.12;                       // Hechtsprung: lang gestreckt
+  if(st===30){const q=Math.sin(PI*Math.min(1,f.fT/.8)),sy=1-.4*q;f.spin.scale.y*=sy;f.spin.scale.x*=1+.15*q;f.spin.position.y=f.c*sy}   // untendurch: ganz flach
   f.stars.visible=st===19;if(st===19)f.stars.rotation.y=t*5;
   for(const q in f.fx)f.fx[q].visible=(+q===st);
   poseModel(f,x,st,sdt);
   if(id==='stier'&&st===4&&Math.random()<sdt*40)emit(wx-2-Math.random()*2,.4,wz+Math.random()*2-1,-3,1.5,0,.9,1.3,'#d6c8a0');
   if(id==='husky'&&rain&&Math.random()<sdt*45)emit(wx-1,.25,wz+Math.random()-.5,-5,2+Math.random()*2,Math.random()*2-1,.5,.4,'#ffffff');
-  if((st===20||st===24)&&Math.random()<sdt*40)emit(wx,.3,wz+Math.random()-.5,-3,1.5,0,.7,1,'#d6c8a0');
+  if((st===20||st===24||st===29&&f.fT>.4||st===37)&&Math.random()<sdt*40)emit(wx,.3,wz+Math.random()-.5,-3,1.5,0,.7,1,'#d6c8a0');
   if((id==='wolf'&&st===13||id==='shiba'&&st===15)&&Math.random()<sdt*30)emit(wx-1,.3,wz+Math.random()-.5,-4,1.2,0,.6,.7,'#d6c8a0');
   if(id==='kuh'){
     f.inner.rotation.z=f.rk*.12;f.inner.position.y=-f.c+f.rk*.5;
@@ -211,5 +251,31 @@ function pose(i,x,st,rain,dt,sdt,o,xs){
       for(let q=0;q<26;q++)emit(wx+1,3,wz,Math.random()*10-5,Math.random()*8,Math.random()*10-5,1.1,1.8,q%3?'#444444':'#ff8a1e')}
   }
   juice(f,i,st,dt,sdt);   // Überzeichnung, js/juice.js
-  f.prev=st;
+  pullTail(f,i);
+  f.prev=st;f.pst=st;f.po=o;
 }
+const ez=u=>u*u*(3-2*u);
+// Der Große schaut zwischen den eigenen Beinen nach hinten (Zustand 31): erst hüpft er, dann senkt er den Kopf, am Ende hebt er ihn wieder
+const lookK=u=>ez(clamp((u-.25)/.3,0,1))*(1-ez(clamp((u-.85)/.25,0,1)));
+// Kopf zur Seite, aufs Innenfeld (32 schaut dem Hasen nach, 38 zeigt hin)
+const sideK=(st,u)=>st===32?ez(Math.min(1,u/.3))*(1-ez(clamp((u-1.1)/.3,0,1))):st===38?ez(Math.min(1,u/.2))*(1-ez(clamp((u-.6)/.2,0,1))):0;
+// Knochen für die Überholmanöver, nach dem Mixer (siehe poseModel)
+function moveBones(f,st){const B=f.bone,u=f.fT;
+  if(st===29&&B.BackLegL){   // Hechtsprung: Vorderbeine nach vorn, Hinterbeine nach hinten, wie ein Torwart
+    for(let k=0;k<2;k++){aimBone(B[FL[2*k]],f,-.3);aimBone(B[FL[2*k+1]],f,-.2);followBone(B[FIK[k]],B[FL[2*k+1]],f.ikRel[k]);
+      aimBone(B[BL[3*k]],f,PI-.45);aimBone(B[BL[3*k+1]],f,PI-.15);aimBone(B[BL[3*k+2]],f,PI-.05);followBone(B[BIK[k]],B[BL[3*k+2]],f.ikB[k])}}
+  if(st===31&&f.id!=='aufrecht'){const k=lookK(u);B.Neck1.rotateX(-1.1*k);if(B.Neck2)B.Neck2.rotateX(-.8*k);if(B.Head)B.Head.rotateX(-.7*k)}
+  const sk=sideK(st,u);
+  if(sk>0){B.Neck1.rotateZ(NSIDE*sk);if(B.Head)B.Head.rotateZ(NSIDE*.6*sk)}
+  if(st===38&&sk>0&&f.id!=="aufrecht"){aimBone(B[FL[PAW]],f,-1*sk+.9*(1-sk));aimBone(B[FL[PAW+1]],f,-.9*sk+1.2*(1-sk));followBone(B[FIK[PAW/2]],B[FL[PAW+1]],f.ikRel[PAW/2])}   // Pfote hoch: „Da!“
+  if(f.kN>0){B.Neck1.rotateX(-1.3*f.kN);B.Neck1.scale.y*=1+.5*f.kN}   // Stabhochsprung: Hals als Stab
+}
+let NSIDE=1,PAW=2;   // Drehrichtung des Halses zum Innenfeld; PAW: das Vorderbein auf der Seite des Innenfelds (Index in FL)
+// Schwanz-Schleuder: Hängt ein Hund am Schwanz dieser Figur, wird der Schwanz gerade nach hinten bis zu seinem Maul gezogen
+function pullTail(f,i){const tb=f.bone&&f.bone.Tail1;if(!tb)return;
+  const g=fig.find((h,k)=>k!==i&&h.pst===35&&h.po===i&&h.fT<.7&&h.mouth);if(!g)return;
+  for(let k=2;k<=8;k++){const b=f.bone['Tail'+k];if(b)b.quaternion.identity()}   // gerade gezogen, ohne Wackeln
+  let last=tb;for(let k=8;k>=2;k--)if(f.bone['Tail'+k]){last=f.bone['Tail'+k];break}
+  tb.updateWorldMatrix(true,true);tb.getWorldPosition(tmpV);const bx=tmpV.x,by=tmpV.y;last.getWorldPosition(tmpV);const l0=Math.max(.3,Math.hypot(tmpV.x-bx,tmpV.y-by)*1.15);
+  const dx=g.mouth.x-bx,dy=g.mouth.y-by;aimBone(tb,f,Math.atan2(-dy,dx));
+  tb.scale.y*=clamp(Math.hypot(dx,dy)/l0,1,10);tb.updateMatrixWorld(true)}

@@ -1,9 +1,9 @@
 // Chaos-Derby – Überzeichnung: Ausholen vor jedem Gag, Stauchen und Strecken, wackelnde Ohren und Schwänze, Kamerawackeln und Speedlines bei Treffern.
 // Reine Darstellung. Das Rennen steht vorab fest, deshalb kann die Figur schon ausholen, bevor der Gag in der Simulation beginnt.
 const JU={
-  gags:{4:1,6:1,9:1,11:1,13:1,15:1,21:1,22:1,23:1,24:1,25:1},   // Zustände, vor denen ausgeholt wird (Sturmlauf, Rakete, Sprung, Jagd, Zoomies, Überholgags)
+  gags:{4:1,6:1,9:1,11:1,13:1,15:1,21:1,22:1,23:1,24:1,25:1,29:1,30:1,33:1,35:1,38:1},   // Zustände, vor denen ausgeholt wird (Sturmlauf, Rakete, Sprung, Jagd, Zoomies, Überholgags)
   hits:{2:.45,17:.7,18:.9,19:.35,20:.6,26:.8},                  // Treffer: Stärke des Kamerawackelns je Unfallzustand
-  wild:{2:1,4:1,13:1,15:1,17:1,18:1,19:1,20:1,24:1,26:1},        // hier schlackern Ohren und Schwanz besonders
+  wild:{2:1,4:1,13:1,15:1,17:1,18:1,19:1,20:1,24:1,26:1,29:1,34:1,36:1,37:1},        // hier schlackern Ohren und Schwanz besonders
   ahead:.32,   // so lange vor dem Gag wird ausgeholt (s)
   bones:[...['L','R'].flatMap(s=>[1,2,3,4].map(n=>'Ear'+n+s)),...[1,2,3,4,5,6,7,8].map(n=>'Tail'+n)],   // GLTFLoader entfernt die Punkte aus den Knochennamen
   shake:0,burst:null,cv:null
