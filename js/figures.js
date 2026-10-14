@@ -145,16 +145,29 @@ function label(f){
     c.fillStyle=d.ink;c.font='70px "Dela Gothic One","Arial Black",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(d.nr,64,70)}),depthTest:false}));
   s.scale.set(.85,.85,1);s.position.set(0,top,0);s.renderOrder=5;f.root.add(s);f.lbl=s;
   f.fx={};[[1,'Zzz'],[3,'mampf'],[7,'?!'],[2,'✶ ✶'],[8,'Jubel!'],[10,'Nö!'],[12,'!!'],[13,'Jagd!'],[14,'schnüff'],[15,'Zoomies!'],[16,'Auuu!'],[17,'Huiii!'],[18,'platt'],[20,'Platsch!'],[21,'Hopp!'],[22,'Hüa!'],[23,'Hey!'],[24,'Turbo!'],[25,'Bätsch!'],[26,'Aaaah!'],[27,'Bitte!'],[28,'Mampf!']].forEach(q=>{
-    const e=new THREE.Sprite(new THREE.SpriteMaterial({map:canvasTex(256,96,(c)=>{c.font='56px "Dela Gothic One","Arial Black",sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=10;c.strokeStyle='#17231a';c.strokeText(q[1],128,50);c.fillStyle='#fff';c.fillText(q[1],128,50)}),depthTest:false}));
-    e.scale.set(1.9,.7,1);e.position.set(1.3,top+.05,0);e.renderOrder=5;e.visible=false;f.root.add(e);f.fx[q[0]]=e});
+    const e=bubble(q[1],top);f.root.add(e);f.fx[q[0]]=e});
+  // Reaktion des Überholten (siehe RX)
+  f.rxs={};new Set(Object.values(RX).map(q=>q[0])).forEach(q=>{const e=bubble(q,top);e.position.set(f.V.front+.9,top*.72,0);f.root.add(e);f.rxs[q]=e});   // vor dem Gesicht, nicht über der Nummer
   // benommen: drei Sterne kreisen über dem Kopf
   f.stars=G(f.root,V0(f),top-.5,0);f.stars.visible=false;
   for(let k=0;k<3;k++){const e=new THREE.Sprite(new THREE.SpriteMaterial({map:canvasTex(64,64,(c)=>{c.font='54px "Arial Black",sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillStyle='#ffd23a';c.strokeStyle='#17231a';c.lineWidth=6;c.strokeText('✶',32,34);c.fillText('✶',32,34)}),depthTest:false}));
     e.scale.set(.45,.45,1);e.position.set(Math.cos(k*2.1)*.6,0,Math.sin(k*2.1)*.6);e.renderOrder=5;f.stars.add(e)}}
+// Sprechblase über dem Starter
+function bubble(txt,top){
+  const e=new THREE.Sprite(new THREE.SpriteMaterial({map:canvasTex(256,96,(c)=>{c.font='56px "Dela Gothic One","Arial Black",sans-serif';c.textAlign='center';c.textBaseline='middle';c.lineWidth=10;c.strokeStyle='#17231a';c.strokeText(txt,128,50);c.fillStyle='#fff';c.fillText(txt,128,50)}),depthTest:false}));
+  e.scale.set(1.9,.7,1);e.position.set(1.3,top+.05,0);e.renderOrder=5;e.visible=false;return e}
 const V0=f=>f.V.front*.7;   // Kopf liegt etwas vor der Mitte
+// Reaktion: Wer überholt wird, schaut verdutzt zur Seite, sagt etwas und hüpft vor Schreck kurz hoch. Gerechnet aus race.ev (Partner j),
+// reine Darstellung. Art: [Text, ab, bis (s nach dem Ereignis), Schreckhüpfer]
+const RX={leap:['?!',.2,1.4,1],turbo:['?!',.25,1.4,1],taunt:['Grrr!',.45,1.9,0],piggy:['Uff!',.05,1.3,0],piggyoff:['Puh!',.1,1.1,0]};
+function reactions(){
+  if(race.rx)return race.rx;const rx=race.rx=race.field.map(()=>[]);
+  for(const e of race.ev){const q=RX[e.k];if(q&&e.j>=0&&e.j!==e.i)rx[e.j].push({a:e.t+q[1],b:e.t+q[2],s:q[0],hop:q[3]})}
+  return rx}
 
 /* ---------- Animation je Bild ---------- */
 const STAND={1:1,3:1,10:1,12:1,14:1,16:1,18:1,19:1,22:1,27:1,28:1};   // Zustände, in denen das Tier steht
+const FALLEN={2:1,17:1,20:1,26:1};   // liegt, fliegt oder rutscht: keine Reaktion
 function pose(i,x,st,rain,dt,sdt,o,xs){
   const f=fig[i],id=f.id,k=Math.min(1,dt*8);
   if(STAND[st])f.sa=st===3||st===14||st===28?(f.act&&f.act.Eating?'Eating':'Idle'):'Idle';else if(!f.sa)f.sa='Idle';
@@ -165,7 +178,8 @@ function pose(i,x,st,rain,dt,sdt,o,xs){
   else f.fT+=sdt;
   const dx=x-f.lx;f.lx=x;if(Math.abs(dx)<5){f.tb+=((st===24?2.6:1)-f.tb)*Math.min(1,dt*10);f.gp+=dx/f.V.gs*f.tb;f.wp+=dx/f.V.ws*f.tb}   // Beine: Turbo wirbelt
   if(st===17)f.gp+=sdt*3;   // in der Luft strampeln
-  f.ry+=((st===7||st===9||st===25?PI:st===28?1.2:0)-f.ry)*Math.min(1,dt*9);f.root.rotation.y=f.ry;
+  const rr=(state==='run'||state==='rep')&&race&&race.ev&&!STAND[st]&&!FALLEN[st]?reactions()[i].find(q=>t>=q.a&&t<q.b):null;
+  f.ry+=((st===7||st===9||st===25?PI:st===28?1.2:rr?-.45:0)-f.ry)*Math.min(1,dt*9);f.root.rotation.y=f.ry;   // rr: dreht sich verdutzt zur Seite
   // seitlicher Versatz: Stier im Sturmlauf, Zoomies, abgedrängt, Bocksprung über die Nachbarbahn
   const oz=o>=0?laneZ(o)-laneZ(i):0,u7=Math.min(1,f.fT/.7);
   const zt=id==='stier'&&st===4?Math.sin(t*2.3)*4:id==='shiba'&&st===15?Math.sin(t*7)*1.6:st===23?-Math.sign(oz||1)*1.5*Math.sin(PI*Math.min(1,f.fT/1.2)):st===28?-7.3-laneZ(i):0;   // 28: zum Zuschauer an die Bande
@@ -191,12 +205,13 @@ function pose(i,x,st,rain,dt,sdt,o,xs){
   else if(st===20)rz=-.25*f.bel;                                                          // Bauchklatscher: Nase voran über den Rasen
   else if(st===21)rz=.35*Math.cos(PI*u7);
   else if(st===24)rz=-.18;
-  else y+=f.jb*Math.abs(Math.sin(t*9))*.35;
+  else y+=f.jb*Math.abs(Math.sin(t*9))*.35+(rr&&rr.hop?.55*Math.sin(PI*clamp((t-rr.a)/.4,0,1)):0);
   f.spin.rotation.z=rz;f.spin.position.y=y;
   f.spin.rotation.x=f.lie*1.35+(st===19?.12*Math.sin(t*6):0)+(st===23?-.35*Math.sign(oz||1)*Math.sin(PI*Math.min(1,f.fT/1.2)):0);
   f.spin.scale.set(1+.35*f.sq,1-.72*f.sq,1+.35*f.sq);   // platt wie ein Pfannkuchen
   f.stars.visible=st===19;if(st===19)f.stars.rotation.y=t*5;
   for(const q in f.fx)f.fx[q].visible=(+q===st);
+  for(const q in f.rxs)f.rxs[q].visible=!!rr&&!f.fx[st]&&rr.s===q;
   poseModel(f,x,st,sdt);
   if(id==='stier'&&st===4&&Math.random()<sdt*40)emit(wx-2-Math.random()*2,.4,wz+Math.random()*2-1,-3,1.5,0,.9,1.3,'#d6c8a0');
   if(id==='husky'&&rain&&Math.random()<sdt*45)emit(wx-1,.25,wz+Math.random()-.5,-5,2+Math.random()*2,Math.random()*2-1,.5,.4,'#ffffff');

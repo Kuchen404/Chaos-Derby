@@ -6,7 +6,7 @@ Die Idee ist von der japanischen DVD-Reihe „Japan World Cup“ inspiriert. Fig
 
 ## Stand
 
-- **3D-Rennen** (`index.html`): zwölf Starter als Tiermodelle mit Skelett, pro Rennen ein ausgelostes Feld von sechs, Fehlschläge, die andere Starter mitreißen, Kameraregie mit Schnitten auf die Ereignisse, Zeitlupe im Ziel, Zielfoto und Siegerehrung auf dem Podest, vor dem Start eine Vorstellung aller Starter in Nahaufnahme mit eigener Szene je Tier, Musik und Geräusche (im Browser erzeugt), Live-Kommentar als Text und gesprochen von einem japanischen Sprecher, der im Rennverlauf immer mehr abdreht (wahlweise deutsch), Quotentafel.
+- **3D-Rennen** (`index.html`): zwölf Starter als Tiermodelle mit Skelett, pro Rennen ein ausgelostes Feld von sechs, Fehlschläge, die andere Starter mitreißen, Kameraregie, die jeden Moment vorab einplant und mit Vorlauf zeigt, kurze Zeitlupe auf den stärksten Momenten und im Ziel, Zielfoto und Siegerehrung auf dem Podest, vor dem Start eine Vorstellung aller Starter in Nahaufnahme mit eigener Szene je Tier, Musik und Geräusche (im Browser erzeugt), Live-Kommentar als Text und gesprochen von einem japanischen Sprecher, der im Rennverlauf immer mehr abdreht (wahlweise deutsch), Quotentafel.
 - **2D-Rennen** (`classic/index.html`): die erste, flache Fassung in Seitenansicht. Sie zeigt noch das alte Starterfeld (Giraffe, Elefant, Robbe, Schildkröte) und wird nicht weiterentwickelt.
 - **Wetten** am gemeinsamen Bildschirm mit Spielgeld: Mitspieler anlegen, Sieg, Platz oder Zweierwette zu festen Quoten setzen, nach dem Rennen wird ausgezahlt. Wetten am Handy fehlt noch.
 - **Bahnzustand:** Vor jedem Rennen wird der Boden ausgelost (gut, weich, schwer). Quoten und Wetten gelten für diesen Boden.
@@ -57,7 +57,7 @@ Der wichtigste Grundsatz: **erst simulieren, dann zeigen.** Ein Rennen wird voll
 | `js/state.js` | gemeinsame Konstanten und Zustand der 3D-Ansicht |
 | `js/figures.js` | Tiermodelle laden, Jockeys und Rakete, Animation je Bild |
 | `js/scene.js` | Bahn, Tribünen, Licht, Regen, Partikel |
-| `js/director.js` | Kameraregie |
+| `js/director.js` | Kameraregie: Drehbuch aus dem fertigen Rennen, Seitenkamera, Schnitte, Zielkamera |
 | `js/ceremony.js` | Zielfoto und Siegerehrung |
 | `js/parade.js` | Vorstellung der Starter vor dem Rennen (Kamerafahrt, Szenen, Bauchbinde) |
 | `js/sfx.js` | Hintergrundmusik und Geräusche, per Web Audio erzeugt |
