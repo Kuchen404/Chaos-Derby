@@ -33,6 +33,11 @@ function mkFan(food){const g=mkPerson(['#2f6fb8','#d2232a','#f2b600'][Math.floor
   else P(CYL,'#8a3b22',f,0,-.15,0,.06,.36,.06);
   g.food=f;return g}
 
+// Hase im Innenfeld (der Trick „Da, ein Hase!“ geht schief, weil wirklich einer da ist)
+function mkHare(){const g=G(null),c='#9a7b5a';g.scale.setScalar(1.7);
+  P(SPH,c,g,0,.3,0,.3,.22,.2);P(SPH,c,g,.28,.44,0,.14,.13,.12);P(SPH,'#ffffff',g,-.3,.36,0,.09,.09,.09);
+  [.05,-.05].forEach(z=>{const e=P(SPH,c,g,.26,.7,z,.04,.2,.06);e.rotation.z=.25;P(SPH,'#17231a',g,.38,.48,z*1.6,.025,.025,.025)});
+  return g}
 // Baut die Dinge des aktuellen Rennens neu auf (bei jedem reset)
 function propsReset(){
   if(!gl)return;
@@ -44,6 +49,7 @@ function propsReset(){
     else if(q.k==='ducks'){q.g=G(null);q.d=[mkDuck('#f4f4f4',1.9),...[0,1,2,3].map(()=>mkDuck('#ffd23a',1.1))];q.d.forEach(d=>q.g.add(d))}
     else if(q.k==='streak'){q.g=mkPerson(SKIN,SKIN);P(CYL,'#d2232a',q.g.body,0,.92,0,.21,.2,.21)}   // nur in Badehose
     else if(q.k==='snack')q.g=mkFan(q.food);
+    else if(q.k==='hare')q.g=mkHare();
     q.g.visible=false;propG.add(q.g)}
 }
 // Bogenflug aus dem Bild: u 0…1, von (x,z) nach außen; dient für alles, was weggeschleudert wird
@@ -76,5 +82,7 @@ function propsFrame(){
       g.position.set(q.x+.6,0,-9.2);g.rotation.y=-PI/2;walkPerson(g,0,false);g.arms[0].rotation.z=1.5+.15*Math.sin(t*6);
       g.food.visible=t<q.t1-.3;
       if(t>q.t1-.3&&t<q.t1+1.5){g.arms[1].rotation.x=-2.8;g.arms[0].rotation.z=.4}}   // Snack weg: Hand hoch, Daumen hoch
+    else if(q.k==='hare'){g.visible=t>=q.t0&&t<q.t1;if(!g.visible)continue;   // hoppelt hinter der Innenbande davon, zum Schluss ins Innenfeld
+      const a=t-q.t0,out=Math.max(0,a-1.8);g.position.set(q.x+4.5*a,.6*Math.abs(Math.sin(a*7)),9.4+out*3);g.rotation.y=-Math.atan2(out>0?3:0,4.5);g.rotation.z=.25*Math.sin(a*7)}
   }
 }
