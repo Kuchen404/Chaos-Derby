@@ -12,7 +12,7 @@ function frame(dt,sdt){
     for(let q=1;q<ar.length;q+=6)if(ar[q]<0){ar[q]+=22;ar[q+3]+=22}pa.needsUpdate=true}
   const w=A.rain?1:0;frame.w=(frame.w||0)+(w-(frame.w||0))*Math.min(1,dt*2);
   bgc.copy(SKY).lerp(GREY,frame.w);scene.fog.color.copy(bgc);sun.intensity=.7-.35*frame.w;hemi.intensity=.8-.15*frame.w;
-  if(state==='rep')replayCam(xs,dt);else direct(xs,dt);juiceView(dt);renderer.render(scene,camera);
+  if(state==='rep')replayCam(xs,dt);else direct(xs,dt);hideNear();juiceView(dt);renderer.render(scene,camera);
   const lead=Math.max(...xs),rest=Math.max(0,Math.round(L-lead));
   $('rest').textContent=rest>0?'noch '+rest+' m':'im Ziel';
   xs.forEach((x,i)=>{dots[i].style.left=(clamp(x/L,0,1)*100)+'%'});
@@ -26,11 +26,11 @@ function logLine(e){
   $('cap').textContent=e.s;const ol=$('log');if(ol.firstChild&&ol.firstChild.className==='empty')ol.textContent='';
   const li=document.createElement('li'),tm=document.createElement('time'),sp=document.createElement('span');
   voice.say(e.k==='start'?Object.assign({b:race.bod},e):e,clamp(e.t/race.winT,0,1));sfx.event(e.k);
-  tm.textContent=stamp(e.t);sp.textContent=e.s;li.append(tm,sp);ol.prepend(li);while(ol.children.length>9)ol.lastChild.remove();
-  if(e.cut&&(!cut||t>cut.until+1.2||e.k==='fallback'))cut={i:e.i,until:t+e.cut}}   // wer von oben zurückfällt, bekommt immer seinen Schnitt
+  tm.textContent=stamp(e.t);sp.textContent=e.s;li.append(tm,sp);ol.prepend(li);while(ol.children.length>9)ol.lastChild.remove()}   // Schnitte plant die Regie vorab (js/director.js)
 function step(dt){
-  const slow=t>race.winT-.5&&t<race.winT+.45,sdt=dt*(slow?.28:1);
-  $('slow').hidden=!slow;const t0=t;t+=sdt;
+  // Zeitlupe im Ziel und kurz auf den stärksten Momenten (siehe liveSlow in js/director.js)
+  const fin=t>race.winT-.5&&t<race.winT+.45,ls=!fin&&liveSlow(t),sdt=dt*(fin?.28:ls?SLOWF:1);
+  $('slow').hidden=!(fin||ls);const t0=t;t+=sdt;
   while(evI<race.ev.length&&race.ev[evI].t<=t)logLine(race.ev[evI++]);
   if(!photoTaken&&race.winT>=0&&t>=race.winT)snapPhoto();
   frame(dt,sdt);
@@ -60,7 +60,7 @@ function finish(){
   startReplay(()=>{startCeremony();$('cap').textContent+=won});
 }
 function reset(){
-  cancelAnimationFrame(raf);paradeStop();voice.stop();sfx.music(null);sfx.rain(false);t=0;evI=0;cut=null;shotK='';regie.sp=regie.alone=-1;regie.since=0;state='idle';$('slow').hidden=true;
+  cancelAnimationFrame(raf);paradeStop();voice.stop();sfx.music(null);sfx.rain(false);t=0;evI=0;shotK='';regie.sp=regie.alone=regie.cs=-1;regie.since=regie.off=0;regie.of=null;state='idle';$('slow').hidden=true;
   endCeremony();hideReplay();raceBar.view(false);
   $('log').innerHTML='<li class="empty">Der Kommentar läuft mit, sobald das Rennen startet.</li>';
   $('cap').textContent='Die Starter stehen an der Linie. Der Boden ist '+BODEN[race.bod].name+'.';

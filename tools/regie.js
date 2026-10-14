@@ -14,11 +14,17 @@ srv.listen(0,async()=>{
   await p.goto('http://localhost:'+srv.address().port+'/');await p.evaluate(()=>{setField(CLASSIC);useField(CLASSIC)});await p.waitForFunction(()=>fig.every(f=>f.model),null,{timeout:120000});
   const res=await p.evaluate(N=>{
     renderer.render=()=>{};cancelAnimationFrame(raf);
-    const V=new THREE.Vector3(),seen=i=>{camera.updateMatrixWorld();const r=fig[i].root.position;V.set(r.x,vis(i).top*S*.5,r.z).project(camera);return Math.abs(V.x)<.95&&Math.abs(V.y)<.95&&V.z<1};
+    const V=new THREE.Vector3(),W=new THREE.Vector3(),seen=i=>{camera.updateMatrixWorld();const r=fig[i].root.position;V.set(r.x,vis(i).top*S*.5,r.z).project(camera);return Math.abs(V.x)<.95&&Math.abs(V.y)<.95&&V.z<1};
+    // gut im Bild: Mitte im Bild und mindestens 7 % der Bildhöhe groß
+    const good=i=>{camera.updateMatrixWorld();const r=fig[i].root.position;V.set(r.x,vis(i).top*S*.5,r.z).project(camera);W.set(r.x,vis(i).top*S,r.z).project(camera);
+      return Math.abs(V.x)<.9&&Math.abs(V.y)<.9&&V.z<1&&Math.abs(W.y-V.y)>.07};
     const out=[];
     for(let s=0;s<N;s++){
       race=simulate(1000+s*7919,true,0,CLASSIC);race.bod=0;reset();state='run';
-      const o={side:0,leadOff:0,cut:0,cutOff:0,pack:0,jumps:0,short:[],win:false,frames:0};let k0='',t0=0;const P=new THREE.Vector3(),Q=new THREE.Vector3();
+      const o={side:0,leadOff:0,cut:0,cutOff:0,pack:0,jumps:0,short:[],win:false,frames:0,mom:0,momSeen:0};
+      // Momente: Ereignisse mit Schnitt oder Gewicht 2 vor den letzten 70 m; gesehen, wenn der Starter in den 1,5 s danach zu 75 % gut im Bild ist
+      let tN=race.winT;for(let q=0;q<race.frames.length;q++)if(Math.max(...race.frames[q].x)>=L-70){tN=q/30;break}
+      const mom=race.ev.filter(e=>e.i>=0&&e.t<tN&&(e.cut>0||e.p>=2)).map(e=>({t:e.t,i:e.i,n:0,g:0}));let k0='',t0=0;const P=new THREE.Vector3(),Q=new THREE.Vector3();
       for(;;){const done=step(1/30);o.frames++;
         const xs=race.frames[Math.min(Math.floor(t*30),race.frames.length-1)].x,li=xs.indexOf(Math.max(...xs)),k=shotK.replace(/[\d.]+$/,'');
         if(shotK!==k0){if(k0&&t-t0<1.2)o.short.push(k0.replace(/[\d.]+$/,'')+' '+(t-t0).toFixed(1)+' s');k0=shotK;t0=t}
@@ -28,8 +34,9 @@ srv.listen(0,async()=>{
         if(k==='pack')o.pack++;
         if(k==='cut'){o.cut++;if(!seen(regie.cutI))o.cutOff++}
         if(!o.win&&t>=race.winT&&k==='fin'&&seen(race.order[0]))o.win=true;
+        for(const m of mom)if(t>=m.t&&t<m.t+1.5){m.n++;if(good(m.i))m.g++}
         if(done)break}
-      out.push(o)}
+      o.mom=mom.length;o.momSeen=mom.filter(m=>m.n&&m.g/m.n>=.75).length;out.push(o)}
     return out},N);
   const sum=k=>res.reduce((a,o)=>a+o[k],0),pc=(a,b)=>(b?100*a/b:0).toFixed(1)+' %';
   console.log('Rennen:',N);
@@ -37,6 +44,7 @@ srv.listen(0,async()=>{
   console.log('Schnitt, betroffener Starter nicht im Bild:',pc(sum('cutOff'),sum('cut')));
   console.log('Anteil Verfolger-Einstellung:',pc(sum('pack'),sum('frames')));
   console.log('Kamerasprünge ohne Schnitt:',sum('jumps'));
+  console.log('Momente je Rennen:',(sum('mom')/N).toFixed(1)+', davon gut im Bild:',pc(sum('momSeen'),sum('mom')));
   console.log('Sieger beim Zieleinlauf im Bild:',res.filter(o=>o.win).length+' von '+N);
   const sh=res.flatMap((o,i)=>o.short.map(x=>'Rennen '+i+': '+x));
   console.log('Einstellungen kürzer als 1,2 s:',sh.length);sh.forEach(x=>console.log('  '+x));

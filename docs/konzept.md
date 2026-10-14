@@ -20,7 +20,7 @@ Das Rennen wird im Hintergrund komplett berechnet (`simulate(seed, true)` in `js
 
 ## Die Simulation
 
-- Strecke 1000 m, Zeitschritt 1/30 s, ein Rennen dauert etwa 45 s.
+- Strecke 1200 m, Zeitschritt 1/30 s, ein Rennen dauert etwa 54 s (bis Oktober 2026 waren es 1000 m und 45 s, siehe „Bühne“).
 - Jeder Starter hat ein Grundtempo, ein leichtes Tempo-Rauschen, einen Faktor für die zweite Rennhälfte, einen Faktor bei Regen und je einen Faktor für die drei Bahnzustände.
 - Ereignisse haben eine Wahrscheinlichkeit pro Sekunde und setzen einen Zustand für eine begrenzte Zeit:
 
@@ -32,10 +32,10 @@ Das Rennen wird im Hintergrund komplett berechnet (`simulate(seed, true)` in `js
 | purzelt | vom Stier getroffen, ausgerutscht, Rakete explodiert, Kettenreaktion | ein Überschlag, dann liegt das Tier 2 bis 3 s auf der Seite; danach 1,5 s Schonzeit, in der es nicht wieder fällt und keine eigene Panne hat |
 | läuft zurück | Pferd auf zwei Beinen | läuft kurz in die falsche Richtung |
 | Rakete | Kuh, einmal pro Rennen | 70 m/s, bis die Rakete explodiert |
-| Regen | in knapp der Hälfte der Rennen, 10 s lang | Husky wird sehr schnell, alle anderen etwas langsamer |
+| Regen | in knapp der Hälfte der Rennen, 12 s lang | Husky wird sehr schnell, alle anderen etwas langsamer |
 | jubelt zu früh | Pferd oder Pferd auf zwei Beinen, zwischen 80 und 35 m vor dem Ziel mit mehr als 9 m Vorsprung, einmal pro Rennen | bleibt 1 bis 1,6 s stehen und hüpft |
 | Rakete verkehrt herum | 15 % aller Zündungen der Kuh | fliegt gut 1 s mit 35 m/s rückwärts, dann explodiert sie |
-| Husky heult | Husky, nur wenn es noch nicht geregnet hat | 1,5 s später regnet es 10 s lang |
+| Husky heult | Husky, nur wenn es noch nicht geregnet hat | 1,5 s später regnet es 12 s lang |
 | bockt | Esel | bleibt stehen, bis ihn jemand überholt, höchstens 7 s |
 | springt | Hirsch | 0,9 s lang 1,8-faches Tempo; jeder sechste Sprung endet als Sturz (purzelt); über einen Stier im Sturmlauf springt er hinweg |
 | erstarrt | Reh, wenn bis 18 m entfernt etwas Lautes passiert (Sturmlauf, Rakete, Sturz, Jagd, Zoomies), sonst selten ohne Grund; auch wenn der Wolf es jagt | steht 1,4 bis 2,6 s |
@@ -83,7 +83,7 @@ Nach jedem Unfall gilt 1,5 s Schonzeit, in der der Starter nicht wieder getroffe
 
 ### Überholversuche
 
-Läuft ein schnellerer Starter bis auf 2,5 m an einen laufenden Vordermann heran, hängt er an ihm fest, bis er es mit einem Gag versucht (siehe „Aufholjagd und Überholen nur mit Gag“). Im Schnitt passiert das etwa 12-mal pro Rennen. Welcher Gag, hängt etwas vom Tier ab (60 % einer der eigenen Lieblingsgags, sonst zufällig aus Bocksprung, Huckepack, Drängeln, Turbo, Rückwärts und „Da, ein Hase!“). Läuft ein kleines Tier (Husky, Fuchs, Wolf, Shiba) hinter einem großen, schlüpft es mit 60 % unten durch:
+Läuft ein schnellerer Starter bis auf 2,5 m an einen laufenden Vordermann heran, hängt er an ihm fest, bis er es mit einem Gag versucht (siehe „Aufholjagd und Überholen nur mit Gag“). Seit der Bühne (siehe unten) passiert das im Schnitt gut 5-mal pro Rennen, vorher etwa 10-mal. Welcher Gag, hängt etwas vom Tier ab (60 % einer der eigenen Lieblingsgags, sonst zufällig aus Bocksprung, Huckepack, Drängeln, Turbo, Rückwärts und „Da, ein Hase!“). Läuft ein kleines Tier (Husky, Fuchs, Wolf, Shiba) hinter einem großen, schlüpft es mit 60 % unten durch:
 
 | Gag (`k`) | Lieblingsgag von | Was passiert | Geht schief |
 |---|---|---|---|
@@ -99,7 +99,9 @@ Läuft ein schnellerer Starter bis auf 2,5 m an einen laufenden Vordermann heran
 
 Dazu kommt der **Hechtsprung ins Ziel** (`dive`, 29), der nicht am Festhängen hängt: Wer auf den letzten 9 m bis zu 3 m hinter einem anderen liegt, wirft sich waagerecht wie ein Torwart über die Linie, Vorderbeine nach vorn, Hinterbeine nach hinten. Der Sprung dauert 0,5 s, holt genau den Rückstand auf und streckt die Nase 1,2 m nach vorn (`nose` in `sim.js` kennt dafür den Zustand). Das gibt ein Zielfoto, keinen klaren Sieg; das Zielfoto zeigt das Tier im Flug, weil der Zustand nach dem Zieldurchgang noch bis zur Landung bleibt. Jeder versucht es höchstens einmal. 25 % gehen schief (`divefail`): zu früh gesprungen, er rutscht auf dem Bauch und bleibt einen halben Meter vor der Linie liegen.
 
-Gemessen (3000 Rennen mit ausgelostem Feld und Boden), Gags je Rennen: Bocksprung 2,2 (davon 0,55 auf dem Vordermann), Rückwärts 2,0, Drängeln 1,5, Untendurch 1,3 (0,27 schief), Turbo 1,0, Hase 0,9 (0,24 schief), Stabhochsprung 0,6 (0,14 Kopfstand), Huckepack 0,5, Hechtsprung 0,5 (0,13 zu früh), Schwanz-Schleuder 0,3 (0,07 schief). Die Zahl der Überholversuche ist gleich geblieben, sie verteilen sich jetzt nur auf mehr verschiedene Gags, damit sich weniger wiederholt. Zieleinläufe enger als 0,2 s: vorher 29 %, jetzt 24 %, vor allem weil manche Hechtsprünge schiefgehen und der Zweite dann zurückfällt.
+Gemessen (3000 Rennen mit ausgelostem Feld und Boden, noch ohne Bühne und mit 1000 m), Gags je Rennen: Bocksprung 2,2 (davon 0,55 auf dem Vordermann), Rückwärts 2,0, Drängeln 1,5, Untendurch 1,3 (0,27 schief), Turbo 1,0, Hase 0,9 (0,24 schief), Stabhochsprung 0,6 (0,14 Kopfstand), Huckepack 0,5, Hechtsprung 0,5 (0,13 zu früh), Schwanz-Schleuder 0,3 (0,07 schief). Die Zahl der Überholversuche ist gleich geblieben, sie verteilen sich jetzt nur auf mehr verschiedene Gags, damit sich weniger wiederholt. Zieleinläufe enger als 0,2 s: vorher 29 %, jetzt 24 %, vor allem weil manche Hechtsprünge schiefgehen und der Zweite dann zurückfällt.
+
+Mit der Bühne (siehe unten) halbieren sich die Überholgags: Bocksprung 1,2 (0,31 auf dem Vordermann), Rückwärts 1,1, Drängeln 0,8, Untendurch 0,7 (0,14 schief), Turbo 0,5, Hase 0,5 (0,13 schief), Stabhochsprung 0,3 (0,08 Kopfstand), Huckepack 0,3, Schwanz-Schleuder 0,2 (0,05 schief). Der Hechtsprung braucht keine freie Bühne, weil er in der Zielkamera läuft; er kommt jetzt 1,1-mal pro Rennen vor (0,27 zu früh), auch bei Plätzen hinter dem Sieger, weil die Zieleinläufe enger sind.
 
 Jedes neue Manöver hat eine Ansage vor der Pointe (Pfote hoch, Kopf in den Rasen, Biss in den Schwanz, flach ducken), damit man im Bild sieht, was gleich passiert. Die Darstellung steht in `pose` und `moveBones` in `js/figures.js`: Für den Hechtsprung werden auch die Hinterbeine über ihre IK-Knochen mitgeführt (`followBone`, `ikB`), beim Stabhochsprung dreht sich die Figur um einen festen Punkt am Boden vor ihr und holt die Simulation erst bei der Landung wieder ein, bei der Schwanz-Schleuder zielt der erste Schwanzknochen des Vordermanns auf das Maul des Hundes und wird bis zu zehnfach gestreckt (`pullTail`). Der Hase ist eine Grundform in `js/props.js` (`hare`). Die japanischen Sätze für die neuen Manöver stehen in `js/jikkyo.js`, haben aber noch keine VOICEVOX-Aufnahmen; bis `node tools/jikkyo-render.js` gelaufen ist, spricht sie die Sprachausgabe des Browsers.
 
@@ -126,9 +128,34 @@ Gemessen mit ausgelostem Feld und Boden (2000 bis 3000 Rennen). Ein Überholen z
 | Überholungen durch Gag / Chaos / normal | – | 26 / 44 / 29 % | 70 / 29 / 0 % |
 | Führungswechsel durch Gag / Chaos / normal | – | 29 / 41 / 30 % | 72 / 27 / 1 % |
 
+### Bühne: ein Auftritt nach dem anderen
+
+Mit 19 bis 20 Momenten in 45 s (Eigenheiten, Überholgags, Unfälle, Zuschauer) passierte im Schnitt alle zwei Sekunden etwas, oft zwei Dinge gleichzeitig an verschiedenen Stellen. Die Kamera konnte nur eins zeigen, und nur knapp 60 % der Momente waren gut im Bild. Gewünscht ist Klasse statt Masse: weniger Momente, jeder davon sichtbar und gut inszeniert. Deshalb gilt jetzt (`stage`, `free`, `q` in `js/sim.js`):
+
+- **Die Bühne:** Jedes Ereignis mit Kameraschnitt (`cut`) belegt die Bühne für seine Dauer und 1,5 s danach (`STAGEGAP`). So lange fängt niemand von sich aus einen neuen Gag an. Folgen wie Stürze, Getroffene oder das erschrockene Reh passieren trotzdem, sie gehören zum laufenden Moment.
+- **Vormerkung:** Würfelt ein Starter seine Eigenheit (Schlafen, Sturmlauf, Rakete, Bocken …), während die Bühne belegt ist, merkt er sie sich vor und ist dran, sobald sie frei wird. Nach 4 s verfällt die Vormerkung. Dadurch zeigen sich die Eigenheiten fast so oft wie vorher.
+- **Überholgags warten:** Ein Überholgag beginnt nur bei freier Bühne und wenn keine Eigenheit vorgemerkt ist. Wer festhängt, hängt so lange weiter hinter seinem Vordermann. Bananenschale und Snack kommen ebenfalls nur bei freier Bühne, dafür häufiger gewürfelt als vorher (0,03 statt 0,012 je Sekunde). Erscheinen Flitzer oder Enten, belegen sie die Bühne 3 bzw. 2 s.
+- **Längere Strecke:** 1200 statt 1000 m, damit trotz Pausen genug passiert. Regen dauert 12 statt 10 s. Trampolin und Enten stehen relativ zur Strecke.
+- Die Grundtempos wurden danach neu abgestimmt; sie liegen nahe an den alten Werten.
+
+Gemessen mit `node tools/regie.js 60` (klassisches Feld, im Browser) und einem Zählskript über 3000 Rennen mit ausgelostem Feld und Boden:
+
+| | vorher (1000 m, mit den neuen Überholmanövern) | jetzt (1200 m) |
+|---|---|---|
+| Siegerzeit | 44 s | 54 s |
+| Momente mit Kameraschnitt je Rennen | 19,3 | 14,0 |
+| davon weniger als 1,5 s nach dem vorigen | 9,6 | 2,3 |
+| Überholgags je Rennen | 10,5 | 5,5 |
+| Momente gut im Bild (bis 70 m vor dem Ziel) | 57 % | 90 % |
+| Führungswechsel je Rennen (davon letzte 200 m) | 5,1 (0,9) | 3,7 (0,5) |
+| Wer 200 m vor dem Ziel führt, gewinnt | 47 % | 52 % |
+| Zieleinlauf enger als 0,2 s | 24 % | 34 % |
+
+Eigenheiten je Rennen vorher und jetzt (Starter dabei oder nicht): Sturmlauf 0,48 und 0,51, Rakete 0,28 und 0,29, Schlafen 0,14 und 0,17, Bocken 0,66 und 0,60, Rückwärtslaufen 0,75 und 0,80. „Gut im Bild“ heißt: Der betroffene Starter ist in den 1,5 s nach dem Ereignis zu mindestens 75 % in der Bildmitte und mindestens 7 % der Bildhöhe groß. Wer beim Höhenflug nach oben aus dem Bild schießt, zählt dabei als verpasst, obwohl das gewollt ist.
+
 ### Absurditäten: Dinge auf der Bahn und Zuschauer
 
-Damit nicht nur die Starter selbst für Chaos sorgen, passieren auch um sie herum Dinge. Jeder Gag ist klein (einer verliert oder gewinnt ein paar Meter), dafür kommt in fast jedem Rennen etwas davon vor, im Schnitt knapp zwei pro Rennen (3000 Rennen gezählt). Alles steht in der Simulation (`absurd` und `onTrack` in `js/sim.js`) und landet als `props` im Ergebnis; `js/props.js` zeigt es nur nach der Rennzeit.
+Damit nicht nur die Starter selbst für Chaos sorgen, passieren auch um sie herum Dinge. Jeder Gag ist klein (einer verliert oder gewinnt ein paar Meter), dafür kommt in fast jedem Rennen etwas davon vor, im Schnitt knapp zwei pro Rennen (3000 Rennen gezählt, noch mit 1000 m; Bananenschale und Snack kommen seit der Bühne nur bei freier Bühne, dafür häufiger gewürfelt). Alles steht in der Simulation (`absurd` und `onTrack` in `js/sim.js`) und landet als `props` im Ergebnis; `js/props.js` zeigt es nur nach der Rennzeit.
 
 | Gag (`k`) | Wann | Was passiert | je Rennen |
 |---|---|---|---|
@@ -161,20 +188,20 @@ Aktuelle Siegchancen (`node tools/odds.js`, 6000 Rennen mit ausgelostem Feld und
 
 | Nr | Starter | gesamt | gut | weich | schwer |
 |---|---|---|---|---|---|
-| 1 | Sekundenschlaf (Pferd) | 16 % | 18 % | 14 % | 14 % |
-| 2 | Hals über Kopf (Alpaka) | 18 % | 17 % | 19 % | 17 % |
-| 3 | Dampfwalze (Stier) | 17 % | 15 % | 18 % | 19 % |
-| 4 | Schmuddelwetter (Husky) | 15 % | 14 % | 16 % | 19 % |
-| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 19 % | 20 % | 20 % | 14 % |
-| 6 | Spätzünder (Kuh) | 17 % | 16 % | 17 % | 19 % |
-| 7 | Sturkopf (Esel) | 16 % | 15 % | 17 % | 15 % |
-| 8 | Platzhirsch (Hirsch) | 16 % | 16 % | 15 % | 14 % |
-| 9 | Schreckhaft (Reh) | 16 % | 18 % | 14 % | 13 % |
-| 10 | Schlitzohr (Fuchs) | 16 % | 17 % | 15 % | 18 % |
-| 11 | Hetzjagd (Wolf) | 18 % | 15 % | 18 % | 25 % |
-| 12 | Schnüffelnase (Shiba Inu) | 18 % | 20 % | 17 % | 13 % |
+| 1 | Sekundenschlaf (Pferd) | 17 % | 19 % | 16 % | 13 % |
+| 2 | Hals über Kopf (Alpaka) | 19 % | 18 % | 21 % | 21 % |
+| 3 | Dampfwalze (Stier) | 16 % | 14 % | 19 % | 19 % |
+| 4 | Schmuddelwetter (Husky) | 16 % | 14 % | 17 % | 21 % |
+| 5 | Aufrechter Gang (Pferd auf zwei Beinen) | 17 % | 19 % | 15 % | 14 % |
+| 6 | Spätzünder (Kuh) | 16 % | 15 % | 17 % | 16 % |
+| 7 | Sturkopf (Esel) | 16 % | 16 % | 17 % | 17 % |
+| 8 | Platzhirsch (Hirsch) | 16 % | 17 % | 15 % | 12 % |
+| 9 | Schreckhaft (Reh) | 16 % | 20 % | 13 % | 13 % |
+| 10 | Schlitzohr (Fuchs) | 17 % | 17 % | 16 % | 17 % |
+| 11 | Hetzjagd (Wolf) | 16 % | 13 % | 17 % | 22 % |
+| 12 | Schnüffelnase (Shiba Inu) | 17 % | 18 % | 16 % | 15 % |
 
-Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 22 %, Alpaka 20 %, Pferd auf zwei Beinen 20 %, Kuh 16 %, Stier 12 %, Husky 11 %. Stand mit den neuen Überholmanövern (Untendurch, Hase, Stabhochsprung, Schwanz-Schleuder, Hechtsprung). Dafür wurden die Grundtempos nachgestellt (Pferd 23,77 → 23,65, Alpaka 22,08 → 22,25, Stier 18,77 → 18,85, Husky 18 → 18,4, Kuh 12,73 → 12,6, Esel 22,11 → 22,18, Reh 23,73 → 23,6, Fuchs 21,67 → 21,4, Wolf 21,13 → 21,2, Shiba 22,09 → 22,13); alle Starter liegen zwischen 15 und 19 %. Gegenprobe: Sieg zahlt 0,86 je Taler aus, Platz 0,87, Zweierwette 0,84. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
+Im ursprünglichen Feld (1 bis 6) auf gutem Boden: Pferd 24 %, Pferd auf zwei Beinen 21 %, Alpaka 16 %, Husky 15 %, Kuh 14 %, Stier 11 %. Stand mit der Bühne, 1200 m und den neuen Überholmanövern (Untendurch, Hase, Stabhochsprung, Schwanz-Schleuder, Hechtsprung). Grundtempos dafür: Pferd 23,49, Alpaka 21,65, Stier 18,56, Husky 20,35, Pferd auf zwei Beinen 25,52, Kuh 13,69, Esel 22,29, Hirsch 21,2, Reh 23,6, Fuchs 21,08, Wolf 20,91, Shiba 21,78. Alle Starter liegen zwischen 15,7 und 19,2 %, die mittlere Siegerzeit ist 54,7 s. Gegenprobe: Sieg zahlt 0,86 je Taler aus, Platz 0,86, Zweierwette 0,86. Nach jeder Änderung an den Werten mit `node tools/odds.js` prüfen.
 
 ## Überzeichnete Bewegung
 
@@ -183,6 +210,7 @@ Die Quaternius-Modelle haben nur wenige Clips. Mehr Ausdruck entsteht per Code i
 - **Ausholen:** Weil das Rennen vorab feststeht, sieht die Darstellung 0,32 s voraus. Steht ein Gag bevor (Sturmlauf, Rakete, Sprung, Jagd, Zoomies, alle Überholgags), duckt sich die Figur, lehnt sich zurück und nimmt Anlauf.
 - **Stauchen und Strecken:** eine nachfedernde Feder auf dem Körper. Beim Start eines Gags schnellt die Figur gestreckt los, bei jeder Landung staucht sie, in schnellem Steigen oder Fallen ist sie lang gezogen. Die Füße bleiben dabei am Boden.
 - **Ohren und Schwanz** schlackern über die Knochen (`Ear1L` bis `Ear4R`, `Tail1` bis `Tail8`) im Laufrhythmus, bei Unfällen und Tempo-Gags deutlich stärker. Der Gesamtausschlag ist unabhängig davon, wie viele Glieder ein Schwanz hat.
+- **Reaktion des Überholten:** Wer per Bocksprung, Turbo, rückwärts oder huckepack überholt wird, dreht sich verdutzt zur Kamera und sagt etwas („?!“, „Grrr!“, „Uff!“, „Puh!“), beim Bocksprung und Turbo hüpft er vor Schreck kurz hoch. Gerechnet aus dem Partner des Ereignisses (`RX` und `reactions` in `js/figures.js`). Aktion und Reaktion zusammen machen den Gag erst lesbar.
 - **Treffer:** Bei jedem Unfall im Bild wackelt die Kamera (je nach Art unterschiedlich stark, die explodierende Rakete am stärksten), und Konzentrationslinien wie im Manga zielen für eine halbe Sekunde auf den Getroffenen. Harte Landungen wackeln leicht nach.
 
 ## Wetten
@@ -193,7 +221,7 @@ Gewettet wird mit Spielgeld, entweder am eigenen Handy (siehe unten) oder am Wet
 - **Wettarten:** Sieg (Starter gewinnt), Platz (Starter wird Erster oder Zweiter) und Zweierwette (Erster und Zweiter in genau dieser Reihenfolge).
 - **Feste Quoten:** Alle drei kommen aus denselben Probeläufen mit 15 % Abzug, gerechnet für Boden und Feld des aktuellen Rennens. Das dauert nach „Neues Rennen“ einige Sekunden, das Wettbüro öffnet, sobald die Quoten stehen. Kommt ein neues Rennen („Neues Rennen“ oder Neuladen der Seite), gehen offene Wetten an die Kasse zurück, weil ihre Quoten für ein anderes Feld galten. Angezeigt wird eine Nachkommastelle, und genau diese Quote wird ausgezahlt. Sie gilt ab Abgabe der Wette. Obergrenze 99 für Sieg und Platz, 250 für die Zweierwette, Untergrenze 1,1.
 - **Ablauf:** Der Einsatz geht sofort von der Kasse ab, bis zum Start lässt sich eine Wette zurücknehmen. Mit dem Start schließt das Wettbüro. Nach dem Zieleinlauf wird einmal abgerechnet, eine Wiederholung zahlt nicht noch einmal aus. „Neues Rennen“ startet nicht mehr sofort, sondern öffnet zuerst das Wettbüro.
-- **Gegenprobe:** `node tools/odds.js` lost 40 Felder mit Boden aus, rechnet für jedes die Quoten und setzt dann in je 75 neuen Rennen auf jede Möglichkeit einen Taler. Ergebnis zuletzt: Sieg zahlt 0,86 je Taler aus, Platz 0,88, Zweierwette 0,83. Platz kann durch das Runden kleiner Quoten (Pferd auf gutem Boden 1,3) etwas unter 0,85 liegen, die Zweierwette durch seltene Einläufe und die Obergrenze. Für ein Partyspiel reicht das.
+- **Gegenprobe:** `node tools/odds.js` lost 40 Felder mit Boden aus, rechnet für jedes die Quoten und setzt dann in je 75 neuen Rennen auf jede Möglichkeit einen Taler. Ergebnis zuletzt: Sieg zahlt 0,86 je Taler aus, Platz 0,86, Zweierwette 0,86. Platz kann durch das Runden kleiner Quoten (Pferd auf gutem Boden 1,3) etwas unter 0,85 liegen, die Zweierwette durch seltene Einläufe und die Obergrenze. Für ein Partyspiel reicht das.
 
 ### Wetten am Handy
 
@@ -214,10 +242,12 @@ Jeder kann mit dem eigenen Handy wetten. Das Rennen läuft trotzdem nur am Ferns
 - Der Mixer von Three.js schreibt unveränderte Werte nicht neu. Zusatzdrehungen müssen deshalb vor jedem Bild zurückgenommen werden (siehe `poseModel` in `js/figures.js`), sonst summieren sie sich auf.
 - Jockeys, Rakete, Bahn und Tribünen bestehen aus Grundformen.
 - Kamera: Startfahrt vor dem Feld, mitfahrende Seitenkamera auf die Führungsgruppe, Schnitt auf den betroffenen Starter bei Ereignissen, feste Kamera an der Ziellinie mit Zeitlupe.
-- Liegt der Erste lange allein vorn, wechselt die Regie zwischen ihm (4 s) und den Verfolgern (3 s), bis 150 m vor dem Ziel. Sonst sähe man oft 15 s lang nur ein einzelnes Tier.
-- Jede Einstellung läuft mindestens 1,5 s. Ab 70 m vor dem Ziel bleibt die Einstellung stehen, bis die Zielkamera übernimmt. Die Breite der Führungsgruppe wird geglättet, damit die Kamera nicht reißt, wenn jemand die Gruppe verlässt oder einholt.
+- **Drehbuch** (`planShots` in `js/director.js`): Weil das Rennen vorab feststeht, plant die Regie alle Schnitte vor dem Start. Jeder Moment beginnt 0,7 s vor dem Ereignis, damit man das Ausholen sieht, und läuft mindestens 2,6 s. Der Partner (der Überholte, der Getroffene, der Gejagte) kommt mit ins Bild, wenn er höchstens 20 m entfernt ist; die Kamera rückt dafür so weit zurück, dass alle hineinpassen, auch über mehrere Bahnen. Folgen in der Nähe verlängern den laufenden Moment statt eines neuen Schnitts. Passiert anderswo etwas, während ein Moment läuft, bleibt dieser mindestens 1,5 s nach seinem Ereignis stehen; wer aus dem Höhenflug zurückfällt, bekommt immer sofort seinen Schnitt. Liegen zwei Momente weniger als 1,5 s auseinander, wird direkt weitergeschnitten statt kurz die Seitenkamera zu zeigen.
+- **Live-Zeitlupe:** Die zwei stärksten Momente eines Rennens (Höhenflug, Explosion, Landung auf einem anderen, mindestens 8 s auseinander; Gewichte in `BIG`) laufen für 0,55 s Rennzeit mit 35 % Tempo, mit dem Schild „Zeitlupe“. Das verlängert das Rennen um gut eine Sekunde. Die schiefgegangenen neuen Überholmanöver (Kopfstand, Hinsetzen, Schwanz ins Gesicht) wiegen 3 wie ein verpatzter Bocksprung: Sie verlängern ihren Moment, bekommen aber keine Zeitlupe.
+- Liegt der Erste lange allein vorn, wechselt die Regie zwischen ihm (4 s) und den Verfolgern (3 s), bis 150 m vor dem Ziel. Sonst sähe man oft 15 s lang nur ein einzelnes Tier. Kurz vor der Zielkamera wird nicht mehr gewechselt, auch wenn ein Raketenflug die Spitze plötzlich nah ans Ziel bringt.
+- Jede Einstellung läuft mindestens 1,5 s. Ab 70 m vor dem Ziel gibt es keine neuen Schnitte, und die Seitenkamera steht mindestens 1,5 s, bevor die Zielkamera übernimmt. Die Breite der Führungsgruppe wird geglättet, damit die Kamera nicht reißt, wenn jemand die Gruppe verlässt oder einholt.
 - **Vorstellung der Starter:** Solange das Wettbüro offen ist, läuft eine Endlosschleife (`js/parade.js`). Die Kamera fährt von Starter zu Starter in der Reihenfolge der Startnummern; jeder tritt 5 m aus der Reihe, zeigt in einer kurzen Szene seine Eigenheit und geht rückwärts zurück. Unten links steht eine Bauchbinde mit Nummer, Name, Eigenheit und Siegquote. Nach allen sechs folgt eine Totale aufs Feld, dann beginnt die Schleife von vorn (gut 40 s). „Rennen starten“ beendet sie. Beim ersten Durchgang sagt der Sprecher die Namen an (vorhandene Aufnahmen `name.*`, ruhige Stimme), sobald der Browser den Ton nach der ersten Bedienung freigibt. Die Szenen: Pferd gähnt, schläft im Liegen ein und schreckt hoch; Alpaka macht den Hals lang und frisst; Stier scharrt und prescht los; Husky hängt durch, bis eine Regenwolke kommt; Pferd auf zwei Beinen richtet sich auf, winkt und dreht eine Pirouette; Kuh macht eine stotternde Probezündung mit Rußwolke; Esel schüttelt den Kopf und keilt aus; Hirsch schlägt einen Salto; Reh erschrickt und erstarrt zitternd; Fuchs duckt sich und schleicht; Wolf heult und macht einen Satz auf die Kamera zu; Shiba schnüffelt und rennt dann Kreise. Alles entsteht per Code über Knochen, Höhe und Neigung der Figur, die Simulation ist nicht beteiligt.
-- `node tools/regie.js 60` spielt Rennen im Browser ab und misst, ob Führender, betroffener Starter und Sieger im Bild sind, wie oft die Kamera ohne Schnitt springt und welche Einstellungen zu kurz sind. Vorher (60 Rennen): 515 Kamerasprünge, 21 Einstellungen unter 1,2 s. Nachher: 0 Sprünge, 1 kurze Einstellung.
+- `node tools/regie.js 60` spielt Rennen im Browser ab und misst, ob Führender, betroffener Starter und Sieger im Bild sind, wie oft die Kamera ohne Schnitt springt und welche Einstellungen zu kurz sind. Vorher (60 Rennen): 515 Kamerasprünge, 21 Einstellungen unter 1,2 s. Nachher: 0 Sprünge, 1 kurze Einstellung. Seit dem Drehbuch misst es auch, wie viele Momente gut im Bild sind (57 % vorher, 90 % jetzt); keine Kamerasprünge, keine Einstellung unter 1,2 s.
 
 ## Gesprochener Kommentar
 
