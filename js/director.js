@@ -1,5 +1,5 @@
 // Chaos-Derby – Kameraregie: Startfahrt, Seitenkamera, Verfolger, Schnitte auf Ereignisse, Zieleinlauf
-const regie={sp:-1,alone:-1,since:0,cutI:0,of:null,plan:[],slow:[],shot:null,off:0,cs:-1};   // geglättete Gruppenbreite; seit wann der Erste allein vorn liegt; Beginn der laufenden Einstellung; Drehbuch
+const regie={sp:-1,alone:-1,since:0,cutI:0,of:null,plan:[],slow:[],tFin:0,shot:null,off:0,cs:-1};   // geglättete Gruppenbreite; seit wann der Erste allein vorn liegt; Beginn der laufenden Einstellung; Drehbuch
 const HOLD=1.5,NEAR=L-70;   // Mindestdauer einer Einstellung in s; ab hier keine neuen Schnitte mehr bis zur Zielkamera
 // Drehbuch: Das Rennen steht vorab fest, deshalb legt die Regie vor dem Start fest, wann sie auf welchen Moment schneidet.
 // Jeder Moment (Ereignis mit Schnitt) beginnt PRE Sekunden vorher, damit man das Ausholen sieht, und läuft mindestens MINSHOT.
@@ -36,7 +36,7 @@ function planShots(){
   // Zeitlupe für die stärksten Momente, mindestens 8 s auseinander
   const slow=[];shots.filter(s=>s.big&&s.big.w>=4&&s.big.a>s.t0&&s.big.a<s.t1-.3).sort((a,b)=>b.big.w-a.big.w||a.t0-b.t0)
     .forEach(s=>{if(slow.length<SLOWN&&slow.every(w=>Math.abs(w.a-s.big.a)>8))slow.push({a:s.big.a-.05,b:s.big.a+.5})});
-  regie.plan=shots;regie.slow=slow;regie.of=race;
+  regie.plan=shots;regie.slow=slow;regie.of=race;regie.tFin=tFin;
 }
 function ensurePlan(){if(regie.of!==race)planShots()}
 // Läuft gerade eine Zeitlupe auf einem Höhepunkt? (main.js bremst dann das Abspielen)
@@ -52,8 +52,8 @@ function direct(xs,dt){
   // Welche Einstellung? Start, Ziel und Nachspann haben Vorrang (die Zielkamera bleibt, auch wenn der Erste noch einmal zurückläuft), dann das Drehbuch; Seitenkamera und Verfolger wechseln frühestens nach HOLD
   const cur=shotK.replace(/[\d.]+$/,''),si=regie.plan.findIndex(s=>t>=s.t0&&t<s.t1);
   let k=t<2.6?'start':t>wt+1.6?'post':lead>=L-32||cur==='fin'?'fin':si>=0?'cut'+si:pack?'pack':'side';
-  // Wechsel zwischen Seitenkamera und Verfolgern nicht kurz vor dem nächsten Moment, sonst stünde die Einstellung nur einen Augenblick
-  const soon=regie.plan.some(s=>s.t0>t&&s.t0-t<HOLD);
+  // Wechsel zwischen Seitenkamera und Verfolgern nicht kurz vor dem nächsten Moment oder der Zielkamera, sonst stünde die Einstellung nur einen Augenblick
+  const soon=t>regie.tFin-HOLD||regie.plan.some(s=>s.t0>t&&s.t0-t<HOLD);
   if((k==='side'||k==='pack')&&k!==shotK&&(cur==='side'||cur==='pack')&&(t-regie.since<HOLD||lead>=NEAR||soon))k=shotK;
   let ax=0,px,py,pz,tx,ty,tz=0;
   if(k==='start'){ax=lead;px=13;py=2.1;pz=9.5;tx=-3;ty=1.7}
